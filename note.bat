@@ -22,8 +22,8 @@ git add .
 git commit -m %message%
 git push
 @set /p isMerge=  如果没有报错直接回车即可,如果报错则输入pull来解决冲突: 
-if not '%isMerge%' == '' (
-    @set flag='open'
+@ if not '%isMerge%' == '' (
+    @set flag=open
     @ goto gitpull
 ) 
 exit
@@ -31,9 +31,9 @@ exit
 :gitpull
 @cd C:\Users\yingjie.lu\Documents\note
 git pull
-if not '%flag%'=='open'(
+@ if not '%flag%'=='open'(
 	@set /p isMerge=  '输入merge进行合并冲突'
-	if '%isMerge%' == 'merge' code C:\Users\yingjie.lu\Documents\note
+	@ if '%isMerge%' == 'merge' code C:\Users\yingjie.lu\Documents\note
 ) else (
 	code C:\Users\yingjie.lu\Documents\note
 )
