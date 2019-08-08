@@ -13,8 +13,7 @@
 
 :gitpush
 @set /p message= 输入提交信息: 
-@cd d:/myNote
-@d:
+@cd C:\Users\yingjie.lu\Documents\note
 git add .
 git commit -m %message%
 git push
@@ -22,7 +21,6 @@ git push
 exit
 
 :gitpull
-@cd d:/myNote
-@d:
+@cd C:\Users\yingjie.lu\Documents\note
 git pull
 exit
