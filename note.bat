@@ -32,7 +32,7 @@ exit
 @cd C:\Users\yingjie.lu\Documents\note
 git pull
 @ if not '%flag%'=='open' (
-	@set /p isMerge=  '输入merge进行合并冲突'
+	@set /p isMerge=  '如果没有报错直接回车即可,如果报错则输入merge进行合并冲突'
 	@ if not '%isMerge%' == '' code C:\Users\yingjie.lu\Documents\note
 ) else (
 	code C:\Users\yingjie.lu\Documents\note
