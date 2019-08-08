@@ -1,4 +1,14 @@
-@set myPath = C:\Users\yingjie.lu\Documents\note
+:: 使用quicker软件时使用以下路径
+:: 需要自行修改note文件夹的路径
+:: %cd%是获取当前cmd的路径 
+
+@set myPath=%cd%
+@cd %myPath%
+@cd ../
+@set myPath=%cd%\Documents\note
+
+:: 如果是使用powershell测试时,使用以下路径
+:: set myPath=%cd%
 
 :rechoose
 @set /p choice= 请选择push,pull,merge: 
@@ -19,7 +29,6 @@
 
 :gitpush
 @set /p message= 输入提交信息: 
-echo %myPath%
 @cd %myPath%
 git add .
 git commit -m %message%
