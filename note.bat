@@ -22,7 +22,7 @@ git add .
 git commit -m %message%
 git push
 @set /p isMerge=  
-if '%isMerge%' == 'merge' code C:\Users\yingjie.lu\Documents\note
+if not '%isMerge%' == '' goto rechoose
 exit
 
 :gitpull
