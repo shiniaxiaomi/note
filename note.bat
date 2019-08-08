@@ -1,5 +1,5 @@
 :rechoose
-@set /p choice= 请选择push还是pull: 
+@set /p choice= 请选择push,pull,merge: 
 
 @ if "%choice%"=="push" (
     @ goto gitpush
@@ -7,6 +7,10 @@
 
 @ if "%choice%"=="pull" (
     @ goto gitpull
+) 
+
+@ if "%choice%"=="merge" (
+    @ goto gitmerge
 ) 
 
 @ goto rechoose
@@ -17,9 +21,17 @@
 git add .
 git commit -m %message%
 git push
+@set /p isMerge=  
+if '%isMerge%' == 'merge' code C:\Users\yingjie.lu\Documents\note
 exit
 
 :gitpull
 @cd C:\Users\yingjie.lu\Documents\note
 git pull
+@set /p isMerge=  
+if '%isMerge%' == 'merge' code C:\Users\yingjie.lu\Documents\note
+exit
+
+:gitmerge
+code C:\Users\yingjie.lu\Documents\note
 exit
