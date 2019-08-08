@@ -21,7 +21,7 @@
 git add .
 git commit -m %message%
 git push
-@set /p isMerge=  
+@set /p isMerge=  '如果没有报错直接回车即可,如果报错则输入pull来解决冲突'
 if not '%isMerge%' == '' goto rechoose
 exit
 
