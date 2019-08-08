@@ -1,3 +1,5 @@
+@set path = C:\Users\yingjie.lu\Documents\note
+
 :rechoose
 @set /p choice= 请选择push,pull,merge: 
 
@@ -17,7 +19,8 @@
 
 :gitpush
 @set /p message= 输入提交信息: 
-@cd C:\Users\yingjie.lu\Documents\note
+echo %path%
+@cd %path%
 git add .
 git commit -m %message%
 git push
@@ -29,16 +32,16 @@ git push
 exit
 
 :gitpull
-@cd C:\Users\yingjie.lu\Documents\note
+@cd %path%
 git pull
 @ if '%flag%'=='open' (
-    code C:\Users\yingjie.lu\Documents\note
+    code %path%
 ) else (
     @set /p isMerge=  '如果没有报错直接回车即可,如果报错则输入merge进行合并冲突'
-	@ if '%isMerge%' == '' code C:\Users\yingjie.lu\Documents\note
+	@ if '%isMerge%' == '' code %path%
 )
 exit
 
 :gitmerge
-code C:\Users\yingjie.lu\Documents\note
+code %path%
 exit
