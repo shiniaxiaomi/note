@@ -40,7 +40,14 @@ git pull
     code %myPath%
 ) else (
     @set /p isMerge=  '如果没有报错直接回车即可退出,如果报错则输入merge进行合并冲突'
-	@ if '%isMerge%' == 'merge' code %myPath%
+	@ if '%isMerge%' == 'merge' (
+        :: 拉取冲突因为本地冲突,先将代码提交到本地仓库,然后在拉取,git会进行自动合并,之后在使用vscode进行解决冲突的合并
+        git add .
+        @set /p message= 输入本次提交的信息:
+        git commit -m %message%
+        git pull
+        code %myPath%
+    )
     @ if '%isMerge%' == 'exit' exit
     @ if '%isMerge%' == '' exit
 )
