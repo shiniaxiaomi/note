@@ -8,7 +8,7 @@
 @set myPath=%cd%\Documents\note
 
 :: 如果是使用powershell测试时,使用以下路径
-:: set myPath=%cd%
+:: @set myPath=%cd%
 
 :rechoose
 @set /p choice= 请选择push,pull,merge: 
@@ -33,11 +33,13 @@
 git add .
 git commit -m %message%
 git push
-@set /p isMerge=  如果没有报错直接回车即可,如果报错则输入pull来解决冲突: 
+@set /p isMerge=  如果没有报错直接回车即可退出,如果报错则输入pull来解决冲突: 
 @ if not '%isMerge%' == '' (
     @set flag=open
     @ goto gitpull
 ) 
+@ if '%isMerge%' == 'exit' exit
+@ if '%isMerge%' == '' exit
 exit
 
 :gitpull
@@ -46,8 +48,10 @@ git pull
 @ if '%flag%'=='open' (
     code %myPath%
 ) else (
-    @set /p isMerge=  '如果没有报错直接回车即可,如果报错则输入merge进行合并冲突'
-	@ if '%isMerge%' == '' code %myPath%
+    @set /p isMerge=  '如果没有报错直接回车即可退出,如果报错则输入merge进行合并冲突'
+	@ if '%isMerge%' == 'merge' code %myPath%
+    @ if '%isMerge%' == 'exit' exit
+    @ if '%isMerge%' == '' exit
 )
 exit
 
