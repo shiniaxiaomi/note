@@ -130,7 +130,9 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 提交日志的版本状态图
 
-![1565353821636](../.img/.git/1565353821636.png)
+
+
+![1565353821636](../.img/.Git/1565353821636.png)
 
 > 目前的版本指针指向的是最顶上的最新节点
 
@@ -142,7 +144,7 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 版本状态图
 
-![1565354190680](../.img/.git/1565354190680.png)
+![1565354190680](../.img/.Git/1565354190680.png)
 
 ---
 
@@ -174,7 +176,7 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
 
 就是电脑上能够看到的目录,比如`learngit`文件夹就是一个工作区：
 
-![working-dir](../.img/.git/0.png)
+![working-dir](../.img/.Git/0.png)
 
 ### 版本库（Repository）-包含了暂存区
 
@@ -182,7 +184,7 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
 
 Git的版本库里存了很多东西，其中最重要的就是称为**stage（或者叫index）的暂存区**，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
 
-![1565355268609](../.img/.git/1565355268609.png)
+![1565355268609](../.img/.Git/1565355268609.png)
 
 ### git提交的具体细节
 
