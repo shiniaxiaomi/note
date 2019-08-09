@@ -208,3 +208,34 @@
 # 项目代码
 添加监听器
 
+
+
+
+
+# 文档
+
+- [@公式](https://docs.awspaas.com/reference-guide/aws-paas-at-reference-guide/index.html)
+- [AWS UI组件参考指南](https://docs.awspaas.com/reference-guide/aws-paas-ui-reference-guide/index.html)
+- [存储模型](https://docs.awspaas.com/user-manual/aws-pass-console-user-manual-bo/index.html)
+
+# 其他
+
+- > #### 获取扩展列值
+  >
+  > API获取
+  >
+  > ```java
+  > //根据表名、字段名、扩展属性名获得属性值
+  > SDK.getRepositoryAPI().getBOItemPropValue("表名", "字段名", "属性名称");
+  > 
+  > //根据表名、扩展属性名、扩展属性值获得满足条件的字段定义模型列表
+  > SDK.getRepositoryAPI().getBOItemsOfProp( "表名",  "属性名称",  "属性值");
+  > ```
+  >
+  > @公式获取
+  >
+  > ```js
+  > //根据表名、字段名、扩展属性名获得属性值
+  > @boItemPropVal(*boName,*fieldName,*prop)
+  > ```
+
