@@ -52,7 +52,7 @@ git pull
     git commit -m %isMerge%
     git pull
     code %myPath%
-    pause
+    exit
 )
 :: Çå¿Õ±äÁ¿
 set isMerge=
