@@ -1,3 +1,5 @@
+:: 在使用前还需要进行git和vscode的环境变量配置
+:: 将C:\Program Files\Microsoft VS Code\bin和C:\Program Files\Git\cmd加入到环境变量中即可
 :: 需要自行修改note文件夹的路径
 @set myPath=C:\Users\%userName%\Documents\note\
 
