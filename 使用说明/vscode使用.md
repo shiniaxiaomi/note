@@ -7,6 +7,14 @@
 - 汉化
 
   > 在vscode中搜索chinese汉化插件，重启之后即可
+  
+- 将vscode添加到环境变量
+
+  `C:\Users\Administrator\AppData\Local\Programs\Microsoft VS Code\bin`
+
+  > 添加之后就可以直接在命令行中输入`code a.txt`来直接使用`vscode`来创建或者编辑文件了
+
+
 
 # 快捷键
 
