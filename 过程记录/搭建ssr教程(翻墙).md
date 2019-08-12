@@ -15,7 +15,7 @@ https://www.vultr.com/
 > 如果报错,则执行yum install wget -y,在重复上面的命令
 
 安装成功后保存截图
-![在这里插入图片描述](../.img/.搭建ssr教程(翻墙)/2019080620544085.png)
+![在这里插入图片描述](./.img/.搭建ssr教程(翻墙)/2019080620544085.png)
 
 ## 安装锐速脚本
 1. 更换内核
@@ -27,11 +27,11 @@ https://www.vultr.com/
 > `wget -N --no-check-certificate https://raw.githubusercontent.com/91yun/serverspeeder/master/serverspeeder-all.sh && bash serverspeeder-all.sh`
 
 出现下图就算成功了
-![在这里插入图片描述](../.img/.搭建ssr教程(翻墙)/20190806205726251.png)
+![在这里插入图片描述](./.img/.搭建ssr教程(翻墙)/20190806205726251.png)
 
 
 # 连接Shadowsocks
-![在这里插入图片描述](../.img/.搭建ssr教程(翻墙)/20190806210213250.png)
+![在这里插入图片描述](./.img/.搭建ssr教程(翻墙)/20190806210213250.png)
 
 # 其他操作
 ## 查看80端口
