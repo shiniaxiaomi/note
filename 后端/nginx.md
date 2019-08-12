@@ -830,10 +830,6 @@ http {
 
 
 
-
-
-
-
 # 参考文档
 
 [nginx 反向代理](https://www.cnblogs.com/ysocean/p/9392908.html)
