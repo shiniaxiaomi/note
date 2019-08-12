@@ -938,23 +938,32 @@ Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/boo
 示例:
 
 ```cmd
-# Windows:
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
 # Python:
 *.py[cod]
 *.so
-*.egg
 *.egg-info
 dist
 build
 
-# My configurations:
-db.ini
-deploy_key_rsa
+# 文件夹
+/java
+
+# 通配符
+*.txt
+
+# 文件夹下的某个文件
+/git/readme.md
 ```
+
+> 配置语法:
+>
+> - 以斜杠“/”开头表示目录；
+> - 以星号“*”通配多个字符；
+> - 以问号“?”通配单个字符
+> - 以方括号“[]”包含单个字符的匹配列表；
+> - 以叹号“!”表示不忽略(跟踪)匹配到的文件或目录。
+>
+> 注意： git 对于 .gitignore配置文件是按行从上到下进行规则匹配的
 
 最后一步就是把`.gitignore`也提交到Git，就完成了
 
