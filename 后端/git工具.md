@@ -945,14 +945,14 @@ Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/boo
 dist
 build
 
-# 文件夹
-/java
+# 过滤文件设置，表示过滤这个文件夹
+/target/
+
+# 表示指定过滤某个文件下具体文件
+/mtk/do.c
 
 # 通配符
 *.txt
-
-# 文件夹下的某个文件
-/git/readme.md
 ```
 
 > 配置语法:
