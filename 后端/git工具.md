@@ -132,7 +132,7 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 
 
-![1565353821636](../.img/.git工具/1565353821636.png)
+![1565353821636](./.img/.git工具/1565353821636.png)
 
 > 目前的版本指针指向的是最顶上的最新节点
 
@@ -144,7 +144,7 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 版本状态图
 
-![1565354190680](../.img/.git工具/1565354190680.png)
+![1565354190680](./.img/.git工具/1565354190680.png)
 
 ---
 
@@ -176,7 +176,7 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
 
 就是电脑上能够看到的目录,比如`learngit`文件夹就是一个工作区：
 
-![working-dir](../.img/.git工具/0.png)
+![working-dir](./.img/.git工具/0.png)
 
 ### 版本库（Repository）-包含了暂存区
 
@@ -184,7 +184,7 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
 
 Git的版本库里存了很多东西，其中最重要的就是称为**stage（或者叫index）的暂存区**，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
 
-![1565355268609](../.img/.git工具/1565355268609.png)
+![1565355268609](./.img/.git工具/1565355268609.png)
 
 > 在`git add .`后,当前修改的文件都会加入到暂存区,在`git commit`后,会把暂存区添加当前分支(默认是master分支)的head节点
 
@@ -296,7 +296,7 @@ $ git commit -m "remove test.txt"
 
 `HEAD`严格来说不是指向提交，而是指向`master`，`master`才是指向提交的，所以，`HEAD`指向的就是当前分支。如下图所示:
 
-![1565409404088](../.img/.git工具/1565409404088.png)
+![1565409404088](./.img/.git工具/1565409404088.png)
 
 每次提交，`master`分支都会向前移动一步，这样，随着你不断提交，`master`分支的线也越来越长。
 
@@ -304,7 +304,7 @@ $ git commit -m "remove test.txt"
 
 当我们创建新的分支，例如`dev`时，Git新建了一个指针叫`dev`，指向`master`相同的提交，再把`HEAD`指向`dev`，就表示当前分支在`dev`上：
 
-![1565409527909](../.img/.git工具/1565409527909.png)
+![1565409527909](./.img/.git工具/1565409527909.png)
 
 所以,Git创建一个分支很快，因为除了增加一个`dev`指针，改改`HEAD`的指向，工作区的文件都没有任何变化！
 
@@ -312,17 +312,17 @@ $ git commit -m "remove test.txt"
 
 从现在开始，对工作区的修改和提交就是针对`dev`分支了，比如新提交一次后，`dev`指针往前移动一步，而`master`指针不变：
 
-![git-br-dev-fd](../.img/.git工具/0-1565409653004.png)
+![git-br-dev-fd](./.img/.git工具/0-1565409653004.png)
 
 
 
 假如我们在`dev`上的工作完成了，就可以把`dev`合并到`master`上。Git怎么合并呢？最简单的方法，就是直接把`master`指向`dev`的当前提交，就完成了合并：
 
-![git-br-ff-merge](../.img/.git工具/0-1565409749594.png)
+![git-br-ff-merge](./.img/.git工具/0-1565409749594.png)
 
 合并完分支后，甚至可以删除`dev`分支。删除`dev`分支就是把`dev`指针给删掉，删掉后，我们就剩下了一条`master`分支：
 
-![git-br-rm](../.img/.git工具/0-1565409790707.png)
+![git-br-rm](./.img/.git工具/0-1565409790707.png)
 
 
 
@@ -488,7 +488,7 @@ $ git commit -m "conflict fixed"
 
 现在，`master`分支和`feature1`分支变成了下图所示：
 
-![git-br-conflict-merged](../.img/.git工具/0-1565415846652.png)
+![git-br-conflict-merged](./.img/.git工具/0-1565415846652.png)
 
 
 
@@ -546,7 +546,7 @@ Deleted branch feature1 (was 14096d0).
 
 所以，团队合作的分支看起来就像这样：
 
-![git-br-policy](../.img/.git工具/0-1565425746153.png)
+![git-br-policy](./.img/.git工具/0-1565425746153.png)
 
 ## Bug分支
 
@@ -909,7 +909,7 @@ Deleted tag 'v0.1' (was f15b0dd)
 
 Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/bootstrap`，以及你自己克隆到本地电脑的仓库，他们的关系就像下图显示的那样：
 
-![1565444764864](../.img/.git工具/1565444764864.png)
+![1565444764864](./.img/.git工具/1565444764864.png)
 
 如果你想修复bootstrap的一个bug，或者新增一个功能，立刻就可以开始干活，干完后，往自己的仓库推送。
 
@@ -1050,10 +1050,6 @@ $ cat .gitconfig
 # 参考文档
 
 [廖雪峰的git教程](https://www.liaoxuefeng.com/wiki/896043488029600)
-
-
-
-
 
 
 
