@@ -1631,9 +1631,9 @@ RPM 包的名称是`httpd-2.2.15-15.el6.centos.1.i686.rpm`
 
 - rpm：RPM 包的扩展名，表明这是编译好的二进制包，可以使用 rpm 命令直接安装。此外，还有以 src.rpm 作为扩展名的 RPM 包，这表明是源代码包，需要安装生成源码，然后对其编译并生成 rpm 格式的包，最后才能使用 rpm 命令进行安装。
 
-## rpm包安装、卸载和升级
+## 使用rpm进行软件的安装、卸载和升级
 
-### rpm包默认安装路径
+### 使用rpm安装软件时的默认安装路径
 
 ---
 
@@ -1649,7 +1649,7 @@ RPM 包的名称是`httpd-2.2.15-15.el6.centos.1.i686.rpm`
 
 RPM 包的默认安装路径是可以通过命令查询的。
 
-### rpm包的安装
+### 使用rpm安装软件
 
 ---
 
@@ -1731,7 +1731,7 @@ tcp 0 0 :::80:::* LISTEN
 
 访问localhost,出现apache的页面,则表示安装并启动成功!
 
-### rpm包的升级
+### 使用rpm升级软件
 
 ---
 
@@ -1749,7 +1749,7 @@ tcp 0 0 :::80:::* LISTEN
 
 >  `-F`（大写）选项的含义是：如果该软件没有安装，则不会安装，必须安装有较低版本才能升级。
 
-### rpm包的卸载
+### 使用rpm卸载软件
 
 ---
 
@@ -1787,6 +1787,303 @@ httpd is needed by (installed) webalizer-2.21_02-3.3.el6.i686
 httpd is needed by (installed) mod_ssl-1:2.2.15-15.el6.centos.1.i686
 httpd=0:2.2.15-15.el6.centos.1 is needed by(installed)mod_ssl-1:2.2.15-15.el6.centos.1.i686
 ```
+
+### 使用rpm查询软件
+
+---
+
+#### 查询软件包是否安装
+
+---
+
+**基本格式**
+
+```cmd
+[root@localhost ~]# rpm -q 包名
+```
+
+**选项**
+
+- -q 表示查询，是 query 的首字母。
+
+**示例**
+
+- 查看 Linux 系统中是否安装 apache
+
+  ```cmd
+  [root@localhost ~]# rpm -q httpd
+  httpd-2.2.15-15.el6.centos.1.i686
+  ```
+
+  > 注意这里使用的是包名，而不是包全名。因为已安装的软件包只需给出包名，系统就可以成功识别（使用包全名反而无法识别）。
+
+#### 查询系统中所有安装的软件包
+
+---
+
+**查询 Linux 系统中所有已安装软件包**
+
+```cmd
+[root@localhost ~]# rpm -qa
+libsamplerate-0.1.7-2.1.el6.i686
+startup-notification-0.10-2.1.el6.i686
+gnome-themes-2.28.1-6.el6.noarch
+fontpackages-filesystem-1.41-1.1.el6.noarch
+gdm-libs-2.30.4-33.el6_2.i686
+gstreamer-0.10.29-1.el6.i686
+redhat-lsb-graphics-4.0-3.el6.centos.i686
+…省略部分输出…
+```
+
+**可以使用管道符查找出需要的内容**
+
+```cmd
+[root@localhost ~]# rpm -qa | grep httpd
+httpd-devel-2.2.15-15.el6.centos.1.i686
+httpd-tools-2.2.15-15.el6.centos.1.i686
+httpd-manual-2.2.15-15.el6.centos.1.noarch
+httpd-2.2.15-15.el6.centos.1.i686
+```
+
+#### 查询软件包的详细信息
+
+---
+
+**基本格式**
+
+```cmd
+[root@localhost ~]# rpm -qi 包名
+```
+
+**选项**
+
+- -i 选项表示查询软件信息，是 information 的首字母。
+
+**示例**
+
+- 想查看 apache 包的详细信息
+
+  ```cmd
+  [root@localhost ~]# rpm -qi httpd
+  Name : httpd Relocations:(not relocatable)
+  #包名
+  Version : 2.2.15 Vendor:CentOS
+  #版本和厂商
+  Release : 15.el6.centos.1 Build Date: 2012年02月14日星期二 06时27分1秒
+  #发行版本和建立时间
+  Install Date: 2013年01月07日星期一19时22分43秒
+  Build Host:
+  c6b18n2.bsys.dev.centos.org
+  #安装时间
+  Group : System Environment/Daemons Source RPM:
+  httpd-2.2.15-15.el6.centos.1.src.rpm
+  #组和源RPM包文件名
+  Size : 2896132 License: ASL 2.0
+  #软件包大小和许可协议
+  Signature :RSA/SHA1,2012年02月14日星期二 19时11分00秒，Key ID
+  0946fca2c105b9de
+  #数字签名
+  Packager：CentOS BuildSystem <http://bugs.centos.org>
+  URL : http://httpd.apache.org/
+  #厂商网址
+  Summary : Apache HTTP Server
+  #软件包说明
+  Description:
+  The Apache HTTP Server is a powerful, efficient, and extensible web server.
+  #描述
+  ```
+
+**查询未安装软件包的详细信息**
+
+- 基本格式
+
+  ```cmd
+  [root@localhost ~]# rpm -qip 包全名
+  ```
+
+- 选项
+
+  -p 选项表示查询未安装的软件包，是 package 的首字母。
+
+  > 注意，这里用的是包全名，且未安装的软件包需使用“绝对路径+包全名”的方式才能确定包。
+
+#### 查询软件相关的文件和路径
+
+---
+
+rpm 软件包通常采用默认路径安装，各安装文件会分门别类安放在适当的目录文件下。使用 rpm 命令`可以查询到已安装软件包中包含的所有文件及各自安装路径`
+
+**基本格式**
+
+```cmd
+[root@localhost ~]# rpm -ql 包名
+```
+
+**选项**
+
+- -l 选项表示列出软件包所有文件的安装目录。
+
+**示例**
+
+- 查看 apache 软件包中所有文件以及各自的安装位置
+
+  ```cmd
+  [root@localhost ~]# rpm -ql httpd
+  /etc/httpd
+  /etc/httpd/conf
+  /etc/httpd/conf.d
+  /etc/httpd/conf.d/README
+  /etc/httpd/conf.d/welcome.conf
+  /etc/httpd/conf/httpd.conf
+  /etc/httpd/conf/magic
+  …省略部分输出…
+  ```
+
+**查询未安装软件包中包含的所有文件以及打算安装的路径**
+
+- 命令格式
+
+  ```cmd
+  [root@localhost ~]# rpm -qlp 包全名
+  ```
+
+- 选项
+
+  -p 选项表示查询未安装的软件包信息，是 package 的首字母。
+
+  > 注意，由于软件包还未安装，因此需要使用“绝对路径+包全名”的方式才能确定包。
+
+- 示例
+
+  我们想查看 bing 软件包（未安装，绝对路径为：/mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm）中的所有文件及各自打算安装的位置
+
+  ```cmd
+  [root@localhost ~]# rpm -qlp /mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm
+  /etc/NetworkManager/dispatcher.d/13-named
+  /etc/logrotate.d/named
+  /etc/named
+  /etc/named.conf
+  /etc/named.iscdlv.key
+  /etc/named.rfc1912.zones
+  …省略部分输出…
+  ```
+
+#### 查询系统文件属于哪个软件
+
+---
+
+rpm 支持反向查询，即查询某系统文件所属哪个 RPM 软件包
+
+**基本格式**
+
+```cmd
+[root@localhost ~]# rpm -qf 系统文件名
+```
+
+**选项**
+
+- -f 选项的含义是查询系统文件所属哪个软件包，是 file 的首字母。
+
+  > 注意，只有使用 RPM 包安装的文件才能使用该命令，手动方式建立的文件无法使用此命令。
+
+**示例**
+
+- 查询 ls 命令所属的软件包
+
+  ```cmd
+  [root@localhost ~]# rpm -qf /bin/ls
+  coreutils-8.4-19.el6.i686
+  ```
+
+#### 查询软件包的依赖关系
+
+---
+
+使用 rpm 命令安装 RPM 包，需考虑与其他 RPM 包的依赖关系。rpm -qR 命令就用来查询某已安装软件包依赖的其他包
+
+**基本格式**
+
+```cmd
+[root@localhost ~]# rpm -qR 包名
+```
+
+**选项**
+
+- -R（大写）选项的含义是查询软件包的依赖性，是 requires 的首字母。
+
+**示例**
+
+- 查询 apache 软件包的依赖性
+
+  ```cmd
+  [root@localhost ~]# rpm -qR httpd
+  /bin/bash
+  /bin/sh
+  /etc/mime.types
+  /usr/sbin/useradd
+  apr-util-ldap
+  chkconfig
+  config(httpd) = 2.2.15-15.el6.centos.1
+  httpd-tods = 2.2.15-15.el6.centos.1
+  initscripts >= 8.36
+  …省略部分输出…
+  ```
+
+- 在此命令的基础上增加 -p 选项，即可实现查找未安装软件包的依赖性
+
+  ```cmd
+  [root@localhost ~]# rpm -qRp /mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm
+  /bin/bash
+  /bin/sh
+  bind-libs = 32:9.8.2-0.10.rc1.el6
+  chkconfig
+  chkconfig
+  config(bind) = 32:9.8.2-0.10.rc1.el6
+  grep
+  libbind9.so.80
+  libc.so.6
+  libc.so.6(GLIBC_2.0)
+  libc.so.6(GLIBC_2.1)
+  …省略部分输出…
+  ```
+
+  > 注意，这里使用的也是“绝对路径+包全名”的方式。
+
+### rpm包验证和数字证书
+
+
+
+---
+
+### 提取rpm包
+
+---
+
+### srpm源码包安装
+
+---
+
+### yum源及配置
+
+---
+
+### yum命令
+
+---
+
+### yum管理软件组
+
+---
+
+### linux源码包安装和卸载
+
+---
+
+### linux源码包摄功能及
+
+---
+
+
 
 
 
