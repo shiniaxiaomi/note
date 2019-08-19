@@ -1788,7 +1788,7 @@ httpd is needed by (installed) mod_ssl-1:2.2.15-15.el6.centos.1.i686
 httpd=0:2.2.15-15.el6.centos.1 is needed by(installed)mod_ssl-1:2.2.15-15.el6.centos.1.i686
 ```
 
-### 使用rpm查询软件
+### 使用rpm查询软件相关内容
 
 ---
 
@@ -2051,25 +2051,423 @@ rpm 支持反向查询，即查询某系统文件所属哪个 RPM 软件包
 
 ### rpm包验证和数字证书
 
+---
 
+为了能够及时发现文件误删、误修改文件数据、恶意篡改文件内容等问题，Linux 提供了以下两种监控（检测）方式：
+
+- RPM 包校验：其实就是将已安装文件和 /var/lib/rpm/ 目录下的数据库内容进行比较，确定文件内容是否被修改。
+- RPM 包数字证书校验：用来校验 RPM 包本身是否被修改。
+
+#### rpm包校验
 
 ---
+
+RPM 包校验可用来判断已安装的软件包（或文件）是否被修改
+
+**命令格式**
+
+```cmd
+[root@localhost ~]# rpm -Va
+# -Va 选项表示校验系统中已安装的所有软件包。
+```
+
+```cmd
+[root@localhost ~]# rpm -V 已安装的包名
+# -V 选项表示校验指定 RPM 包中的文件，是 verity 的首字母。
+```
+
+```cmd
+[root@localhost ~]# rpm -Vf 系统文件名
+# -Vf 选项表示校验某个系统文件是否被修改。
+```
+
+**示例**
+
+- 校验 apache 软件包中所有的安装文件是否被修改
+
+  ```cmd
+  [root@localhost -]# rpm -V httpd
+  ```
+
+  如果执行后无任何提示信息，表明所有用 apache 软件包安装的文件均未改动过
+
+- 在修改apache的默认网页文件后,再次使用上述命令
+
+  ```cmd
+  [root@localhost ~]# rpm -V httpd
+  S.5....T. c /etc/httpd/conf/httpd.conf
+  ```
+
+  可以看到，结果显示了文件被修改的信息
+
+  > 该信息可分为以下 3 部分:
+  >
+  > - 最前面的 8 个字符（S.5....T）都属于验证信息，各字符的具体含义如下：
+  >   - S：文件大小是否改变。
+  >   - M：文件的类型或文件的权限（rwx）是否改变。
+  >   - 5：文件MD5校验和是否改变（可以看成文件内容是否改变）。
+  >   - D：设备的主从代码是否改变。
+  >   - L：文件路径是否改变。
+  >   - U：文件的属主（所有者）是否改变。
+  >   - G：文件的属组是否改变。
+  >   - T：文件的修改时间是否改变。
+  >   - .：若相关项没发生改变，用 . 表示。
+  > - 被修改文件类型，大致可分为以下几类：
+  >   - c：配置文件（configuration file）。
+  >   - d：普通文档（documentation）。
+  >   - g："鬼"文件（ghost file），很少见，就是该文件不应该被这个 RPM 包包含。
+  >   - l：授权文件（license file）。
+  >   - r：描述文件（read me）。
+  > - 被修改文件所在绝对路径（包含文件名）。
+
+  由此，S.5....T. c S.5....T. c /etc/httpd/conf/httpd.conf 表达的完整含义是：配置文件 httpd.conf 的大小、内容、修改时间被人为修改过。
+
+#### rpm数字证书验证
+
+---
+
+RPM 包校验方法只能用来校验已安装的 RPM 包及其安装文件，如果 RPM 包本身就被动过手脚，此方法将无法解决问题，需要使用 RPM 数字证书验证方法
+
+> 简单的理解，RPM 包校验其实就是将现有安装文件与最初使用 RPM 包安装时的初始文件进行对比，如果有改动则提示给用户，因此这种方式无法验证 RPM 包本身被修改的情况。
+
+数字证书，又称数字签名，由软件开发商直接发布。Linux 系统安装数字证书后，若 RPM 包做了修改，此包携带的数字证书也会改变，将无法与系统成功匹配，软件无法安装。
+
+使用数字证书验证 RPM 包的方法具有如下 2 个特点：
+
+1. 必须找到原厂的公钥文件，然后才能进行安装。
+2. 安装 RPM 包会提取 RPM 包中的证书信息，然后和本机安装的原厂证书进行验证。如果验证通过，则允许安装；如果验证不通过，则不允许安装并发出警告。
+
+**数字证书默认会放到系统中`/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6`位置处，通过以下命令也可验证**
+
+```cmd
+#系统中的数字证书位置
+[root@localhost ~]# ll /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+-rw-r--r--.1 root root 1706 6 月 26 17:29 /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+```
+
+**安装数字证书的命令**
+
+```cmd
+[root@localhost ~]# rpm --import /efc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+# --import表示导入数字证书
+```
+
+**数字证书安装完成后，可使用如下命令进行验证**
+
+```cmd
+[root@localhost ~]# rpm -qa|grep gpg-pubkey
+gpg-pubkey-c105b9de-4e0fd3a3
+```
+
+可以看到，数字证书已成功安装。在装有数字证书的系统上安装 RPM 包时，系统会自动验证包的数字证书，验证通过则可以安装，反之将无法安装（系统会报错）。
+
+**查询数字证书详细信息的命令如下**
+
+数字证书本身也是一个 RPM 包，因此可以用 rpm 命令查询数字证书的详细信息，也可以将其卸载。
+
+```cmd
+[root@localhost ~]# rpm -qi gpg-pubkey-c105b9de-4e0fd3a3
+#查询数字证书包的详细信息
+Name : gpg-pubkey
+Relocations: (not relocatable)
+Version : c105b9de Vendor: (none)
+Release : 4e0fd3a3 Build Date: 2012年11月12日 星期一 23时05分20秒
+Install Date: 2012年11月12日星期一23时05分20秒 Build Host: local host
+Group : Public Keys
+Source RPM: (none)
+Size : 0
+License: pubkey
+…省略部分输出…
+-----END PGP PUBLIC KEY BLOCK----
+```
+
+**卸载数字证书可以使用 -e 选项**
+
+```cmd
+[root@localhost ~]# rpm -e gpg-pubkey-c105b9de-4ead3a3
+```
 
 ### 提取rpm包
 
 ---
 
+在讲解如何从 RPM 包中提取文件之前，先来系统学习一下 cpio 命令。
+
+#### cpio命令
+
+---
+
+cpio 命令用于从归档包中存入和读取文件，换句话说，cpio 命令可以从归档包中提取文件（或目录），也可以将文件（或目录）复制到归档包中。
+
+> 归档包，也可称为文件库，其实就是 cpio 或 tar 格式的文件，该文件中包含其他文件以及一些相关信息（文件名、访问权限等）。归档包既可以是磁盘中的文件，也可以是磁带或管道。
+
+cpio 命令可以看做是备份或还原命令，因为它可以将数据（文件）备份到 cpio 归档库，也可以利用 cpio 文档库对数据进行恢复。
+
+使用 cpio 命令备份或恢复数据，需注意以下几点：
+
+- 使用 cpio 备份数据时如果使用的是绝对路径，那么还原数据时会自动恢复到绝对路径下；同理，如果备份数据使用的是相对路径，那么数据会还原到相对路径下。
+- cpio 命令无法自行指定备份（或还原）的文件，需要目标文件（或目录）的完整路径才能成功读取，因此此命令常与 find 命令配合使用。
+- cpio 命令恢复数据时不会自动覆盖同名文件，也不会创建目录（直接解压到当前文件夹）。
+
+**cpio命令基本模式**
+
+---
+
+- "-o" 模式：指的是 copy-out 模式，就是把数据备份到文件库中
+
+  **命令格式**
+
+  ```cmd
+  [root@localhost ~]# cpio -o[vcB] > [文件丨设备]
+  ```
+
+  **选项**
+
+  - -o：copy-out模式，备份；
+  - -v：显示备份过程；
+  - -c：使用较新的portable format存储方式；
+  - -B：设定输入/输出块为 5120Bytes，而不是模式的 512Bytes；
+
+  **示例**
+
+  - 使用 cpio 备份数据
+
+    ```cmd
+    [root@localhost ~]#find /etc -print | cpio -ocvB > /root/etc.cpio
+    #利用find命令指定要备份/etc/目录，使用>导出到etc.cpio文件
+    [root@localhost ~]# II -h etc.cpio
+    -rw--r--r--.1 root root 21M 6月5 12:29 etc.cpio
+    #etc.cpio文件生成
+    ```
+
+- "-i" 模式：指的是 copy-in 模式，就是把数据从文件库中恢复
+
+  **基本格式**
+
+  ```cmd
+  [root@localhost ~]# cpio -i[vcdu] < [文件|设备]
+  ```
+
+  **选项**
+
+  - -i：copy-in 模式，还原；
+  - -v：显示还原过程；
+  - -c：较新的 portable format 存储方式；
+  - -d：还原时自动新建目录；
+  - -u：自动使用较新的文件覆盖较旧的文件；
+
+  **示例**
+
+  - 使用 cpio 恢复之前备份的数据
+
+    ```cmd
+    [root@localhost ~]# cpio -idvcu < /root/etc.cpio
+    #还原etc的备份
+    #如果大家査看一下当前目录/root/，就会发现没有生成/etc/目录。这是因为备份时/etc/目录使用的是绝对路径，所以数据直接恢复到/etc/系统目录中，而没有生成在/root/etc/目录中
+    ```
+
+- "-p" 模式：指的是复制模式，使用 -p 模式可以从某个目录读取所有文件，但并不将其备份到 cpio 库中，而是直接复制为其他文件
+
+  **示例**
+
+  - 使用 -p 将 /boot/ 复制到 /test/boot 目录中
+
+    ```cmd
+    [root@localhost ~]# cd /tmp/
+    #进入/tmp/目录
+    [root@localhost tmp]#rm -rf*
+    #删除/tmp/目录中的所有数据
+    [root@localhost tmp]# mkdir test
+    #建立备份目录
+    [root@localhost tmp]# find /boot/ -print | cpio -p /tmp/test
+    #备份/boot/目录到/tmp/test/目录中
+    [root@localhost tmp]# ls test/boot
+    #在/tmp/test/目录中备份出了/boot/目录
+    ```
+
+#### 使用cpio命令提取rpm包中指定文件
+
+---
+
+在服务器使用过程，如果系统文件被误修改或误删除，可以考虑使用 cpio 命令提取出原 RPM 包中所需的系统文件，从而修复被误操作的源文件。
+
+**命令格式**
+
+```cmd
+[root@localhost ~]# rpm2cpio 包全名|cpio -idv .文件绝对路径
+```
+
 ### srpm源码包安装
 
 ---
+
+另一种 RPM 包，即 SRPM 源码包安装软件。
+
+SRPM 包，比 RPM 包多了一个“S”，是“Source”的首字母，所以 SRPM 可直译为“源代码形式的 RPM 包”。也就是说，SRPM 包中不再是经过编译的二进制文件，都是源代码文件。可以这样理解，SRPM 包是软件以源码形式发布后直接封装成 RPM 包的产物。
+
+**RPM与SRPM对比**
+
+| 文件格式 | 文件名格式  | 直接安装与否 | 内含程序类型   | 可否修改参数并编译 |
+| -------- | ----------- | ------------ | -------------- | ------------------ |
+| RPM      | xxx.rpm     | 可           | 已编译         | 不可               |
+| SRPM     | xxx.src.rpm | 不可         | 未编译的源代码 | 可                 |
+
+从表中可以看到，SRPM 包的命名与 RPM 包基本类似，唯一区别在于 SRPM 包多了“src”标志，即 SRPM 包采用“包名-版本号-发布次数-发行商-src.rpm”的方式进行命名，比如“MySQL-5.5.29-2.el6.src.rpm”。
+
+**使用srpm安装步骤**
+
+1. 将 SRPM 包编译成二进制的 RPM 包；
+2. 使用编译完成的 RPM 包安装软件；
+
+**示例**
+
+- 安装 apache 
+  1. 利用 rpmbuild 命令可以直接使用 SRPM 包安装软件，也可以先将 SRPM 包编译成 RPM 包，再使用 RPM 包安装软件；
+  2. 利用 *.spec 文件可实现将 SRPM 包编译成 RPM 包，再使用 RPM 包安装软件；
+
+具体的操作命令用到的时候在查就好了
 
 ### yum源及配置
 
 ---
 
+前面分别介绍了使用 SRPM 源码包和 RPM 二进制包安装软件，这两种方法都比较繁琐，需要手动解决包之间具有依赖性的问题，尤其是库文件依赖，需要自行去 [http://www.rpmfind.net](http://www.rpmfind.net/)网站上查找相关的 RPM 包, 而`yum是一种可自动安装软件包（自动解决包之间依赖关系）的安装方式。`
+
+yum，全称“Yellow dog Updater, Modified”，是一个专门为了解决包的依赖关系而存在的软件包管理器。就好像 Windows 系统上可以通过 360 软件管家实现软件的一键安装、升级和卸载，Linux 系统也提供有这样的工具，就是 yum。
+
+可以这么说，yum 是改进型的 RPM 软件管理器，它很好的解决了 RPM 所面临的软件包依赖问题。yum 在服务器端存有所有的 RPM 包，并将各个包之间的依赖关系记录在文件中，当管理员使用 yum 安装 RPM 包时，yum 会先从服务器端下载包的依赖性文件，通过分析此文件从服务器端一次性下载所有相关的 RPM 包并进行安装。
+
+#### 查看 yum 是否已安装
+
+---
+
+```cmd
+[root@localhost ~]# rpm -qa | grep yum
+yum-metadata-parser-1.1.2-16.el6.i686
+yum-3.2.29-30.el6.centos.noarch
+yum-utils-1.1.30-14.el6.noarch
+yum-plugin-fastestmirror-1.1.30-14.el6.noarch
+yum-plugin-security-1.1.30-14.el6.noarch
+```
+
+[如果没有安装yum,可以使用rpm进行安装yum](https://jingyan.baidu.com/article/e3c78d6483a02a3c4d85f578.html)
+
+#### 设置yum源
+
+---
+
+使用 yum 安装软件包之前，需指定好 yum 下载 RPM 包的位置，此位置称为 yum 源。换句话说，yum 源指的就是软件安装包的来源。
+
+使用 yum 安装软件时至少需要一个 yum 源。`yum 源既可以使用网络 yum 源，也可以将本地光盘作为 yum 源`。接下来就给大家介绍这两种 yum 源的搭建方式。
+
+**网络yum源搭建**
+
+---
+
+一般情况下，只要你的主机网络正常，可以直接使用网络 yum 源，不需要对配置文件做任何修改，这里对 yum 源配置文件做一下简单介绍。
+
+网络 yum 源配置文件位于 /etc/yum.repos.d/ 目录下，文件扩展名为"*.repo"（只要扩展名为 "*.repo" 的文件都是 yum 源的配置文件）。
+
+```cmd
+[root@localhost ~]# ls /etc/yum.repos.d/
+CentOS-Base.repo
+CentOS-Media.repo
+CentOS-Debuginfo.repo.bak
+CentOS-Vault.repo
+```
+
+可以看到，该目录下有 4 个 yum 配置文件，通常情况下 CentOS-Base.repo 文件生效
+
+我们可以尝试打开此文件
+
+```cmd
+[root@localhost yum.repos.d]# vim /etc/yum.repos.d/ CentOS-Base.repo
+[base]
+name=CentOS-$releasever - Base
+mirrorlist=http://mirrorlist.centos.org/? release= $releasever&arch=$basearch&repo=os
+baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+…省略部分输出…
+```
+
+此文件中含有 5 个 yum 源容器，这里只列出了 base 容器，其他容器和 base 容器类似。
+
+base 容器中各参数的含义分别为：
+
+- [base]：容器名称，一定要放在[]中。
+- name：容器说明，可以自己随便写。
+- mirrorlist：镜像站点，这个可以注释掉。
+- baseurl：`我们的 yum 源服务器的地址`。默认是 CentOS 官方的 yum 源服务器，是可以使用的。如果你觉得慢，则可以改成你喜欢的 yum 源地址。
+- enabled：此容器是否生效，如果不写或写成 enabled 则表示此容器生效，写成 enable=0 则表示此容器不生效。
+- gpgcheck：如果为 1 则表示 RPM 的数字证书生效；如果为 0 则表示 RPM 的数字证书不生效。
+- gpgkey：数字证书的公钥文件保存位置。不用修改。
+
+**本地 yum 源**
+
+---
+
+在无法联网的情况下，yum 可以考虑用本地光盘（或安装映像文件）作为 yum 源。
+
+Linux 系统安装映像文件中就含有常用的 RPM 包，我们可以使用压缩文件打开映像文件（iso文件），进入其 Packages 子目录，如图 所示
+
+![1566099884585](.img/.linux/1566099884585.png)
+
+可以看到，该子目录下含有几乎所有常用的 RPM 包，因此使用系统安装映像作为本地 yum 源没有任何问题。
+
+在 /etc/yum.repos.d/ 目录下有一个 CentOS-Media.repo 文件，此文件就是以本地光盘作为 yum 源的模板文件，只需进行简单的修改即可，步骤如下：
+
+1. 放入 CentOS 安装光盘，并挂载光盘到指定位置。命令如下：
+
+   ```cmd
+   [root@localhost ~]# mkdir /mnt/cdrom
+   #创建cdrom目录，作为光盘的挂载点
+   [root@localhost ~]# mount /dev/cdrom /mnt/cdrom/
+   mount: block device/dev/srO is write-protected, mounting read-only
+   #挂载光盘到/mnt/cdrom目录下
+   ```
+
+2. 修改其他几个 yum 源配置文件的扩展名，让它们失效，因为只有扩展名是"*.repo"的文件才能作为 yum 源配置文件。当然也可以删除其他几个 yum 源配置文件，但是如果删除了，当又想用网络作为 yum 源时，就没有了参考文件，所以最好还是修改扩展名。 命令如下：
+
+   ```cmd
+   [root@localhost ~]# cd /etc/yum.repos.d/
+   [root@localhost yum.repos.d]# mv CentOS-Base, repo CentOS-Base.repo.bak
+   [root@localhost yum.repos.d]#mv CentOS-Debuginfo.repo CentOS-Debuginfo.repo.bak
+   [root@localhost yum.repos.d]# mv CentOS-Vault.repo CentOS-Vault.repo.bak
+   ```
+
+3. 修改光盘 yum 源配置文件 CentOS-Media.repo，参照以下方修改：
+
+   ```cmd
+   [root@localhost yum.repos.d]# vim CentOS-Media.repo
+   [c6-media]
+   name=CentOS-$releasever - Media
+   baseurl=file:///mnt/cdrom
+   #地址为你自己的光盘挂载地址
+   #file:///media/cdrom/
+   #file:///media/cdrecorder/
+   #注释这两个的不存在地址
+   gpgcheck=1
+   enabled=1
+   #把enabled=0改为enabled=1, 让这个yum源配置文件生效
+   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+   ```
+
+本地 yum 源就配置完成了。
+
 ### yum命令
 
 ---
+
+
+
+
+
+
+
+
+
+
 
 ### yum管理软件组
 
