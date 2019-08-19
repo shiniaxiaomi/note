@@ -1543,7 +1543,7 @@ grep命令能够在一个或多个文件中，搜索某一特定的字符模式�
   >
   > > 需要注意的是，在基本正则表达式中，如通配符 *、+、{、|、( 和 )等，已经失去了它们原本的含义，而若要恢复它们原本的含义，则要在之前添加反斜杠 \，如 \*、\+、\{、\|、\( 和 \)。
 
-# linux系统的软件安装
+# linux系统的软件安装|
 
 ## linux的安装包
 
@@ -2600,6 +2600,12 @@ lamp:!::
 
 ------
 
+**创建用户的原理**
+
+useradd 命令创建用户的过程是这样的，系统首先读取 /etc/login.defs 和 /etc/default/useradd，根据这两个配置文件中定义的规则添加用户，也就是向 /etc/passwd、/etc/group、/etc/shadow、/etc/gshadow 文件中添加用户数据，接着系统会自动在 /etc/default/useradd 文件设定的目录下建立用户主目录，最后复制 /etc/skel 目录中的所有文件到此主目录中，由此，一个新的用户就创建完成了。
+
+通过 /etc/default/useradd 文件，大家仅能修改有关新用户的部分默认值，有一些内容并没有在这个文件中，例如修改用户默认的 UID、GID，以及对用户密码的默认设置，对这些默认值的修改就需要在 /etc/login.defs 文件中进行。
+
 **命令格式**
 
 `useradd [选项] 用户名`
@@ -2688,27 +2694,134 @@ lamp:!::
   [root@localhost ~]# useradd -u 550 -g lamp1 -G root -d /home/lamp1 -c "test user" -s /bin/bash lamp1
   ```
 
-  
-
-
-
-
-
 ### passwd命令(修改用户密码)
 
 ------
 
+学习 useradd 命令我们知道，使用此命令创建新用户时，并没有设定用户密码，因此还无法用来登陆系统，本节就来学习 passwd 密码配置命令 。
 
+**命令格式**
+
+```cmd
+[root@localhost ~]#passwd [选项] 用户名
+```
+
+**选项**
+
+- -S：查询用户密码的状态，也就是 /etc/shadow 文件中此用户密码的内容。仅 root 用户可用；
+- -l：暂时锁定用户，该选项会在 /etc/shadow 文件中指定用户的加密密码串前添加 "!"，使密码失效。仅 root 用户可用；
+- -u：解锁用户，和 -l 选项相对应，也是只能 root 用户使用；
+- --stdin：可以将通过管道符输出的数据作为用户的密码。主要在批量添加用户时使用；
+- -n 天数：设置该用户修改密码后，多长时间不能再次修改密码，也就是修改 /etc/shadow 文件中各行密码的第 4 个字段；
+- -x 天数：设置该用户的密码有效期，对应 /etc/shadow 文件中各行密码的第 5 个字段；
+- -w 天数：设置用户密码过期前的警告天数，对于 /etc/shadow 文件中各行密码的第 6 个字段；
+- -i 日期：设置用户密码失效日期，对应 /etc/shadow 文件中各行密码的第 7 个字段。
+
+**示例**
+
+- 使用 root 账户修改 lamp 普通用户的密码
+
+  ```cmd
+  [root@localhost ~]#passwd lamp
+  Changing password for user lamp.
+  New password: <==直接输入新的口令，但屏幕不会有任何反应
+  BAD PASSWORD: it is WAY too short <==口令太简单或过短的错误！这里只是警告信息，输入的密码依旧能用
+  Retype new password:  <==再次验证输入的密码，再输入一次即可
+  passwd: all authentication tokens updated successfully.  <==提示修改密码成功
+  ```
+
+- 修改当前系统已登入用户的密码
+
+  ```cmd
+  [root@localhost ~]#passwd
+  #passwd直接回车代表修改当前用户的密码
+  Changing password for user vbird2.
+  Changing password for vbird2
+  (current) UNIX password: <==这里输入『原有的旧口令』
+  New password: <==这里输入新口令
+  BAD PASSWORD: it is WAY too short <==口令检验不通过，请再想个新口令
+  New password: <==这里再想个来输入吧
+  Retype new password: <==通过口令验证！所以重复这个口令的输入
+  passwd: all authentication tokens updated successfully. <==成功修改用户密码
+  ```
+
+  > 注意:
+  >
+  > 1. 普通用户只能使用 passwd 命令修改自己的密码，而不能修改其他用户的密码。
+  > 2. 普通用户修改自己的密码需要先输入自己的旧密码，只有旧密码输入正确才能输入新密码。
+  > 3. 而使用 root 用户，无论是修改普通用户的密码，还是修改自己的密码，都可以不遵守 PAM 模块设定的规则,都可以直接设置
 
 ### usermod命令(修改用户信息)
 
 ------
 
+**基本格式**
 
+`usermod [选项] 用户名`
+
+**选项**
+
+- -c 用户说明：修改用户的说明信息，即修改 /etc/passwd 文件目标用户信息的第 5 个字段；
+- -d 主目录：修改用户的主目录，即修改 /etc/passwd 文件中目标用户信息的第 6 个字段，需要注意的是，主目录必须写绝对路径；
+- -e 日期：修改用户的失效曰期，格式为 "YYYY-MM-DD"，即修改 /etc/shadow 文件目标用户密码信息的第 8 个字段；
+- -g 组名：修改用户的初始组，即修改 /etc/passwd 文件目标用户信息的第 4 个字段（GID）；
+- -u UID：修改用户的UID，即修改 /etc/passwd 文件目标用户信息的第 3 个字段（UID）；
+- -G 组名：修改用户的附加组，其实就是把用户加入其他用户组，即修改 /etc/group 文件；
+- -l 用户名：修改用户名称；
+- -L：临时锁定用户（Lock）；
+- -U：解锁用户（Unlock），和 -L 对应；
+- -s shell：修改用户的登录 Shell，默认是 /bin/bash。
+
+**示例**
+
+- 锁定用户
+
+  ```cmd
+  [root@localhost ~]# usermod -L lamp
+  [root@localhost ~]# grep "lamp" /etc/shadow
+  lamp:!$6$YrPj8g0w$ChRVASybEncU24hkYFqxREH3NnzhAVDJSQLwRwTSbcA2N8UbPD9bBKVQSky xlaMGs/Eg5AQwO.UokOnKqaHFa/:15711:0:99999:7:::
+  #其实锁定就是在密码字段前加入"!"，这时lamp用户就暂时不能登录了
+  ```
+
+- 解锁用户
+
+  ```cmd
+  [root@localhost ~]# usermod -U lamp
+  [root@localhost ~]# grep "lamp" /etc/shadow
+  lamp:$6$YrPj8g0w$ChRVASybEncU24hkYFqxREH3NnzhAVDJSQLwRwTSbcA2N8UbPD9bBKVQSkyx laMGs/Eg5AQwO.UokOnKqaHFa/:15711:0:99999:7:::
+  #取消了密码字段前的 "!"
+  ```
+
+- 把用户加入root组
+
+  ```cmd
+  [root@localhost ~]# usermod -G root lamp
+  [root@localhost ~]# grep "lamp" /etc/group
+  root:x:0:lamp
+  #lamp用户已经加入了root组
+  lamp:x:501:
+  ```
+
+- 修改用户说明
+
+  ```cmd
+  [root@localhost ~]# usermod -c "test user" lamp 
+  [root@localhost ~]# grep "lamp" /etc/passwd
+  lamp:x:501:501:test user:/home/lamp:/bin/bash
+  #查看一下，用户说明已经被修改了
+  ```
 
 ### chage命令(修改用户密码状态)
 
 ------
+
+显示更加详细的用户密码信息，并且和 passwd 命令一样，提供了修改用户密码信息的功能。
+
+> 如果你要修改用户的密码信息，还是直接修改 /etc/shadow 文件更加方便。
+
+**基本格式**
+
+
 
 
 
