@@ -887,6 +887,10 @@ Deleted tag 'v0.1' (was f15b0dd)
 >  * [new tag]         v0.9 -> v0.9
 > ```
 
+## 创建一个基于tag的分支
+
+`tag `
+
 ## 小结
 
 - 命令`git tag <tagname>`用于新建一个标签，默认为`HEAD`，也可以指定一个commit id；
@@ -1046,6 +1050,8 @@ $ cat .gitconfig
 # 参考文档
 
 [廖雪峰的git教程](https://www.liaoxuefeng.com/wiki/896043488029600)
+
+
 
 
 
