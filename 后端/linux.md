@@ -1323,7 +1323,7 @@ yum是一种可自动安装软件包（自动解决包之间依赖关系）的�
 
 - 对用户的一些基本属性做默认设置
 
-## 常用操作命令
+## 常用命令
 
 ### useradd
 
@@ -1395,43 +1395,366 @@ yum是一种可自动安装软件包（自动解决包之间依赖关系）的�
 
     `usermod -c "test user" lamp `
 
-### chage
-
-修改用户密码状态
-
-- 
-
-
-
-
-
-
-
 ### userdel
 
-删除用户
+删除用户的相关数据,此命令只有root用户才能使用
+
+原理
+
+- 该命令就是删除存在下列文件中的用户数据
+- 用户基本信息: 在 /etc/passwd 文件中
+- 用户密码信息: 在 /etc/shadow 文件中；
+- 用户群组基本信息：在 /etc/group 文件中；
+- 用户群组信息信息：在 /etc/gshadow 文件中；
+- 用户个人文件：主目录默认位于 /home/用户名，邮箱位于 /var/spool/mail/用户名。
+
+基本格式
+
+```cmd
+[root@localhost ~]# userdel -r 用户名
+```
+
+示例
+
+- 删除lamp用户
+
+  `userdel -r lamp`
 
 ### id
 
-查看用户的UID和GID
+查看用户的UID,GID和附加组的信息
+
+命令格式
+
+```cmd
+[root@localhost ~]# id 用户名
+```
+
+示例
+
+- 查看lamp用户的信息
+
+  `id lamp`
 
 ### su
 
-用户间切换
+用户切换
+
+命令格式
+
+```cmd
+[root@localhost ~]# su [选项] 用户名
+```
+
+示例
+
+- 切换root用户,并且切换环境变量
+
+  `su -root`
+
+## 用户组命令
 
 ### groupadd
 
+添加用户组
+
+命令格式
+
+```cmd
+[root@localhost ~]# groupadd [选项] 组名
+```
+
+示例
+
+- 创建新群组
+
+  `groupadd group1`
+
+### groupmod
+
 修改用户组
+
+命令格式
+
+```cmd
+[root@localhost ~]# groupmod [选现] 组名
+```
+
+示例
+
+- 把组名group1修改为testgrp
+
+  `groupmod -n testgrp group1`
 
 ### groupdel
 
 删除用户组
 
+命令格式
+
+```cmd
+[root@localhost ~]# groupdel 组名
+```
+
+示例
+
+- 删除group1
+
+  `groupdel group1`
+
 ### gpasswd
 
 把用户添加进组或从组中删除
+
+命令格式
+
+```cmd
+[root@localhost ~]# gpasswd 选项 组名
+```
+
+示例
+
+- 设置密码
+
+  `gpasswd group1 `
+
+- 加入群组管理员为lamp
+
+  `gpasswd -A lamp group1`
+
+- 将用户lamp1加入到group1群组
+
+  `gpasswd -a lamp1 group1`
 
 ### newgrp
 
 切换用户的有效组
 
+有点复杂,用到了再说...
+
+# 权限管理
+
+权限管理，就是指对不同的用户，设置不同的文件访问权限，包括对文件的读、写、删除等
+
+## chagrp
+
+修改文件和目录的所属组
+
+命令格式
+
+```cmd
+[root@localhost ~]# chgrp [-R] 所属组 文件名/目录名
+```
+
+示例
+
+- 修改install.log文件的所属组为group1
+
+  `chgrp group1 install.log`
+
+  > 要被改变的所属组必须是真实存在的
+
+  查看是否更改生效
+
+  ```cmd
+  [root@localhost ~]# ll install.log
+  -rw-r--r--. 1 root group1 78495 Nov 17 05:54 install.log
+  #修改生效
+  ```
+
+## chown
+
+修改文件（或目录）的所有者, 也可以修改文件（或目录）的所属组
+
+修改所有者
+
+- 命令格式
+
+  ```cmd
+  [root@localhost ~]# chown [-R] 所有者 文件或目录
+  ```
+
+同时修改所有者和所属组
+
+- 命令格式
+
+  ```cmd
+  [root@localhost ~]# chown [-R] 所有者:所属组 文件或目录
+  ```
+
+示例
+
+- 修改文件的所有者
+
+  `chown 用户名 文件名`
+
+  查看修改情况
+
+  ```cmd
+  [root@localhost ~]# ll file
+  -rw-r--r--. 1 user root 0 Apr 17 05:12 file
+  #所有者变成了user用户，这时user用户对这个文件就拥有了读、写权限
+  ```
+
+## 权限位
+
+linux使用r表示对文件有读的权限,w表示对文件有写的权限,x表示对文件有可以执行的权限
+
+示例
+
+```cmd
+[root@localhost ~]# ls -al
+-rw-r--r--.   1    root   root       24   Jan  6  2007 .bash_logout
+```
+
+每行的第一列表示各个文件针对不同用户设定的权限,一共是11位
+
+- 第一位表示文件的具体类型
+- 最后一位表示安全规则管理
+- 剩下的中间9位就是对应的不同权限
+
+文件权限位如图所示
+
+![文件权限位](.img/.linux/2-1Z41G11439421.gif)
+
+linux将访问文件的用户分为3类,分别是文件的所有者,所属组以及其他人
+
+- 每种类别中的权限最多为`rwx`,即读,写和执行的权限都具备
+
+## chmod(*)
+
+修改文件的权限
+
+chmod 命令基本格式
+
+```cmd
+[root@localhost ~]# chmod [-R] 权限值 文件名
+```
+
+使用数字修改文件权限
+
+- 原理
+
+  权限对应数字
+
+  - 在Linux中,各个权限与数字的对应关系如下
+
+    ```cmd
+    r --> 4
+    w --> 2
+    x --> 1
+    ```
+
+  - 以 `rwxrw-r-x` 为例,所有者、所属组和其他人分别对应的权限值为：
+
+    ```cmd
+    所有者 = rwx = 4+2+1 = 7
+    所属组 = rw- = 4+2 = 6
+    其他人 = r-x = 4+1 = 5
+    ```
+
+    > 所以，此权限对应的权限值就是 765
+
+- 示例
+
+  - 修改 .bashrc 目录文件的权限(rwxrwxrwx)
+
+    `chmod 777 .bashrc`
+
+使用字母修改文件权限
+
+- 原理
+
+  - chmod 命令中用 `u、g、o` 分别代表 3 种身份(所有者、所属组和其他人),使用`a`表示全部的身份
+
+  - chmod 命令中用 `+、-、=`分别表示加入,删除,设定对应的权限
+
+  - 如图所示
+
+    ![chmod 命令基本格式](.img/.linux/2-1Z41G31209649.gif)
+
+- 示例
+
+  - 设定 .bashrc 文件的权限为 rwxr-xr-x
+
+    `chmod u=rwx,go=rx .bashrc`
+
+  - 添加.bashrc 文件对所有用户的写权限
+
+    `chmod a+w .bashrc`
+
+## umask
+
+修改默认新建文件或目录的权限
+
+示例
+
+- 修改权限(暂时有效)
+
+  `umask 002`
+
+  > 这种方式修改的 umask 只是临时有效
+
+- 修改权限(长期有效)
+
+  > 修改对应的环境变量配置文件 /etc/profile
+
+## charttr
+
+专门用来修改文件或目录的隐藏属性，只有 root 用户可以使用。
+
+命令格式
+
+```cmd
+[root@localhost ~]# chattr [+-=] [属性] 文件或目录名
+```
+
+> 表示给文件或目录添加属性，- 表示移除文件或目录拥有的某些属性，= 表示给文件或目录设定一些属性
+
+示例
+
+- 设置文件不允许被删除
+
+  `chattr +i ftest`
+
+## lsattr
+
+查看文件或目录的隐藏属性
+
+命令格式
+
+```cmd
+[root@localhost ~]# lsattr [选项] 文件或目录名
+```
+
+示例
+
+`lsattr attrtest`
+
+## sudo
+
+可以让普通用户切换到 root 身份去执行某些特权命令
+
+命令格式
+
+```cmd
+[root@localhost ~]# sudo [-b] [-u 新使用者账号] 要执行的命令
+```
+
+选项
+
+- -b  ：将后续的命令放到背景中让系统自行运行，不对当前的 shell 环境产生影响。
+- -u  ：后面可以接欲切换的用户名，若无此项则代表切换身份为 root 。
+- -l：此选项的用法为 sudo -l，用于显示当前用户可以用 sudo 执行那些命令。
+
+# 文件系统管理
+
+# 启动管理
+
+# 系统服务管理
+
+# 系统管理
+
+# 系统日志管理
+
+# 备份与恢复
