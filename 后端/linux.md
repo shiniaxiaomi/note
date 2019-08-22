@@ -1,5 +1,7 @@
 [TOC]
 
+https://github.com/shiniaxiaomi/note/blob/master/%E5%90%8E%E7%AB%AF/linux.md#%E5%8E%8B%E7%BC%A9%E6%96%87%E4%BB%B6
+
 # 简介
 
 是一个操作系统,和Windows、UNIX一样属于比较流行的操作系统
