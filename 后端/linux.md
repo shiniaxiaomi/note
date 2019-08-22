@@ -1282,295 +1282,126 @@ yum是一种可自动安装软件包（自动解决包之间依赖关系）的�
 
 - 组用户信息存储在 /etc/group 文件中，而`将组用户的密码信息存储在 /etc/gshadow 文件中`。
 
-**文件内容**
+  文件内容
 
-```cmd
-[root@localhost ~]#vim /etc/gshadow
-root:::
-bin:::bin, daemon
-daemon:::bin, daemon
-...省略部分输出...
-lamp:!::
-```
+  ```cmd
+  [root@localhost ~]#vim /etc/gshadow
+  root:::
+  bin:::bin, daemon
+  daemon:::bin, daemon
+  ...省略部分输出...
+  lamp:!::
+  ```
 
-文件中，每行代表一个组用户的密码信息，各行信息用 ":" 作为分隔符分为 4 个字段，每个字段的含义如下：
+  文件中，每行代表一个组用户的密码信息，各行信息用 ":" 作为分隔符分为 4 个字段，每个字段的含义如下：
 
-`组名：加密密码：组管理员：组附加用户列表`
+  `组名：加密密码：组管理员：组附加用户列表`
 
-**字段的具体含义**
+  字段的具体含义
 
-- 组名
+  - 组名
 
-  同 /etc/group 文件中的组名相对应。
+    同 /etc/group 文件中的组名相对应。
 
-- 组密码
+  - 组密码
 
-  对于大多数用户来说，通常不设置组密码，因此该字段常为空，但有时为 "!"，指的是该群组没有组密码，也不设有群组管理员。
+    对于大多数用户来说，通常不设置组密码，因此该字段常为空，但有时为 "!"，指的是该群组没有组密码，也不设有群组管理员。
 
-- 组管理员
+  - 组管理员
 
-  从系统管理员的角度来说，该文件最大的功能就是创建群组管理员。
+    从系统管理员的角度来说，该文件最大的功能就是创建群组管理员。
 
-  考虑到 Linux 系统中账号太多，而超级管理员 root 可能比较忙碌，因此当有用户想要加入某群组时，root 或许不能及时作出回应。这种情况下，如果有群组管理员，那么他就能将用户加入自己管理的群组中，也就免去麻烦 root 了。
+    考虑到 Linux 系统中账号太多，而超级管理员 root 可能比较忙碌，因此当有用户想要加入某群组时，root 或许不能及时作出回应。这种情况下，如果有群组管理员，那么他就能将用户加入自己管理的群组中，也就免去麻烦 root 了。
 
-  不过，由于目前有 sudo 之类的工具，因此群组管理员的这个功能已经很少使用了。
+    不过，由于目前有 sudo 之类的工具，因此群组管理员的这个功能已经很少使用了。
 
-- 组中的附加用户
+  - 组中的附加用户
 
-  该字段显示这个用户组中有哪些附加用户，和 /etc/group 文件中附加组显示内容相同
+    该字段显示这个用户组中有哪些附加用户，和 /etc/group 文件中附加组显示内容相同
 
-### /ect/login.defs(创建用户的默认设置文件)
+**/ect/login.defs(创建用户的默认设置文件)**
 
-------
-
-/etc/login.defs 文件用于在创建用户时，`对用户的一些基本属性做默认设置`，例如指定用户 UID 和 GID 的范围，用户的过期时间，密码的最大长度，等等。
-
-> 需要注意的是，该文件的用户默认配置对 root 用户无效。并且，当此文件中的配置与 /etc/passwd 和 /etc/shadow 文件中的用户信息有冲突时，系统会以/etc/passwd 和 /etc/shadow 为准。
-
-**/etc/login.defs文件内容选项含义**
-
-| 设置项                   | 含义                                                         |
-| ------------------------ | ------------------------------------------------------------ |
-| MAIL_DIR /var/spool/mail | 创建用户时，系统会在目录 /var/spool/mail 中创建一个用户邮箱，比如 lamp 用户的邮箱是 /var/spool/mail/lamp。 |
-| PASS_MAX_DAYS 99999      | 密码有效期，99999 是自 1970 年 1 月 1 日起密码有效的天数，相当于 273 年，可理解为密码始终有效。 |
-| PASS_MIN_DAYS 0          | 表示自上次修改密码以来，最少隔多少天后用户才能再次修改密码，默认值是 0。 |
-| PASS_MIN_LEN 5           | 指定密码的最小长度，默认不小于 5 位，但是现在用户登录时验证已经被 PAM 模块取代，所以这个选项并不生效。 |
-| PASS_WARN_AGE 7          | 指定在密码到期前多少天，系统就开始通过用户密码即将到期，默认为 7 天。 |
-| UID_MIN 500              | 指定最小 UID 为 500，也就是说，添加用户时，默认 UID 从 500 开始。注意，如果手工指定了一个用户的 UID 是 550，那么下一个创建的用户的 UID 就会从 551 开始，哪怕 500~549 之间的 UID 没有使用。 |
-| UID_MAX 60000            | 指定用户最大的 UID 为 60000。                                |
-| GID_MIN 500              | 指定最小 GID 为 500，也就是在添加组时，组的 GID 从 500 开始。 |
-| GID_MAX 60000            | 用户 GID 最大为 60000。                                      |
-| CREATE_HOME yes          | 指定在创建用户时，是否同时创建用户主目录，yes 表示创建，no 则不创建，默认是 yes。 |
-| UMASK 077                | 用户主目录的权限默认设置为 077。                             |
-| USERGROUPS_ENAB yes      | 指定删除用户的时候是否同时删除用户组，准备地说，这里指的是删除用户的初始组，此项的默认值为 yes。 |
-| ENCRYPT_METHOD SHA512    | 指定用户密码采用的加密规则，默认采用 SHA512，这是新的密码加密模式，原先的 Linux 只能用 DES 或 MD5 加密。 |
+- 对用户的一些基本属性做默认设置
 
 ## 操作命令
 
-### useradd命令(添加新的系统用户)
+### useradd
 
-------
+添加新的系统用户
 
-**创建用户的原理**
+- 创建用户的原理
 
-useradd 命令创建用户的过程是这样的，系统首先读取 /etc/login.defs 和 /etc/default/useradd，根据这两个配置文件中定义的规则添加用户，也就是向 /etc/passwd、/etc/group、/etc/shadow、/etc/gshadow 文件中添加用户数据，接着系统会自动在 /etc/default/useradd 文件设定的目录下建立用户主目录，最后复制 /etc/skel 目录中的所有文件到此主目录中，由此，一个新的用户就创建完成了。
+  > 系统首先读取 /etc/login.defs 和 /etc/default/useradd，根据这两个配置文件中定义的规则添加用户，也就是向 /etc/passwd、/etc/group、/etc/shadow、/etc/gshadow 文件中添加用户数据，接着系统会自动在 /etc/default/useradd 文件设定的目录下建立用户主目录，最后复制 /etc/skel 目录中的所有文件到此主目录中，由此，一个新的用户就创建完成了。
 
-通过 /etc/default/useradd 文件，大家仅能修改有关新用户的部分默认值，有一些内容并没有在这个文件中，例如修改用户默认的 UID、GID，以及对用户密码的默认设置，对这些默认值的修改就需要在 /etc/login.defs 文件中进行。
+- 命令格式
 
-**命令格式**
+  `useradd [选项] 用户名`
 
-`useradd [选项] 用户名`
+- 示例
 
-**选项**
+  - 创建lamp普通用户
 
-| 选项        | 含义                                                         |
-| ----------- | ------------------------------------------------------------ |
-| -u UID      | 手工指定用户的 UID，注意 UID 的范围（不要小于 500）。        |
-| -d 主目录   | 手工指定用户的主目录。主目录必须写绝对路径，而且如果需要手工指定主目录，则一定要注意权限； |
-| -c 用户说明 | `手工指定/etc/passwd文件中各用户信息中第 5 个字段的描述性内容，可随意配置；` |
-| -g 组名     | 手工`指定用户的初始组`。一般以和用户名相同的组作为用户的初始组，在创建用户时会默认建立初始组。一旦手动指定，则系统将不会在创建此默认的初始组目录。 |
-| -G 组名     | `指定用户的附加组`。我们把用户加入其他组，一般都使用附加组； |
-| -s shell    | 手工指定用户的登录 [Shell](http://c.biancheng.net/shell/)，默认是 /bin/bash； |
-| -e 曰期     | 指定用户的失效曰期，格式为 "YYYY-MM-DD"。也就是 /etc/shadow 文件的第八个字段； |
-| -o          | 允许创建的用户的 UID 相同。例如，执行 "useradd -u 0 -o usertest" 命令建立用户 usertest，它的 UID 和 root 用户的 UID 相同，都是 0； |
-| -m          | 建立用户时强制建立用户的家目录。在建立系统用户时，该选项是默认的； |
-| -r          | 创建系统用户，也就是 UID 在 1~499 之间，供系统程序使用的用户。由于系统用户主要用于运行系统所需服务的权限配置，因此系统用户的创建默认不会创建主目录。 |
+    `useradd lamp`
 
-其实，系统已经帮我们规定了非常多的默认值，在没有特殊要求下，无需使用任何选项即可成功创建用户。
+  - 在建立用户lamp1的同时，指定了UID（550）、初始组（lamp1）、附加组（root）、家目录（/home/lamp1/）、用户说明（test user）和用户登录Shell（/bin/bash）
 
-**示例**
+    `useradd -u 550 -g lamp1 -G root -d /home/lamp1 -c "test user" -s /bin/bash lamp1`
 
-- 创建lamp普通用户(`默认创建的用户已经非常好用了,一般不需要添加参数`)
+### passwd
+
+修改用户密码
+
+- 命令格式
 
   ```cmd
-  [root@localhost ~]# useradd lamp
+  [root@localhost ~]# passwd [选项] 用户名
   ```
 
-  不要小看这条简单的命令，它会完成以下几项操作：
+- 示例
 
-  - 在 /etc/passwd 文件中创建一行与 lamp 用户相关的数据：
+  - 使用 root 账户修改 lamp 普通用户的密码
 
-    ```cmd
-    [root@localhost ~]# grep "lamp" /etc/passwd
-    lamp:x:500:500::/home/lamp:/bin/bash
-    ```
+    `passwd lamp`
 
-    可以看到，用户的 UID 是从 500 开始计算的。同时默认指定了用户的家目录为 /home/lamp/，用户的登录 Shell 为 /bin/bash。
+  - 修改当前系统已登入用户的密码
 
-  - 在 /etc/shadow 文件中新增了一行与 lamp 用户密码相关的数据：
+    `passwd`
 
-    ```cmd
-    [root@localhost ~]# grep "lamp" /etc/shadow
-    lamp:!!:15710:0:99999:7:::
-    ```
+### usermod
 
-    当然，这个用户还没有设置密码，所以密码字段是 "!!"，代表这个用户没有合理密码，不能正常登录。同时会按照默认值设定时间字段，例如密码有效期有 99999 天，距离密码过期 7 天系统会提示用户“密码即将过期”等。
+修改用户信息
 
-  - 在 /etc/group 文件中创建一行与用户名一模一样的群组：
+- 命令格式
 
-    ```cmd
-    [root@localhost ~]# grep "lamp" /etc/group
-    lamp:x:500:
-    ```
-
-    该群组会作为新建用户的初始组。
-
-  - 在 /etc/gshadow 文件中新增一行与新增群组相关的密码信息
-
-    ```cmd
-    [root@localhost ~]# grep "lamp" /etc/gshadow
-    lamp:!::
-    ```
-
-    当然，我们没有设定组密码，所以这里没有密码，也没有组管理员。
-
-  - 默认创建用户的主目录和邮箱：
-
-    ```cmd
-    [root@localhost ~]#ll -d /home/lamp/
-    drwx------ 3 lamp lamp 4096 1月6 00:19 /home/lamp/
-    [root@localhost ~]#ll /var/spod/mail/lamp
-    -rw-rw---- 1 lamp mail 0 1月6 00:19 /var/spool/mail/lamp
-    ```
-
-    注意这两个文件的权限，都要让 lamp 用户拥有相应的权限。
-
-  - 将 /etc/skel 目录中的配置文件复制到新用户的主目录中（至于为什么，学完本节内容就会明白）。
-
-  > 可以看到，useradd 命令创建用户的过程，其实就是修改了与用户相关的几个文件或目录，
-
-- 在建立用户lamp1的同时，指定了UID（550）、初始组（lamp1）、附加组（root）、家目录（/home/lamp1/）、用户说明（test user）和用户登录Shell（/bin/bash）
-
-  ```cmd
-  [root@localhost ~]# useradd -u 550 -g lamp1 -G root -d /home/lamp1 -c "test user" -s /bin/bash lamp1
+  ```
+  [root@localhost ~]# usermod [选项] 用户名
   ```
 
-### passwd命令(修改用户密码)
+- 示例
 
-------
+  - 锁定用户
 
-学习 useradd 命令我们知道，使用此命令创建新用户时，并没有设定用户密码，因此还无法用来登陆系统，本节就来学习 passwd 密码配置命令 。
+    `usermod -L lamp`
 
-**命令格式**
+  - 解锁用户
 
-```cmd
-[root@localhost ~]#passwd [选项] 用户名
-```
+    `usermod -U lamp`
 
-**选项**
+  - 把用户加入root组
 
-- -S：查询用户密码的状态，也就是 /etc/shadow 文件中此用户密码的内容。仅 root 用户可用；
-- -l：暂时锁定用户，该选项会在 /etc/shadow 文件中指定用户的加密密码串前添加 "!"，使密码失效。仅 root 用户可用；
-- -u：解锁用户，和 -l 选项相对应，也是只能 root 用户使用；
-- --stdin：可以将通过管道符输出的数据作为用户的密码。主要在批量添加用户时使用；
-- -n 天数：设置该用户修改密码后，多长时间不能再次修改密码，也就是修改 /etc/shadow 文件中各行密码的第 4 个字段；
-- -x 天数：设置该用户的密码有效期，对应 /etc/shadow 文件中各行密码的第 5 个字段；
-- -w 天数：设置用户密码过期前的警告天数，对于 /etc/shadow 文件中各行密码的第 6 个字段；
-- -i 日期：设置用户密码失效日期，对应 /etc/shadow 文件中各行密码的第 7 个字段。
+    `usermod -G root lamp`
 
-**示例**
+  - 修改用户说明
 
-- 使用 root 账户修改 lamp 普通用户的密码
+    `usermod -c "test user" lamp `
 
-  ```cmd
-  [root@localhost ~]#passwd lamp
-  Changing password for user lamp.
-  New password: <==直接输入新的口令，但屏幕不会有任何反应
-  BAD PASSWORD: it is WAY too short <==口令太简单或过短的错误！这里只是警告信息，输入的密码依旧能用
-  Retype new password:  <==再次验证输入的密码，再输入一次即可
-  passwd: all authentication tokens updated successfully.  <==提示修改密码成功
-  ```
+### chage
 
-- 修改当前系统已登入用户的密码
+修改用户密码状态
 
-  ```cmd
-  [root@localhost ~]#passwd
-  #passwd直接回车代表修改当前用户的密码
-  Changing password for user vbird2.
-  Changing password for vbird2
-  (current) UNIX password: <==这里输入『原有的旧口令』
-  New password: <==这里输入新口令
-  BAD PASSWORD: it is WAY too short <==口令检验不通过，请再想个新口令
-  New password: <==这里再想个来输入吧
-  Retype new password: <==通过口令验证！所以重复这个口令的输入
-  passwd: all authentication tokens updated successfully. <==成功修改用户密码
-  ```
+- 
 
-  > 注意:
-  >
-  > 1. 普通用户只能使用 passwd 命令修改自己的密码，而不能修改其他用户的密码。
-  > 2. 普通用户修改自己的密码需要先输入自己的旧密码，只有旧密码输入正确才能输入新密码。
-  > 3. 而使用 root 用户，无论是修改普通用户的密码，还是修改自己的密码，都可以不遵守 PAM 模块设定的规则,都可以直接设置
 
-### usermod命令(修改用户信息)
-
-------
-
-**基本格式**
-
-`usermod [选项] 用户名`
-
-**选项**
-
-- -c 用户说明：修改用户的说明信息，即修改 /etc/passwd 文件目标用户信息的第 5 个字段；
-- -d 主目录：修改用户的主目录，即修改 /etc/passwd 文件中目标用户信息的第 6 个字段，需要注意的是，主目录必须写绝对路径；
-- -e 日期：修改用户的失效曰期，格式为 "YYYY-MM-DD"，即修改 /etc/shadow 文件目标用户密码信息的第 8 个字段；
-- -g 组名：修改用户的初始组，即修改 /etc/passwd 文件目标用户信息的第 4 个字段（GID）；
-- -u UID：修改用户的UID，即修改 /etc/passwd 文件目标用户信息的第 3 个字段（UID）；
-- -G 组名：修改用户的附加组，其实就是把用户加入其他用户组，即修改 /etc/group 文件；
-- -l 用户名：修改用户名称；
-- -L：临时锁定用户（Lock）；
-- -U：解锁用户（Unlock），和 -L 对应；
-- -s shell：修改用户的登录 Shell，默认是 /bin/bash。
-
-**示例**
-
-- 锁定用户
-
-  ```cmd
-  [root@localhost ~]# usermod -L lamp
-  [root@localhost ~]# grep "lamp" /etc/shadow
-  lamp:!$6$YrPj8g0w$ChRVASybEncU24hkYFqxREH3NnzhAVDJSQLwRwTSbcA2N8UbPD9bBKVQSky xlaMGs/Eg5AQwO.UokOnKqaHFa/:15711:0:99999:7:::
-  #其实锁定就是在密码字段前加入"!"，这时lamp用户就暂时不能登录了
-  ```
-
-- 解锁用户
-
-  ```cmd
-  [root@localhost ~]# usermod -U lamp
-  [root@localhost ~]# grep "lamp" /etc/shadow
-  lamp:$6$YrPj8g0w$ChRVASybEncU24hkYFqxREH3NnzhAVDJSQLwRwTSbcA2N8UbPD9bBKVQSkyx laMGs/Eg5AQwO.UokOnKqaHFa/:15711:0:99999:7:::
-  #取消了密码字段前的 "!"
-  ```
-
-- 把用户加入root组
-
-  ```cmd
-  [root@localhost ~]# usermod -G root lamp
-  [root@localhost ~]# grep "lamp" /etc/group
-  root:x:0:lamp
-  #lamp用户已经加入了root组
-  lamp:x:501:
-  ```
-
-- 修改用户说明
-
-  ```cmd
-  [root@localhost ~]# usermod -c "test user" lamp 
-  [root@localhost ~]# grep "lamp" /etc/passwd
-  lamp:x:501:501:test user:/home/lamp:/bin/bash
-  #查看一下，用户说明已经被修改了
-  ```
-
-### chage命令(修改用户密码状态)
-
-------
-
-显示更加详细的用户密码信息，并且和 passwd 命令一样，提供了修改用户密码信息的功能。
-
-> 如果你要修改用户的密码信息，还是直接修改 /etc/shadow 文件更加方便。
-
-**基本格式**
 
 
 
