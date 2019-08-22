@@ -876,7 +876,7 @@ linux的安装包
 
 - rpm：RPM 包的扩展名，表明这是编译好的二进制包，可以使用 rpm 命令直接安装。此外，还有以 src.rpm 作为扩展名的 RPM 包，这表明是源代码包，需要安装生成源码，然后对其编译并生成 rpm 格式的包，最后才能使用 rpm 命令进行安装。
 
-## rpm包安装、卸载和升级软件
+## rpm包管理软件
 
 ### 安装软件
 
@@ -1005,1021 +1005,282 @@ linux的安装包
   [root@localhost ~]# rpm -qip 包全名
   ```
 
-  
+### 查询软件的文件路径
 
+查询已安装软件包中包含的所有文件及各自安装路径
 
+- 查看已安装软件的文件路径
 
-#### 查询软件相关的文件和路径
-
----
-
-rpm 软件包通常采用默认路径安装，各安装文件会分门别类安放在适当的目录文件下。使用 rpm 命令`可以查询到已安装软件包中包含的所有文件及各自安装路径`
-
-**基本格式**
-
-```cmd
-[root@localhost ~]# rpm -ql 包名
-```
-
-**选项**
-
-- -l 选项表示列出软件包所有文件的安装目录。
-
-**示例**
-
-- 查看 apache 软件包中所有文件以及各自的安装位置
+  命令格式
 
   ```cmd
-  [root@localhost ~]# rpm -ql httpd
-  /etc/httpd
-  /etc/httpd/conf
-  /etc/httpd/conf.d
-  /etc/httpd/conf.d/README
-  /etc/httpd/conf.d/welcome.conf
-  /etc/httpd/conf/httpd.conf
-  /etc/httpd/conf/magic
-  …省略部分输出…
+  [root@localhost ~]# rpm -ql 包名
   ```
 
-**查询未安装软件包中包含的所有文件以及打算安装的路径**
+  示例
 
-- 命令格式
+  - 查看apache的所有文件安装路径
+
+    `rpm -ql httpd`
+
+- 查看未安装软件的预安装路径
+
+  命令格式
 
   ```cmd
   [root@localhost ~]# rpm -qlp 包全名
   ```
 
-- 选项
+  示例
 
-  -p 选项表示查询未安装的软件包信息，是 package 的首字母。
+  - 查看bing软件包(未安装)
 
-  > 注意，由于软件包还未安装，因此需要使用“绝对路径+包全名”的方式才能确定包。
+    `rpm -qlp /mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm`
 
-- 示例
-
-  我们想查看 bing 软件包（未安装，绝对路径为：/mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm）中的所有文件及各自打算安装的位置
-
-  ```cmd
-  [root@localhost ~]# rpm -qlp /mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm
-  /etc/NetworkManager/dispatcher.d/13-named
-  /etc/logrotate.d/named
-  /etc/named
-  /etc/named.conf
-  /etc/named.iscdlv.key
-  /etc/named.rfc1912.zones
-  …省略部分输出…
-  ```
-
-#### 查询系统文件属于哪个软件
-
----
+### 查询文件属于哪个软件
 
 rpm 支持反向查询，即查询某系统文件所属哪个 RPM 软件包
 
-**基本格式**
+命令格式
 
 ```cmd
 [root@localhost ~]# rpm -qf 系统文件名
 ```
 
-**选项**
+示例
 
-- -f 选项的含义是查询系统文件所属哪个软件包，是 file 的首字母。
+- 查询ls命令所属的软件包
 
-  > 注意，只有使用 RPM 包安装的文件才能使用该命令，手动方式建立的文件无法使用此命令。
+  `rpm -qf /bin/ls`
 
-**示例**
+## yum源及配置
 
-- 查询 ls 命令所属的软件包
+yum是一种可自动安装软件包（自动解决包之间依赖关系）的安装方式
 
-  ```cmd
-  [root@localhost ~]# rpm -qf /bin/ls
-  coreutils-8.4-19.el6.i686
-  ```
+- 查看yum是否已安装
 
-#### 查询软件包的依赖关系
+  `rpm -qa | grep yum`
 
----
+  [如果没有安装yum,可以使用rpm进行安装yum](https://jingyan.baidu.com/article/e3c78d6483a02a3c4d85f578.html)
 
-使用 rpm 命令安装 RPM 包，需考虑与其他 RPM 包的依赖关系。rpm -qR 命令就用来查询某已安装软件包依赖的其他包
+设置yum源
 
-**基本格式**
+> yum 源指的就是软件安装包的来源。
 
-```cmd
-[root@localhost ~]# rpm -qR 包名
-```
+- 网络yum源
 
-**选项**
+  网络 yum 源配置文件位于 /etc/yum.repos.d/ 目录下，文件扩展名为"*.repo"（只要扩展名为 "*.repo" 的文件都是 yum 源的配置文件）。通常情况下 CentOS-Base.repo 文件生效
 
-- -R（大写）选项的含义是查询软件包的依赖性，是 requires 的首字母。
-
-**示例**
-
-- 查询 apache 软件包的依赖性
+  打开CentOS-Base.repo文件
 
   ```cmd
-  [root@localhost ~]# rpm -qR httpd
-  /bin/bash
-  /bin/sh
-  /etc/mime.types
-  /usr/sbin/useradd
-  apr-util-ldap
-  chkconfig
-  config(httpd) = 2.2.15-15.el6.centos.1
-  httpd-tods = 2.2.15-15.el6.centos.1
-  initscripts >= 8.36
+  [root@localhost yum.repos.d]# vim /etc/yum.repos.d/ CentOS-Base.repo
+  [base]
+  name=CentOS-$releasever - Base
+  mirrorlist=http://mirrorlist.centos.org/? release= $releasever&arch=$basearch&repo=os
+  baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+  gpgcheck=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
   …省略部分输出…
   ```
 
-- 在此命令的基础上增加 -p 选项，即可实现查找未安装软件包的依赖性
+  参数含义
 
-  ```cmd
-  [root@localhost ~]# rpm -qRp /mnt/cdrom/Packages/bind-9.8.2-0.10.rc1.el6.i686.rpm
-  /bin/bash
-  /bin/sh
-  bind-libs = 32:9.8.2-0.10.rc1.el6
-  chkconfig
-  chkconfig
-  config(bind) = 32:9.8.2-0.10.rc1.el6
-  grep
-  libbind9.so.80
-  libc.so.6
-  libc.so.6(GLIBC_2.0)
-  libc.so.6(GLIBC_2.1)
-  …省略部分输出…
-  ```
+  - [base]：容器名称，一定要放在[]中。
+  - name：容器说明，可以自己随便写。
+  - mirrorlist：镜像站点，这个可以注释掉。
+  - baseurl：我们的 yum 源服务器的地址。默认是 CentOS 官方的 yum 源服务器，是可以使用的。如果你觉得慢，则可以改成你喜欢的 yum 源地址。
+  - enabled：此容器是否生效，如果不写或写成 enabled 则表示此容器生效，写成 enable=0 则表示此容器不生效。
+  - gpgcheck：如果为 1 则表示 RPM 的数字证书生效；如果为 0 则表示 RPM 的数字证书不生效。
+  - gpgkey：数字证书的公钥文件保存位置。不用修改。
 
-  > 注意，这里使用的也是“绝对路径+包全名”的方式。
+- 本地yum源
 
-### rpm包验证和数字证书
+  在无法联网的情况下，yum 可以在本地直接安装映像文件
 
----
+  用到再参考网上教程
 
-为了能够及时发现文件误删、误修改文件数据、恶意篡改文件内容等问题，Linux 提供了以下两种监控（检测）方式：
+## yum基本命令
 
-- RPM 包校验：其实就是将已安装文件和 /var/lib/rpm/ 目录下的数据库内容进行比较，确定文件内容是否被修改。
-- RPM 包数字证书校验：用来校验 RPM 包本身是否被修改。
-
-#### rpm包校验
-
----
-
-RPM 包校验可用来判断已安装的软件包（或文件）是否被修改
-
-**命令格式**
-
-```cmd
-[root@localhost ~]# rpm -Va
-# -Va 选项表示校验系统中已安装的所有软件包。
-```
-
-```cmd
-[root@localhost ~]# rpm -V 已安装的包名
-# -V 选项表示校验指定 RPM 包中的文件，是 verity 的首字母。
-```
-
-```cmd
-[root@localhost ~]# rpm -Vf 系统文件名
-# -Vf 选项表示校验某个系统文件是否被修改。
-```
-
-**示例**
-
-- 校验 apache 软件包中所有的安装文件是否被修改
-
-  ```cmd
-  [root@localhost -]# rpm -V httpd
-  ```
-
-  如果执行后无任何提示信息，表明所有用 apache 软件包安装的文件均未改动过
-
-- 在修改apache的默认网页文件后,再次使用上述命令
-
-  ```cmd
-  [root@localhost ~]# rpm -V httpd
-  S.5....T. c /etc/httpd/conf/httpd.conf
-  ```
-
-  可以看到，结果显示了文件被修改的信息
-
-  > 该信息可分为以下 3 部分:
-  >
-  > - 最前面的 8 个字符（S.5....T）都属于验证信息，各字符的具体含义如下：
-  >   - S：文件大小是否改变。
-  >   - M：文件的类型或文件的权限（rwx）是否改变。
-  >   - 5：文件MD5校验和是否改变（可以看成文件内容是否改变）。
-  >   - D：设备的主从代码是否改变。
-  >   - L：文件路径是否改变。
-  >   - U：文件的属主（所有者）是否改变。
-  >   - G：文件的属组是否改变。
-  >   - T：文件的修改时间是否改变。
-  >   - .：若相关项没发生改变，用 . 表示。
-  > - 被修改文件类型，大致可分为以下几类：
-  >   - c：配置文件（configuration file）。
-  >   - d：普通文档（documentation）。
-  >   - g："鬼"文件（ghost file），很少见，就是该文件不应该被这个 RPM 包包含。
-  >   - l：授权文件（license file）。
-  >   - r：描述文件（read me）。
-  > - 被修改文件所在绝对路径（包含文件名）。
-
-  由此，S.5....T. c S.5....T. c /etc/httpd/conf/httpd.conf 表达的完整含义是：配置文件 httpd.conf 的大小、内容、修改时间被人为修改过。
-
-#### rpm数字证书验证
-
----
-
-RPM 包校验方法只能用来校验已安装的 RPM 包及其安装文件，如果 RPM 包本身就被动过手脚，此方法将无法解决问题，需要使用 RPM 数字证书验证方法
-
-> 简单的理解，RPM 包校验其实就是将现有安装文件与最初使用 RPM 包安装时的初始文件进行对比，如果有改动则提示给用户，因此这种方式无法验证 RPM 包本身被修改的情况。
-
-数字证书，又称数字签名，由软件开发商直接发布。Linux 系统安装数字证书后，若 RPM 包做了修改，此包携带的数字证书也会改变，将无法与系统成功匹配，软件无法安装。
-
-使用数字证书验证 RPM 包的方法具有如下 2 个特点：
-
-1. 必须找到原厂的公钥文件，然后才能进行安装。
-2. 安装 RPM 包会提取 RPM 包中的证书信息，然后和本机安装的原厂证书进行验证。如果验证通过，则允许安装；如果验证不通过，则不允许安装并发出警告。
-
-**数字证书默认会放到系统中`/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6`位置处，通过以下命令也可验证**
-
-```cmd
-#系统中的数字证书位置
-[root@localhost ~]# ll /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
--rw-r--r--.1 root root 1706 6 月 26 17:29 /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
-```
-
-**安装数字证书的命令**
-
-```cmd
-[root@localhost ~]# rpm --import /efc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
-# --import表示导入数字证书
-```
-
-**数字证书安装完成后，可使用如下命令进行验证**
-
-```cmd
-[root@localhost ~]# rpm -qa|grep gpg-pubkey
-gpg-pubkey-c105b9de-4e0fd3a3
-```
-
-可以看到，数字证书已成功安装。在装有数字证书的系统上安装 RPM 包时，系统会自动验证包的数字证书，验证通过则可以安装，反之将无法安装（系统会报错）。
-
-**查询数字证书详细信息的命令如下**
-
-数字证书本身也是一个 RPM 包，因此可以用 rpm 命令查询数字证书的详细信息，也可以将其卸载。
-
-```cmd
-[root@localhost ~]# rpm -qi gpg-pubkey-c105b9de-4e0fd3a3
-#查询数字证书包的详细信息
-Name : gpg-pubkey
-Relocations: (not relocatable)
-Version : c105b9de Vendor: (none)
-Release : 4e0fd3a3 Build Date: 2012年11月12日 星期一 23时05分20秒
-Install Date: 2012年11月12日星期一23时05分20秒 Build Host: local host
-Group : Public Keys
-Source RPM: (none)
-Size : 0
-License: pubkey
-…省略部分输出…
------END PGP PUBLIC KEY BLOCK----
-```
-
-**卸载数字证书可以使用 -e 选项**
-
-```cmd
-[root@localhost ~]# rpm -e gpg-pubkey-c105b9de-4ead3a3
-```
-
-### 提取rpm包
-
----
-
-在讲解如何从 RPM 包中提取文件之前，先来系统学习一下 cpio 命令。
-
-#### cpio命令
-
----
-
-cpio 命令用于从归档包中存入和读取文件，换句话说，cpio 命令可以从归档包中提取文件（或目录），也可以将文件（或目录）复制到归档包中。
-
-> 归档包，也可称为文件库，其实就是 cpio 或 tar 格式的文件，该文件中包含其他文件以及一些相关信息（文件名、访问权限等）。归档包既可以是磁盘中的文件，也可以是磁带或管道。
-
-cpio 命令可以看做是备份或还原命令，因为它可以将数据（文件）备份到 cpio 归档库，也可以利用 cpio 文档库对数据进行恢复。
-
-使用 cpio 命令备份或恢复数据，需注意以下几点：
-
-- 使用 cpio 备份数据时如果使用的是绝对路径，那么还原数据时会自动恢复到绝对路径下；同理，如果备份数据使用的是相对路径，那么数据会还原到相对路径下。
-- cpio 命令无法自行指定备份（或还原）的文件，需要目标文件（或目录）的完整路径才能成功读取，因此此命令常与 find 命令配合使用。
-- cpio 命令恢复数据时不会自动覆盖同名文件，也不会创建目录（直接解压到当前文件夹）。
-
-**cpio命令基本模式**
-
----
-
-- "-o" 模式：指的是 copy-out 模式，就是把数据备份到文件库中
-
-  **命令格式**
-
-  ```cmd
-  [root@localhost ~]# cpio -o[vcB] > [文件丨设备]
-  ```
-
-  **选项**
-
-  - -o：copy-out模式，备份；
-  - -v：显示备份过程；
-  - -c：使用较新的portable format存储方式；
-  - -B：设定输入/输出块为 5120Bytes，而不是模式的 512Bytes；
-
-  **示例**
-
-  - 使用 cpio 备份数据
-
-    ```cmd
-    [root@localhost ~]#find /etc -print | cpio -ocvB > /root/etc.cpio
-    #利用find命令指定要备份/etc/目录，使用>导出到etc.cpio文件
-    [root@localhost ~]# II -h etc.cpio
-    -rw--r--r--.1 root root 21M 6月5 12:29 etc.cpio
-    #etc.cpio文件生成
-    ```
-
-- "-i" 模式：指的是 copy-in 模式，就是把数据从文件库中恢复
-
-  **基本格式**
-
-  ```cmd
-  [root@localhost ~]# cpio -i[vcdu] < [文件|设备]
-  ```
-
-  **选项**
-
-  - -i：copy-in 模式，还原；
-  - -v：显示还原过程；
-  - -c：较新的 portable format 存储方式；
-  - -d：还原时自动新建目录；
-  - -u：自动使用较新的文件覆盖较旧的文件；
-
-  **示例**
-
-  - 使用 cpio 恢复之前备份的数据
-
-    ```cmd
-    [root@localhost ~]# cpio -idvcu < /root/etc.cpio
-    #还原etc的备份
-    #如果大家査看一下当前目录/root/，就会发现没有生成/etc/目录。这是因为备份时/etc/目录使用的是绝对路径，所以数据直接恢复到/etc/系统目录中，而没有生成在/root/etc/目录中
-    ```
-
-- "-p" 模式：指的是复制模式，使用 -p 模式可以从某个目录读取所有文件，但并不将其备份到 cpio 库中，而是直接复制为其他文件
-
-  **示例**
-
-  - 使用 -p 将 /boot/ 复制到 /test/boot 目录中
-
-    ```cmd
-    [root@localhost ~]# cd /tmp/
-    #进入/tmp/目录
-    [root@localhost tmp]#rm -rf*
-    #删除/tmp/目录中的所有数据
-    [root@localhost tmp]# mkdir test
-    #建立备份目录
-    [root@localhost tmp]# find /boot/ -print | cpio -p /tmp/test
-    #备份/boot/目录到/tmp/test/目录中
-    [root@localhost tmp]# ls test/boot
-    #在/tmp/test/目录中备份出了/boot/目录
-    ```
-
-#### 使用cpio命令提取rpm包中指定文件
-
----
-
-在服务器使用过程，如果系统文件被误修改或误删除，可以考虑使用 cpio 命令提取出原 RPM 包中所需的系统文件，从而修复被误操作的源文件。
-
-**命令格式**
-
-```cmd
-[root@localhost ~]# rpm2cpio 包全名|cpio -idv .文件绝对路径
-```
-
-### srpm源码包安装
-
----
-
-另一种 RPM 包，即 SRPM 源码包安装软件。
-
-SRPM 包，比 RPM 包多了一个“S”，是“Source”的首字母，所以 SRPM 可直译为“源代码形式的 RPM 包”。也就是说，SRPM 包中不再是经过编译的二进制文件，都是源代码文件。可以这样理解，SRPM 包是软件以源码形式发布后直接封装成 RPM 包的产物。
-
-**RPM与SRPM对比**
-
-| 文件格式 | 文件名格式  | 直接安装与否 | 内含程序类型   | 可否修改参数并编译 |
-| -------- | ----------- | ------------ | -------------- | ------------------ |
-| RPM      | xxx.rpm     | 可           | 已编译         | 不可               |
-| SRPM     | xxx.src.rpm | 不可         | 未编译的源代码 | 可                 |
-
-从表中可以看到，SRPM 包的命名与 RPM 包基本类似，唯一区别在于 SRPM 包多了“src”标志，即 SRPM 包采用“包名-版本号-发布次数-发行商-src.rpm”的方式进行命名，比如“MySQL-5.5.29-2.el6.src.rpm”。
-
-**使用srpm安装步骤**
-
-1. 将 SRPM 包编译成二进制的 RPM 包；
-2. 使用编译完成的 RPM 包安装软件；
-
-**示例**
-
-- 安装 apache 
-  1. 利用 rpmbuild 命令可以直接使用 SRPM 包安装软件，也可以先将 SRPM 包编译成 RPM 包，再使用 RPM 包安装软件；
-  2. 利用 *.spec 文件可实现将 SRPM 包编译成 RPM 包，再使用 RPM 包安装软件；
-
-具体的操作命令用到的时候在查就好了
-
-### yum源及配置
-
----
-
-前面分别介绍了使用 SRPM 源码包和 RPM 二进制包安装软件，这两种方法都比较繁琐，需要手动解决包之间具有依赖性的问题，尤其是库文件依赖，需要自行去 [http://www.rpmfind.net](http://www.rpmfind.net/)网站上查找相关的 RPM 包, 而`yum是一种可自动安装软件包（自动解决包之间依赖关系）的安装方式。`
-
-yum，全称“Yellow dog Updater, Modified”，是一个专门为了解决包的依赖关系而存在的软件包管理器。就好像 Windows 系统上可以通过 360 软件管家实现软件的一键安装、升级和卸载，Linux 系统也提供有这样的工具，就是 yum。
-
-可以这么说，yum 是改进型的 RPM 软件管理器，它很好的解决了 RPM 所面临的软件包依赖问题。yum 在服务器端存有所有的 RPM 包，并将各个包之间的依赖关系记录在文件中，当管理员使用 yum 安装 RPM 包时，yum 会先从服务器端下载包的依赖性文件，通过分析此文件从服务器端一次性下载所有相关的 RPM 包并进行安装。
-
-#### 查看 yum 是否已安装
-
----
-
-```cmd
-[root@localhost ~]# rpm -qa | grep yum
-yum-metadata-parser-1.1.2-16.el6.i686
-yum-3.2.29-30.el6.centos.noarch
-yum-utils-1.1.30-14.el6.noarch
-yum-plugin-fastestmirror-1.1.30-14.el6.noarch
-yum-plugin-security-1.1.30-14.el6.noarch
-```
-
-[如果没有安装yum,可以使用rpm进行安装yum](https://jingyan.baidu.com/article/e3c78d6483a02a3c4d85f578.html)
-
-#### 设置yum源
-
----
-
-使用 yum 安装软件包之前，需指定好 yum 下载 RPM 包的位置，此位置称为 yum 源。换句话说，yum 源指的就是软件安装包的来源。
-
-使用 yum 安装软件时至少需要一个 yum 源。`yum 源既可以使用网络 yum 源，也可以将本地光盘作为 yum 源`。接下来就给大家介绍这两种 yum 源的搭建方式。
-
-**网络yum源搭建**
-
----
-
-一般情况下，只要你的主机网络正常，可以直接使用网络 yum 源，不需要对配置文件做任何修改，这里对 yum 源配置文件做一下简单介绍。
-
-网络 yum 源配置文件位于 /etc/yum.repos.d/ 目录下，文件扩展名为"*.repo"（只要扩展名为 "*.repo" 的文件都是 yum 源的配置文件）。
-
-```cmd
-[root@localhost ~]# ls /etc/yum.repos.d/
-CentOS-Base.repo
-CentOS-Media.repo
-CentOS-Debuginfo.repo.bak
-CentOS-Vault.repo
-```
-
-可以看到，该目录下有 4 个 yum 配置文件，通常情况下 CentOS-Base.repo 文件生效
-
-我们可以尝试打开此文件
-
-```cmd
-[root@localhost yum.repos.d]# vim /etc/yum.repos.d/ CentOS-Base.repo
-[base]
-name=CentOS-$releasever - Base
-mirrorlist=http://mirrorlist.centos.org/? release= $releasever&arch=$basearch&repo=os
-baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
-…省略部分输出…
-```
-
-此文件中含有 5 个 yum 源容器，这里只列出了 base 容器，其他容器和 base 容器类似。
-
-base 容器中各参数的含义分别为：
-
-- [base]：容器名称，一定要放在[]中。
-- name：容器说明，可以自己随便写。
-- mirrorlist：镜像站点，这个可以注释掉。
-- baseurl：`我们的 yum 源服务器的地址`。默认是 CentOS 官方的 yum 源服务器，是可以使用的。如果你觉得慢，则可以改成你喜欢的 yum 源地址。
-- enabled：此容器是否生效，如果不写或写成 enabled 则表示此容器生效，写成 enable=0 则表示此容器不生效。
-- gpgcheck：如果为 1 则表示 RPM 的数字证书生效；如果为 0 则表示 RPM 的数字证书不生效。
-- gpgkey：数字证书的公钥文件保存位置。不用修改。
-
-**本地 yum 源**
-
----
-
-在无法联网的情况下，yum 可以考虑用本地光盘（或安装映像文件）作为 yum 源。
-
-Linux 系统安装映像文件中就含有常用的 RPM 包，我们可以使用压缩文件打开映像文件（iso文件），进入其 Packages 子目录，如图 所示
-
-![1566099884585](.img/.linux/1566099884585.png)
-
-可以看到，该子目录下含有几乎所有常用的 RPM 包，因此使用系统安装映像作为本地 yum 源没有任何问题。
-
-在 /etc/yum.repos.d/ 目录下有一个 CentOS-Media.repo 文件，此文件就是以本地光盘作为 yum 源的模板文件，只需进行简单的修改即可，步骤如下：
-
-1. 放入 CentOS 安装光盘，并挂载光盘到指定位置。命令如下：
-
-   ```cmd
-   [root@localhost ~]# mkdir /mnt/cdrom
-   #创建cdrom目录，作为光盘的挂载点
-   [root@localhost ~]# mount /dev/cdrom /mnt/cdrom/
-   mount: block device/dev/srO is write-protected, mounting read-only
-   #挂载光盘到/mnt/cdrom目录下
-   ```
-
-2. 修改其他几个 yum 源配置文件的扩展名，让它们失效，因为只有扩展名是"*.repo"的文件才能作为 yum 源配置文件。当然也可以删除其他几个 yum 源配置文件，但是如果删除了，当又想用网络作为 yum 源时，就没有了参考文件，所以最好还是修改扩展名。 命令如下：
-
-   ```cmd
-   [root@localhost ~]# cd /etc/yum.repos.d/
-   [root@localhost yum.repos.d]# mv CentOS-Base, repo CentOS-Base.repo.bak
-   [root@localhost yum.repos.d]#mv CentOS-Debuginfo.repo CentOS-Debuginfo.repo.bak
-   [root@localhost yum.repos.d]# mv CentOS-Vault.repo CentOS-Vault.repo.bak
-   ```
-
-3. 修改光盘 yum 源配置文件 CentOS-Media.repo，参照以下方修改：
-
-   ```cmd
-   [root@localhost yum.repos.d]# vim CentOS-Media.repo
-   [c6-media]
-   name=CentOS-$releasever - Media
-   baseurl=file:///mnt/cdrom
-   #地址为你自己的光盘挂载地址
-   #file:///media/cdrom/
-   #file:///media/cdrecorder/
-   #注释这两个的不存在地址
-   gpgcheck=1
-   enabled=1
-   #把enabled=0改为enabled=1, 让这个yum源配置文件生效
-   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
-   ```
-
-本地 yum 源就配置完成了。
-
-### yum命令
-
----
-
-使用 yum 命令实现查询、安装、升级和卸载 RPM 包。
-
-#### yum查询命令
-
----
-
-**查询所有已安装和可安装的软件包**
-
-- 命令
-
-  `yum list`
-
-- 示例
-
-  ```cmd
-  [root@localhost yum.repos.d]# yum list
-  #查询所有可用软件包列表
-  Installed Packages
-  #已经安装的软件包
-  ConsdeKit.i686 0.4.1-3.el6
-  @anaconda-CentOS-201207051201 J386/6.3
-  ConsdeKit-libs.i686 0.4.1-3.el6 @anaconda-CentOS-201207051201 J386/6.3
-  …省略部分输出…
-  Available Packages
-  #还可以安装的软件包
-  389-ds-base.i686 1.2.10.2-15.el6 c6-media
-  389-ds-base-devel.i686 1.2.10.2-15.el6 c6-media
-  #软件名 版本 所在位置（光盘）
-  …省略部分输出…
-  ```
-
-**查询执行软件包的安装情况**
-
-- 命令
-
-  `yum list 包名`
-
-- 示例
-
-  ```cmd
-  [root@localhost yum.repos.d]# yum list samba
-  Available Packages samba.i686 3.5.10-125.el6 c6-media
-  #查询 samba 软件包的安装情况
-  ```
-
-**从yum源服务器上查找与关键字相关的所有软件包**
-
-- 命令
-
-  `yum search 关键字`
-
-- 示例
-
-  ```cmd
-  [root@localhost yum.repos.d]# yum search samba
-  #搜索服务器上所有和samba相关的软件包
-  ========================N/S Matched:
-  samba =============================
-  samba-client.i686：Samba client programs
-  samba-common.i686：Files used by both Samba servers and clients
-  samba-doc.i686: Documentation for the Samba suite
-  …省略部分输出…
-  Name and summary matches only, use"search all" for everything.
-  ```
-
-**查询执行软件包的详细信息**
-
-- 命令
-
-  `yum info 包名`
-
-- 示例
-
-  ```cmd
-  [root@localhost yum.repos.d]# yum info samba
-  #查询samba软件包的信息
-  Available Packages <-没有安装
-  Name : samba <-包名
-  Arch : i686 <-适合的硬件平台
-  Version : 3.5.10 <―版本
-  Release : 125.el6 <—发布版本
-  Size : 4.9M <—大小
-  Repo : c6-media <-在光盘上
-  …省略部分输出…
-  ```
-
-#### yum安装命令
-
----
-
-**命令格式**
+### 安装软件
 
 `yum -y install 包名`
 
-**选项**
+示例
 
-- install：表示安装软件包。
-- -y：自动回答 yes。如果不加 -y，那么每个安装的软件都需要手工回答 yes；
+- 安装gcc
 
-**示例**
+  `yum -y install gcc`
 
-- 使用yum命令安装gcc
+### 升级软件
 
-  ```cmd
-  [root@localhost yum jepos.d]#yum -y install gcc
-  #使用yum自动安装gcc
-  ```
+示例
 
-  > gcc 是 C 语言的编译器，鉴于该软件包涉及到的依赖包较多，建议使用 yum 命令安装。
+- 升级所有软件包
 
-#### yum升级命令
+  `yum -y update`
 
----
+- 升级对应软件
 
-使用 yum 升级软件包，需确保 yum 源服务器中软件包的版本比本机安装的软件包版本高。
+  `yum -y update 包名`
 
-**升级常用命令**
+### 卸载软件
 
-- `yum -y update`：升级所有软件包。不过考虑到服务器强调稳定性，因此该命令并不常用。
-- `yum -y update 包名`：升级特定的软件包。
-
-#### yum卸载命令
-
----
-
-使用 yum 卸载软件包时，会同时卸载所有与该包有依赖关系的其他软件包，即便有依赖包属于系统运行必备文件，也会被 yum 无情卸载，带来的直接后果就是使系统崩溃。
-
-> 除非你能确定卸载此包以及它的所有依赖包不会对系统产生影响，否则不要使用 yum 卸载软件包。
-
-**命令格式**
+> 使用yum进行卸载会把卸载软件依赖的所有包都会卸载掉,所以要谨慎使用
 
 ` yum remove 包名`
 
-**示例**
+### 其他操作
 
-- 使用yum命令卸载samba 软件包
+- 查询所有已安装软件
 
-  ```cmd
-  [root@localhost yum.repos.d]# yum remove samba
-  #卸载samba软件包
-  ```
+  `yum list`
 
-# linux用户和用户组管理
+- 查询对应软件
 
-## 原理和相关文件
+  `yum list 包名`
 
-### 用户和用户组的关系
+- 从yum源服务器上查询软件包
 
----
+  `yum search 关键字`
 
-Linux 是多用户多任务操作系统，换句话说，Linux 系统支持多个用户在同一时间内登陆，不同用户可以执行不同的任务，并且互不影响。
+- 查询软件包的详细信息
 
-例如，某台 Linux 服务器上有 4 个用户，分别是 root、www、ftp 和 mysql，在同一时间内，root 用户可能在查看系统日志、管理维护系统；www 用户可能在修改自己的网页程序；ftp 用户可能在上传软件到服务器；mysql 用户可能在执行自己的 SQL 查询，每个用户互不干扰，有条不紊地进行着自己的工作。与此同时，每个用户之间不能越权访问，比如 www 用户不能执行 mysql 用户的 SQL 查询操作，ftp 用户也不能修改 www 用户的网页程序。
+  `yum info 包名`
+
+# 用户和用户组管理
+
+## 原理和文件解释
 
 **用户**
 
-不同用户具有不同的权限，毎个用户在权限允许的范围内完成不同的任务，Linux 正是通过这种权限的划分与管理，实现了多用户多任务的运行机制。
-
-因此，`如果要使用 Linux 系统的资源，就必须向系统管理员申请一个账户，然后通过这个账户进入系统（账户和用户是一个概念）。通过建立不同属性的用户，一方面可以合理地利用和控制系统资源，另一方面也可以帮助用户组织文件，提供对用户文件的安全性保护。`
-
-每个用户都有唯一的用户名和密码。在登录系统时，只有正确输入用户名和密码，才能进入系统和自己的主目录。
+- 每个用户都有唯一的用户名和密码。在登录系统时，只有正确输入用户名和密码，才能进入系统和自己的主目录。
 
 **用户组**
 
-用户组是具有相同特征用户的逻辑集合。简单的理解，有时我们需要让多个用户具有相同的权限，比如查看、修改某一个文件的权限，一种方法是分别对多个用户进行文件访问授权，如果有 10 个用户的话，就需要授权 10 次，那如果有 100、1000 甚至更多的用户呢？
-
-显然，这种方法不太合理。最好的方式是建立一个组，让这个组具有查看、修改此文件的权限，然后将所有需要访问此文件的用户放入这个组中。那么，所有用户就具有了和组一样的权限，这就是用户组。  
-
-用户分组是 Linux 系统中对用户进行管理及控制访问权限的一种手段，通过定义用户组，很多程序上简化了对用户的管理工作。
+- 用户组是具有相同特征用户的逻辑集合
+- 在同一个用户组里的用户都具有该用户组所持有的权限
 
 **两者关系**
-
-用户和用户组的对应关系有以下 4 种：
 
 1. 一对一：一个用户可以存在一个组中，是组中的唯一成员；
 2. 一对多：一个用户可以存在多个用户组中，此用户具有这多个组的共同权限；
 3. 多对一：多个用户可以存在一个组中，这些用户具有和组相同的权限；
 4. 多对多：多个用户可以存在多个组中，也就是以上 3 种关系的扩展。
 
-### 用户ID和用户组ID
+**用户ID(UID)和用户组ID(GID)**
 
----
+- 所有用户的名称与 ID 的对应关系都存储在 /etc/passwd 文件中
 
-登陆 Linux 系统时，虽然输入的是自己的用户名和密码，但其实 Linux 并不认识你的用户名称，它只认识用户名对应的 ID 号（也就是一串数字）。Linux 系统将所有用户的名称与 ID 的对应关系都存储在 /etc/passwd 文件中。
+  > 说白了，用户名并无实际作用，仅是为了方便用户的记忆而已。
 
-> 说白了，用户名并无实际作用，仅是为了方便用户的记忆而已。
+- 在 /etc/passwd 文件中，利用 UID 可以找到对应的用户名；在 /etc/group 文件中，利用 GID 可以找到对应的群组名。
 
-Linux 系统中，每个用户的 ID 细分为 2 种，分别是用户 ID（User ID，简称 UID）和组 ID（Group ID，简称 GID），这与文件有拥有者和拥有群组两种属性相对应（如图  所示）。
+**/etc/passwd内容解释**
 
-![1566181253988](.img/.linux/1566181253988.png)
+- 是系统用户配置文件，存储了系统中所有用户的基本信息
 
-从图  中可以看到，该文件的拥有者是超级管理员 root，拥有群组也是 root。读者可能会问，既然 Linux 系统不认识用户名，文件是如何判别它的拥有者名称和群组名称的呢？
-
-每个文件都有自己的拥有者 ID 和群组 ID，当显示文件属性时，系统会根据 /etc/passwd 和 /etc/group 文件中的内容，分别找到 UID 和 GID 对应的用户名和群组名，然后显示出来。
-
-> 在 /etc/passwd 文件中，利用 UID 可以找到对应的用户名；在 /etc/group 文件中，利用 GID 可以找到对应的群组名。
-
-### /etc/passwd内容解释
-
----
-
-Linux 系统中的 `/etc/passwd` 文件，是系统用户配置文件，`存储了系统中所有用户的基本信息`，并且所有用户都可以对此文件执行读操作。
-
-打开文件内容
-
-```cmd
-[root@localhost ~]# vi /etc/passwd
-#查看一下文件内容
-root:x:0:0:root:/root:/bin/bash
-bin:x:1:1:bin:/bin:/sbin/nologin
-daemon:x:2:2:daemon:/sbin:/sbin/nologin
-adm:x:3:4:adm:/var/adm:/sbin/nologin
-...省略部分输出...
-```
-
-可以看到，/etc/passwd 文件中的内容非常规律，每行记录对应一个用户。
-
-这些用户中的绝大多数是系统或服务正常运行所必需的用户，这种用户通常称为系统用户或伪用户。系统用户无法用来登录系统，但也不能删除，因为一旦删除，依赖这些用户运行的服务或程序就不能正常执行，会导致系统问题。
-
-每行用户信息都以 "：" 作为分隔符，划分为 7 个字段，每个字段所表示的含义如下：
-
-`用户名：密码：UID（用户ID）：GID（组ID）：描述性信息：主目录：默认Shell`
-
-下面介绍字段的具体信息
-
-**用户名**
-
----
-
-用户名，就是一串代表用户身份的字符串。
-
-用户名仅是为了方便用户记忆，Linux 系统是通过 UID 来识别用户身份，分配用户权限的。/etc/passwd 文件中就定义了用户名和 UID 之间的对应关系。
-
-**密码**
-
----
-
-"x" 表示此用户设有密码，但不是真正的密码，真正的密码保存在 `/etc/shadow` 文件中（下一节做详细介绍）。 Linux 系统把真正的加密密码串放置在 /etc/shadow 文件中，此文件只有 root 用户可以浏览和操作，这样就最大限度地保证了密码的安全。
-
-> 需要注意的是，虽然 "x" 并不表示真正的密码，但也不能删除，如果删除了 "x"，那么系统会认为这个用户没有密码，从而导致只输入用户名而不用输入密码就可以登陆（只能在本地使用无密码登录，远程是不可以的），除非特殊情况（如破解用户密码）
-
-**UID**
-
----
-
-UID，也就是用户 ID。每个用户都有唯一的一个 UID，Linux 系统通过 UID 来识别不同的用户。
-
-实际上，UID 就是一个 0~65535 之间的数，不同范围的数字表示不同的用户身份，具体如表所示。
-
-| UID 范围  | 用户身份                                                     |
-| --------- | ------------------------------------------------------------ |
-| 0         | 超级用户。UID 为 0 就代表这个账号是管理员账号。在 Linux 中，如何把普通用户升级成管理员呢？只需把其他用户的 UID 修改为 0 就可以了，这一点和 Windows 是不同的。不过不建议建立多个管理员账号。 |
-| 1~499     | 系统用户（伪用户）。也就是说，此范围的 UID 保留给系统使用。其中，1~99 用于系统自行创建的账号；100~499 分配给有系统账号需求的用户。  其实，除了 0 之外，其他的 UID 并无不同，这里只是默认 500 以下的数字给系统作为保留账户，只是一个公认的习惯而已。 |
-| 500~65535 | 普通用户。通常这些 UID 已经足够用户使用了。但不够用也没关系，2.6.x 内核之后的 Linux 系统已经可以支持 232 个 UID 了。 |
-
-**GID**
-
----
-
-全称“Group ID”，简称“组ID”，表示用户初始组的组 ID 号。
-
-这里需要解释一下初始组和附加组的概念。
-
-- 初始组
-
-  指用户登陆时就拥有这个用户组的相关权限。每个用户的初始组只能有一个，通常就是将和此用户的用户名相同的组名作为该用户的初始组。比如说，我们手工添加用户 lamp，在建立用户 lamp 的同时，就会建立 lamp 组作为 lamp 用户的初始组。
-
-- 附加组
-
-  指用户可以加入多个其他的用户组，并拥有这些组的权限。每个用户只能有一个初始组，除初始组外，用户再加入其他的用户组，这些用户组就是这个用户的附加组。附加组可以有多个，而且用户可以有这些附加组的权限。
-
-**描述性信息**
-
----
-
-这个字段并没有什么重要的用途，只是用来解释这个用户的意义而已。
-
-**主目录**
-
----
-
-用户登录后有操作权限的访问目录，通常称为用户的主目录。
-
-- 示例
-
-  root 超级管理员账户的主目录为 /root，普通用户的主目录为 /home/yourIDname，即在 /home/ 目录下建立和用户名相同的目录作为主目录，如 lamp 用户的主目录就是 /home/lamp/ 目录。
-
-**默认的shell**
-
----
-
-Shell 就是 Linux 的命令解释器，是用户和 Linux 内核之间沟通的桥梁。
-
-用户登陆 Linux 系统后，通过使用 Linux 命令完成操作任务，但系统只认识类似 0101 的机器语言，这里就需要使用命令解释器。也就是说，`Shell 命令解释器的功能就是将用户输入的命令转换成系统可以识别的机器语言。`
-
-通常情况下，Linux 系统默认使用的命令解释器是 bash（/bin/bash），当然还有其他命令解释器，例如 sh、csh 等。
-
-`在 /etc/passwd 文件中，大家可以把这个字段理解为用户登录之后所拥有的权限`。如果这里使用的是 bash 命令解释器，就代表这个用户拥有权限范围内的所有权限。
-
-- 示例
+  内容如下
 
   ```cmd
   [root@localhost ~]# vi /etc/passwd
-  lamp:x:502:502::/home/lamp:/bin/bash
+  #查看一下文件内容
+  root:x:0:0:root:/root:/bin/bash
+  bin:x:1:1:bin:/bin:/sbin/nologin
+  daemon:x:2:2:daemon:/sbin:/sbin/nologin
+  adm:x:3:4:adm:/var/adm:/sbin/nologin
+  ...省略部分输出...
   ```
 
-  我手工添加了 lamp 用户，它使用的是 bash 命令解释器，那么这个用户就可以使用普通用户的所有权限。
+  每行用户信息都以 "：" 作为分隔符，划分为 7 个字段，每个字段所表示的含义如下：
 
-  如果我把 lamp 用户的 Shell 命令解释器修改为 /sbin/nologin，那么，这个用户就不能登录了,因为 /sbin/nologin 就是禁止登录的 Shell
+  >  用户名：密码：UID（用户ID）：GID（组ID）：描述性信息：主目录：默认Shell
 
-### /etc/shadow内容解析
+  - 用户名: 一串代表用户身份的字符串,方便用户记忆
 
----
+  - 密码: "x" 表示此用户设有密码，但不是真正的密码，真正的密码保存在 `/etc/shadow` 文件中
 
-/etc/shadow 文件，`用于存储 Linux 系统中用户的密码信息`，又称为“影子文件”。
+  - UID: 用户 ID
 
-/etc/shadow 文件只有 root 用户拥有读权限，其他用户没有任何权限，这样就保证了用户密码的安全性。
+  - GID: 用户初始组的组 ID 
 
-**文件内容**
+    > 初始组指用户登陆时就拥有这个用户组的相关权限
 
-```cmd
-[root@localhost ~]#vim /etc/shadow
-root: $6$9w5Td6lg
-$bgpsy3olsq9WwWvS5Sst2W3ZiJpuCGDY.4w4MRk3ob/i85fl38RH15wzVoom ff9isV1 PzdcXmixzhnMVhMxbvO:15775:0:99999:7:::
-bin:*:15513:0:99999:7:::
-daemon:*:15513:0:99999:7:::
-…省略部分输出…
-```
+  - 描述性信息: 不重要
 
-同 /etc/passwd 文件一样，文件中每行代表一个用户，同样使用 ":" 作为分隔符，不同之处在于，每行用户信息被划分为 9 个字段。
+  - 主目录: 用户登录后有操作权限的访问目录
 
-每个字段的含义如下：
+  - 默认shell: 我也不知道
 
-`用户名：加密密码：最后一次修改时间：最小修改时间间隔：密码有效期：密码需要变更前的警告天数：密码过期后的宽限时间：账号失效时间：保留字段`
+**/etc/shadow内容解析**
 
-**用户名**
+- 用于存储 Linux 系统中用户的密码信息
 
----
+  /etc/shadow 文件只有 root 用户拥有读权限，其他用户没有任何权限，这样就保证了用户密码的安全性。
 
-同 /etc/passwd 文件的用户名有相同的含义。
+  文件内容
 
-**加密密码**
+  ```cmd
+  [root@localhost ~]#vim /etc/shadow
+  root: $6$9w5Td6lg
+  $bgpsy3olsq9WwWvS5Sst2W3ZiJpuCGDY.4w4MRk3ob/i85fl38RH15wzVoom ff9isV1 PzdcXmixzhnMVhMxbvO:15775:0:99999:7:::
+  bin:*:15513:0:99999:7:::
+  daemon:*:15513:0:99999:7:::
+  …省略部分输出…
+  ```
 
----
+  文件中每行代表一个用户，同样使用 ":" 作为分隔符，不同之处在于，每行用户信息被划分为 9 个字段
 
-这里保存的是真正加密的密码。目前 Linux 的密码采用的是 SHA512 散列加密算法，原来采用的是 MD5 或 DES 加密算法。SHA512 散列加密算法的加密等级更高，也更加安全。
+  `用户名：加密密码：最后一次修改时间：最小修改时间间隔：密码有效期：密码需要变更前的警告天数：密码过期后的宽限时间：账号失效时间：保留字段`
 
-所有伪用户的密码都是 "!!" 或 "*"，代表没有密码是不能登录的。当然，新创建的用户如果不设定密码，那么它的密码项也是 "!!"，代表这个用户没有密码，不能登录。
+  每个字段含义如下:
 
-**最后一次修改时间**
+  - 用户名: 一串好记忆的字符
+  - 加密密码: 这里保存的是真正加密的密码, 采用的是 SHA512 散列加密算法
+  - 最后一次修改时间: 计算日期的时间是以  1970 年 1 月 1 日作为 1 不断累加得到的时间
+  - 最小修改时间间隔: 如果是 0，则密码可以随时修改；如果是 10，则代表密码修改后 10 天之内不能再次修改密码
+  - 密码有效期: 该字段的默认值为 99999，也就是 273 年，可认为是永久生效。如果改为 90，则表示密码被修改 90 天之后必须再次修改，否则该用户即将过期。
+  - 密码需要变更前的警告天数: 该字段的默认值是 7
+  - 密码过期后的宽限天数: 此字段规定的宽限天数是 10，则代表密码过期 10 天后失效；如果是 0，则代表密码过期后立即失效；如果是 -1，则代表密码永远不会失效。
+  - 账号失效时间: ...
+  - 保留: ...
+  - 忘记密码怎么办: 对于普通账户可以通过 root 账户重置密码; 如果 root 账号的密码遗失，则需要重新启动进入单用户模式，系统会提供 root 权限的 bash 接口，此时可以用 passwd 命令修改账户密码；
 
----
+**/etc/group文件解析**
 
-此字段表示最后一次修改密码的时间
+- 是用户组配置文件，即用户组的所有信息都存放在此文件中。
 
-Linux 计算日期的时间是以  1970 年 1 月 1 日作为 1 不断累加得到的时间，到 1971 年 1 月 1 日，则为 366 天。这里显示 15775 天，也就是说，此 root 账号在 1970 年 1 月 1 日之后的第 15775 天修改的 root 用户密码。
+  此文件是记录组 ID（GID）和组名相对应的文件
 
-**最小修改时间间隔**
+  文件内容
 
----
+  ```cmd
+  [root@localhost ~]#vim /etc/group
+  root:x:0:
+  bin:x:1:bin,daemon
+  daemon:x:2:bin,daemon
+  …省略部分输出…
+  lamp:x:502:
+  ```
 
-最小修改间隔时间，也就是说，该字段规定了从第 3 字段（最后一次修改密码的日期）起，多长时间之内不能修改密码。如果是 0，则密码可以随时修改；如果是 10，则代表密码修改后 10 天之内不能再次修改密码。
+  各用户组中，还是以 "：" 作为字段之间的分隔符，分为 4 个字段
 
-**密码有效期**
+  `组名：密码：GID：该用户组中的用户列表`
 
----
+  每个字段对应的含义为：
 
-该字段的默认值为 99999，也就是 273 年，可认为是永久生效。如果改为 90，则表示密码被修改 90 天之后必须再次修改，否则该用户即将过期。
+  - 组名: 用户组的名称
+  - 组密码:  "x" 仅仅是密码标识，真正加密后的组密码默认保存在 /etc/gshadow 文件中
+  - 组ID(GID): 群组的 ID 号
+  - 组中的用户: 此字段列出每个群组包含的所有用户
 
-**密码需要变更前的警告天数**
+**用户和用户组的关系的总结**
 
----
+- 到此，我们已经学习了/etc/passwd、/etc/shadow、/etc/group，它们之间的关系可以这样理解，即先在 /etc/group 文件中查询用户组的 GID 和组名；然后在 /etc/passwd 文件中查找该 GID 是哪个用户的初始组，同时提取这个用户的用户名和 UID；最后通过 UID 到 /etc/shadow 文件中提取和这个用户相匹配的密码。
 
-该字段的默认值是 7，也就是说，距离密码有效期的第 7 天开始，每次登录系统都会向该账户发出 "修改密码" 的警告信息。
+**/ect/gshadow文件内容解析**
 
-**密码过期后的宽限天数**
-
----
-
-在密码过期后，用户如果还是没有修改密码，则在此字段规定的宽限天数内，用户还是可以登录系统的；如果过了宽限天数，系统将不再让此账户登陆，也不会提示账户过期，是完全禁用。
-
-比如说，此字段规定的宽限天数是 10，则代表密码过期 10 天后失效；如果是 0，则代表密码过期后立即失效；如果是 -1，则代表密码永远不会失效。
-
-**账号失效时间**
-
----
-
-同第 3 个字段一样;该字段通常被使用在具有收费服务的系统中。
-
-**保留**
-
----
-
-这个字段目前没有使用，等待新功能的加入。
-
-**忘记密码怎么办**
-
----
-
-对于普通账户的密码遗失，可以通过 root 账户解决，它会重新给你配置好指定账户的密码，而不需知道你原有的密码（利用 root 的身份使用 passwd 命令即可）。
-
-如果 root 账号的密码遗失，则需要重新启动进入单用户模式，系统会提供 root 权限的 bash 接口，此时可以用 passwd 命令修改账户密码；也可以通过挂载根目录，修改 /etc/shadow，将账户的 root 密码清空的方法，此方式可使用 root 无法密码即可登陆，建议登陆后使用 passwd 命令配置 root 密码。
-
-### /etc/group文件解析
-
----
-
-/ect/group 文件是用户组配置文件，即`用户组的所有信息都存放在此文件中。`
-
-此文件是记录组 ID（GID）和组名相对应的文件。
-
-**文件内容**
-
-```cmd
-[root@localhost ~]#vim /etc/group
-root:x:0:
-bin:x:1:bin,daemon
-daemon:x:2:bin,daemon
-…省略部分输出…
-lamp:x:502:
-```
-
-我们曾创建 lamp 用户，系统默认生成一个 lamp 用户组，在此可以看到，此用户组的 GID 为 502，目前它仅作为 lamp 用户的初始组。
-
-各用户组中，还是以 "：" 作为字段之间的分隔符，分为 4 个字段，每个字段对应的含义为：
-
-`组名：密码：GID：该用户组中的用户列表`
-
-**各个字段具体含义**
-
-- 组名
-
-  也就是是用户组的名称，有字母或数字构成。同 /etc/passwd 中的用户名一样，组名也不能重复。
-
-- 组密码
-
-  和 /etc/passwd 文件一样，这里的 "x" 仅仅是密码标识，真正加密后的组密码默认保存在 /etc/gshadow 文件中。
-
-- 组ID(GID)
-
-  就是群组的 ID 号，Linux 系统就是通过 GID 来区分用户组的，同用户名一样，组名也只是为了便于管理员记忆。
-
-  这里的组 GID 与 /etc/passwd 文件中第 4 个字段的 GID 相对应，实际上，/etc/passwd 文件中使用 GID 对应的群组名，就是通过此文件对应得到的。
-
-- 组中的用户
-
-  此字段列出每个群组包含的所有用户。需要注意的是，如果该用户组是这个用户的初始组，则该用户不会写入这个字段，可以这么理解，该字段显示的用户都是这个用户组的附加用户。
-
-### 用户和用户组的关系的总结
-
----
-
-到此，我们已经学习了/etc/passwd、/etc/shadow、/etc/group，它们之间的关系可以这样理解，即先在 /etc/group 文件中查询用户组的 GID 和组名；然后在 /etc/passwd 文件中查找该 GID 是哪个用户的初始组，同时提取这个用户的用户名和 UID；最后通过 UID 到 /etc/shadow 文件中提取和这个用户相匹配的密码。
-
-### /ect/gshadow文件内容解析
-
----
-
-组用户信息存储在 /etc/group 文件中，而`将组用户的密码信息存储在 /etc/gshadow 文件中`。
+- 组用户信息存储在 /etc/group 文件中，而`将组用户的密码信息存储在 /etc/gshadow 文件中`。
 
 **文件内容**
 
