@@ -73,3 +73,7 @@
 - 在html中css自动提示
 
   `Html css support`
+  
+- 中文插件
+
+  Chinese

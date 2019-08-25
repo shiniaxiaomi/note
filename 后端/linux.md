@@ -2001,6 +2001,12 @@ Linux 会把不重要的功能编译成内核模块，在需要时再调用，�
   - -l：列出正在监听的网络服务（不包含已经连接的网络服务）；
   - -n：用端口号来显示而不用服务名；
   - -p：列出该服务的进程 ID (PID)；
+  
+- 示例
+
+  - 查看80端口被谁占用
+
+    `netstat -lnp|grep 80`
 
 ## 独立服务的启动管理
 
@@ -2049,6 +2055,54 @@ Linux 会把不重要的功能编译成内核模块，在需要时再调用，�
   - 在文件最后加入要apache的启动命令即可
 
     `/etc/rc.d/init.d/httpd start`
+
+## 系统防火墙
+
+centos6.0
+
+- 默认安装的是iptables
+
+- 操作
+
+  ```cmd
+  service iptables start # 启动
+  service iptables restart # 重启
+  service iptables stop # 禁用
+  service iptables status # 查看iptables的状态
+  netstat -a # 查看所有服务端口
+  vi /etc/sysconfig/iptables # 编辑iptables开放的服务端口
+  ```
+
+centos7.0
+
+- 默认安装的是firewalld
+
+- 操作
+
+  ```cmd
+  systemctl start firewalld # 启动
+  firewall-cmd --reload # 重启
+  systemctl stop firewalld # 禁用
+  systemctl enable firewalld # 设置开机启动
+  sytemctl disable firewalld # 停用并禁止开机启动
+  firewall-cmd --state # 查看防火墙状态
+  firewall-cmd --version # 查看版本
+  firewall-cmd --list-ports # 查看已经开启的端口
+  ```
+
+  添加端口
+
+  ```cmd
+  firewall-cmd --zone=public --add-port=3306/tcp --permanent
+  firewall-cmd --reload # 需要重启防火墙
+  ```
+
+  删除端口
+
+  ```cmd
+  firewall-cmd --zone=public --remove-port=3306/tcp --permanent
+  firewall-cmd --reload # 需要重启防火墙
+  ```
 
 # 系统管理
 
