@@ -595,6 +595,8 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
 
   `fs.unlink(path, callback)`
 
+  > 回调函数，没有参数。
+
 - 创建目录
 
   `fs.mkdir(path[, options], callback)`
@@ -616,6 +618,8 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
 - 删除目录
 
   `fs.rmdir(path, callback)`
+  
+  > 回调函数，没有参数。
 
 # web模块
 
