@@ -300,79 +300,139 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
   console.log("文件压缩完成。");
   ```
 
-# 模块系统
+# js模块系统
 
 为了让Node.js的文件可以相互调用，Node.js提供了一个简单的模块系统。
 
-简单的创建模块
+## 简单的引入
 
-- 创建模块
-  - 创建hello.js模块
+- 创建a.js文件
 
-    ```js
-    exports.world = function() {
-      console.log('Hello World');
-    }
-    ```
+  ```js
+  //该变量只能在内部使用
+  var test = "test";
+  console.log(test);
+  //函数只能内部使用
+  function print(name) {
+    console.log(name);
+  }
+  print("sdfsdf");
+  ```
 
-    > hello.js 通过 exports 对象把 world 作为模块的访问接口, 在 main.js 中通过 require('./hello') 加载这个模块，然后就可以直接访问 hello.js 中 exports 对象的成员函数了。
+- 创建index.js文件(和a.js是同级目录)
 
-    即exports对象就是require所获取的对象,那个对象就可以直接使用world这个方法
+  ```js
+  var a=require(./a); //直接运行a.js中的代码
+  ```
 
-- 引入模块并调用
-  - ```js
-    var hello = require('./hello');
-    hello.world();
-    ```
+- 运行index.js
 
-把一个对象封装到模块中
+  ```js
+  运行结果:
+  test
+  sdfsdf
+  ```
 
-- 创建hello.js
+- 总结
+
+  可以把a.js当作是一个执行某个任务是所需要的模块,a.js本身就能执行完成,index.js就是单纯的调用了a.js而已
+
+## 创建模块
+
+- 创建a.js模块
+
+  ```js
+  //该变量只能在内部使用
+  var test = "test";
+  //导出变量
+  exports.sss = 111;
+  //导出函数
+  exports.hello = function(name) {
+    console.log(test + name);
+  };
+  //通过 exports 对象把 world 作为模块的访问接口
+  //将其当作模块引入其他文件之后就可以将world当作是成员函数使用了
+  ```
+
+- 创建index.js文件(和a.js是同级目录)
+
+  ```js
+  var a = require("./a"); //获取a模块
+  a.hello("jjj");//调用a模块中的hello函数
+  console.log(a.sss);//打印a模块中的sss变量(a模块中的test变量只能内部使用)
+  ```
+
+- 运行index.js
+
+  ```js
+  运行结果:
+  testjjj
+  111
+  ```
+
+- 总结
+
+  a.js相当于是一个模块,模块中导出的变量和函数可以被重复的使用(其中模块中导出的变量可以被修改),导出的模块只有一份,如果调用两次require("./a"),获取到的模块对象是同一个
+
+## 封装一个对象
+
+- 创建a.js文件
 
   ```js
   function Hello() { 
-      var name; 
-      this.setName = function(thyName) { 
+      var name; //对象的成员变量
+      this.setName = function(thyName) { //set方法
           name = thyName; 
       }; 
-      this.sayHello = function() { 
+      this.sayHello = function() { //sayHello方法
           console.log('Hello ' + name); 
       }; 
   }; 
-  module.exports = Hello;
+  module.exports = Hello;//导出对象
+  //将Hello直接赋值给module.exports,那么通过require获取到的就是一个对象,使用时需要new一个对象
   ```
 
-  将Hello直接赋值给module.exports,那么通过require获取到的就是一个对象,使用时需要new一个对象
-
-- 引入模块并使用
+- 创建index.js文件(和a.js是同级目录)
 
   ```js
-  //main.js 
-  var Hello = require('./hello'); 
-  hello = new Hello(); 
-  hello.setName('BYVoid'); 
-  hello.sayHello(); 
+  var a = require("./a"); //引入一个类
+  var hello = new a(); //new了这个类的一个对象
+  hello.setName("1");
+  hello.sayHello();
   ```
 
-系统模块
+- 运行index.js
+
+  ```js
+  运行结果:
+  Hello 1
+  ```
+
+- 总结
+
+  a.js就相当于是一个类,获取模块后就获取了类模板,可以实例化出多个类实例,每个实例都保存着自己的一份数据和函数,互不冲突,和上一个`创建模块`是完全两种概念
+
+## 系统模块
+
+- 先安装
+
+  `cnpm i fs -S`
 
 - 使用
 
-  `var http = require("http");`
+  `var fs = require("fs");`
 
-模块的加载
+- 总结
 
-- require方法接受以下几种参数的传递
-  - http、fs、path等，原生模块。
-  - ./mod或../mod，相对路径的文件模块。
-  - /pathtomodule/mod，绝对路径的文件模块。
-  - mod，非原生模块的文件模块。
+  直接使用,没毛病
 
-总结
+## js模块总结
 
 - exports 和 module.exports 的使用
 
-  如果要对外暴露属性或方法，就用 exports 就行，要暴露对象(类似class，包含了很多属性和方法)，就用 module.exports。
+  如果要对外暴露属性或方法，就用 exports 就行
+  
+  要暴露对象(类似class，包含了很多属性和方法)，就用 module.exports。
 
 # 函数
 
@@ -701,7 +761,7 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
 
 
 
-# Express 框架
+# [Express 框架](https://www.runoob.com/nodejs/nodejs-express-framework.html)
 
 Express 是一个简洁而灵活的 node.js Web应用框架, 提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。
 
@@ -712,6 +772,97 @@ Express 框架核心特性：
 - 可以设置中间件来响应 HTTP 请求。
 - 定义了路由表用于执行不同的 HTTP 请求动作。
 - 可以通过向模板传递参数来动态渲染 HTML 页面。
+
+## 安装
+
+安装express
+
+`cnpm install express --save`
+
+再安装其他的相关模块
+
+- body-parser - node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
+
+- cookie-parser - 这就是一个解析Cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
+
+- multer - node.js 中间件，用于处理 enctype="multipart/form-data"（设置表单的MIME编码）的表单数据。
+
+  ```js
+  cnpm install body-parser --save
+  cnpm install cookie-parser --save
+  cnpm install multer --save
+  ```
+
+## demo实例
+
+- 创建一个demo.js
+
+  ```js
+  var express = require('express');//导入express模块 
+  var app = express();//获取app对象
+   
+  //当'/'请求时的回调(request 和 response 对象来处理请求和响应的数据)
+  app.get('/', function (req, res) {
+     res.send('Hello World');
+  })
+   
+  //启动server并监听再8081端口
+  var server = app.listen(8081, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+    console.log("应用实例，访问地址为 http://%s:%s", host, port);
+  })
+  ```
+
+- 执行demo.js
+
+  `node demo.js`
+
+- 访问网址http://localhost:8081/
+
+  ![1567093713226](.img/.node.js/1567093713226.png)
+
+- request 和 response的属性见[参考文档](https://www.runoob.com/nodejs/nodejs-express-framework.html)
+
+## 路由
+
+分别对应不同的url请求
+
+- 访问主页
+
+  `app.get('/', function (req, res){})`
+
+- 普通的url请求
+
+  `app.get('/del_user', function (req, res) {})`
+
+- 使用正则来匹配url请求
+
+  `app.get('/ab*cd', function(req, res) {})`
+
+## 静态资源
+
+Express 提供了内置的中间件 express.static 来设置静态文件
+
+- 设置public目录为静态资源文件路径
+
+  ```js
+  var express = require('express');
+  var app = express();
+  app.use('/public', express.static('public'));
+  ```
+
+- 在public目录下放`logo.png`图片并访问
+
+  `http://localhost:8081/public/logo.png`即可看到图片
+
+## 表单处理
+
+使用`process_get`路由器来处理`get`请求的请求参数
+
+使用`process_post`路由器来处理`post`请求的请求参数
+
+[详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
 
 # 参考文档
 
