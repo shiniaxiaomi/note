@@ -673,6 +673,34 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
       }).listen(3000);
       ```
 
+# shelljs模块
+
+- 执行命令
+
+  ```js
+  shell.exec("echo hello " + name);
+  ```
+
+  ```js
+  shell.exec("git clone "+gitUrl, function(code, stdout, stderr) {
+      if(code!=0){//报错
+          console.log(new Date().toLocaleString()+'克隆失败:'+stderr);
+      }else{
+          console.log(new Date().toLocaleString()+'克隆成功:'+stdout);
+      }
+  }
+  ```
+
+- 进入目录
+
+  ```js
+  shell.cd(srcDir);
+  ```
+
+  
+
+
+
 # Express 框架
 
 Express 是一个简洁而灵活的 node.js Web应用框架, 提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。
