@@ -735,31 +735,49 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
 
 # shelljs模块
 
-- 执行命令
+## 安装
+
+```js
+npm install shelljs  --save
+```
+
+## shelljs使用全局模式
+
+```js
+require('shelljs/global');
+
+mkdir('-p', '/var/log');
+cp('-R', '/var/log/*', '/home/zhangzhi/logs/');
+
+cd('/home/zhangzhi/logs');
+//在shelljs 使用下,第一种方式必须使用 exec 方法,通过把 shell 脚本以参数形式传递给 exec 方法来运行即可.
+//在全局模式下,可以直接在 node.js 代码中书写 shell 脚本,比如上面的 mkdir ,cp ,cd 等等.
+```
+
+# shelljs 实时获取输入输出流
+
+- 输出流
 
   ```js
-  shell.exec("echo hello " + name);
+  var child = exec('ls', {async:true});
+  child.stdout.on('data', function(data) {
+    /* ... do something with data ... */
+    这里可以拦截标准输出流
+  });
   ```
+
+- 输入流
 
   ```js
-  shell.exec("git clone "+gitUrl, function(code, stdout, stderr) {
-      if(code!=0){//报错
-          console.log(new Date().toLocaleString()+'克隆失败:'+stderr);
-      }else{
-          console.log(new Date().toLocaleString()+'克隆成功:'+stdout);
-      }
-  }
-  ```
-
-- 进入目录
-
-  ```js
-  shell.cd(srcDir);
-  ```
-
+  var userName='zhangzhi';
+  var password='pwd';
   
-
-
+  exec("adduser "+userName);
+  var child= exec("passwd " + userName,{async:true});
+  child.stdin.write(password+'\n'); //这里输入密码
+  child.stdin.write(password+'\n'); //这里输入确认密码
+  child.stdin.end();
+  ```
 
 # [Express 框架](https://www.runoob.com/nodejs/nodejs-express-framework.html)
 
