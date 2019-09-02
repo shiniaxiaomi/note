@@ -888,7 +888,7 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
   1. 安装forever进行管理
 
-     `npm ``install` `-g forever`
+     `npm install -g forever`
 
   2. 运行
 
@@ -897,6 +897,16 @@ Express 提供了内置的中间件 express.static 来设置静态文件
   3. 日志文件位置
 
      默认会放在`~/.forever/forever.log`中
+
+  4. 关闭应用
+
+     - 关闭一个应用
+
+       `forever stop index.js`
+
+     - 关闭所有应用
+
+       `forever stopall`
 
 # 参考文档
 
