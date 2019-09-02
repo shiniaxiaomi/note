@@ -8,6 +8,10 @@ node.js是一个基于chrome JavaScript运行是建立的一个平台
 
 node.js是一个事件驱动I/O服务端JavaScript环境,基于Google的V8引擎,性能非常好
 
+# API文档
+
+[node.js中文网](http://nodejs.cn/api/path.html)
+
 # 安装
 
 在Windows下安装
@@ -733,12 +737,32 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
       }).listen(3000);
       ```
 
-# shelljs模块
+# [shelljs模块](https://www.npmjs.com/package/shelljs)
 
 ## 安装
 
 ```js
 npm install shelljs  --save
+```
+
+## shelljs基本使用
+
+```js
+var shell=require('shelljs');
+shell.mkdir("-p",'/tmp/a/b/c/d');//递归创建目录
+shell.mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');//递归创建多个目录
+
+shell.rm('-rf', 'out/Release');//强制删除目录或文件
+
+shell.cp('-R', 'stuff/', 'out/Release');//递归复制文件夹(将stuff目录复制为out/Release目录)
+
+shell.cd('lib');//进入目录
+
+shell.ls('*.js').forEach(function (file) {});//使用ls命令并遍历文件
+
+shell.sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');//直接将souce.js中的PROGRAM_VERSION替换成v0.1.3(支持正则表达式)
+
+shell.exec('git commit -am "Auto-commit"');//执行git命令
 ```
 
 ## shelljs使用全局模式
@@ -754,7 +778,7 @@ cd('/home/zhangzhi/logs');
 //在全局模式下,可以直接在 node.js 代码中书写 shell 脚本,比如上面的 mkdir ,cp ,cd 等等.
 ```
 
-# shelljs 实时获取输入输出流
+## shelljs 实时获取输入输出流
 
 - 输出流
 

@@ -1045,7 +1045,43 @@ $ cat .gitconfig
     email = your@email.com
 ```
 
+# 问题
 
+## 解决gitbash中文乱码的问题
+
+- 进入git安装目录，通常是C:\Program Files (x86)\Git\
+
+  编辑etc\gitconfig文件，在文件末尾增加以下内容：
+
+  ```git
+  [gui]  
+      encoding = utf-8  #代码库统一使用utf-8  
+  [i18n]  
+      commitencoding = utf-8  #log编码  
+  [svn]  
+      pathnameencoding = utf-8  #支持中文路径 
+  ```
+
+- 编辑etc\git-completion.bash文件,在文件末尾增加以下内容：
+
+  ```git
+  alias ls='ls --show-control-chars --color=auto'  #ls能够正常显示中文  
+  ```
+
+- 编辑etc\inputrc文件，修改output-meta和convert-meta属性值
+
+  ```git
+  set output-meta on  #bash可以正常输入中文  
+  set convert-meta off  
+  ```
+
+- 编辑profile文件，在文件末尾添加如下内容：
+
+  ```git
+  export LESSHARESET=utf-8  
+  ```
+
+  
 
 # 参考文档
 
