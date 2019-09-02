@@ -764,7 +764,7 @@ Git有commit，为什么还要引入tag？
 > 还可以创建带有说明的标签，用`-a`指定标签名，`-m`指定说明文字：
 >
 > ```cmd
-> $ git tag -a v0.1 -m "version 0.1 released" 1094adb
+> $ git tag -a v0.1 -m "version 0.1 released" 
 > ```
 
 
