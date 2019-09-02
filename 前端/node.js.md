@@ -906,6 +906,32 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
 [详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
 
+# 遇到的问题
+
+- 在linux中如何后台运行nodejs程序
+
+  1. 安装forever进行管理
+
+     `npm install -g forever`
+
+  2. 运行
+
+     `forever start index.js`
+
+  3. 日志文件位置
+
+     默认会放在`~/.forever/forever.log`中
+
+  4. 关闭应用
+
+     - 关闭一个应用
+
+       `forever stop index.js`
+
+     - 关闭所有应用
+
+       `forever stopall`
+
 # 参考文档
 
 [node.js教程](https://www.runoob.com/nodejs/nodejs-tutorial.html)
