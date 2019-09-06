@@ -46,3 +46,6 @@ function ajaxPostUtil(url,dataObj,handleFunction){
 }
 ```
 
+使用js刷新页面
+
+`location.reload();`
