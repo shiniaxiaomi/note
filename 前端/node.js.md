@@ -900,9 +900,82 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
 ## 表单处理
 
-使用`process_get`路由器来处理`get`请求的请求参数
+- js发送get请求
 
-使用`process_post`路由器来处理`post`请求的请求参数
+  ```js
+  //发送get请求
+  function ajaxGetUtil(url,handleFunction){
+  	var httpRequest = new XMLHttpRequest();//第一步：建立所需的对象
+  	httpRequest.open('GET', url, true);//第二步：打开连接  将请求参数写在url中  ps:"./Ptest.php?name=test&nameone=testone"
+  	httpRequest.send();//第三步：发送请求  将请求参数写在URL中
+  
+  	httpRequest.onreadystatechange = function () {
+  		if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+  			handleFunction(JSON.stringify(httpRequest.responseText));//获取到json字符串，还需解析
+  		}
+  	};
+  }
+  ```
+
+- js发送post请求
+
+  ```js
+  //发送get请求
+  function ajaxPostUtil(url,dataObj,handleFunction){
+  	var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+  	httpRequest.open('post', url); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
+      httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置普通类型数据,如(a=1&b=2)
+  	httpRequest.setRequestHeader("Content-type","application/json");//设置json类型数据,如({a:1,b:2})
+  	httpRequest.send(JSON.stringify(dataObj));//发送请求 将json写入send中
+  
+  	httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+  		if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+  			handleFunction(JSON.stringify(httpRequest.responseText));//获取到json字符串，还需解析
+  		}
+  	};
+  }
+  ```
+
+- 获取get请求的数据
+
+  ```js
+  //获取todoList的数据
+  app.get("/getTodoList", function(req, res) {
+      res.send(todoListData);
+  });
+  ```
+
+- 获取post请求的数据(普通数据)
+
+  ```js
+  var express = require("express"); //导入express模块
+  var bodyParser = require('body-parser');
+  // 创建 application/x-www-form-urlencoded 编码解析
+  var urlencodedParser = bodyParser.urlencoded({ extended: false });
+  var app = express(); //获取app对象
+  
+  //获取todoList的数据
+  app.post("/saveTodoList",urlencodedParser, function(req, res) {
+      console.log(req.body)
+      res.send({'code':1,"data":''});
+  });
+  ```
+
+- 获取post请求的数据(json类型数据)
+
+  ```js
+  var express = require("express"); //导入express模块
+  var bodyParser = require('body-parser');
+  var app = express(); //获取app对象
+  
+  //获取todoList的数据
+  app.post("/saveTodoList",bodyParser.json(), function(req, res) {
+      console.log(req.body)
+      res.send({'code':1,"data":''});
+  });
+  ```
+
+  
 
 [详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
 
