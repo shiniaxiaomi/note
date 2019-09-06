@@ -21,12 +21,12 @@
 
 - 选中当前格式文本
   
-`Ctrl+E`
+  `Ctrl+E`
   
 - 跳转到页首
-  
+
   `Ctrl+Home`
-  
+
 - 隐藏/显示侧边栏
   `Ctrl+Shift+L`
 
