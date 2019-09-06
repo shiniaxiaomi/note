@@ -906,6 +906,36 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
 [详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
 
+## express-session模块
+
+这是一个session模块,可以快速的将session添加到express框架中
+
+使用
+
+- 安装
+
+  `cnpm i express-session -S`
+
+- 创建
+
+  ```js
+  var session = require("express-session");
+  app.use(
+    session({
+      secret: "this is a string key", //加密的字符串，里面内容可以随便写
+      resave: false, //强制保存session,即使它没变化
+      saveUninitialized: true //强制将未初始化的session存储，默认为true
+    })
+  );
+  ```
+
+- 使用
+
+  ```js
+  req.session.isLogin=true; //创建session
+  console.log(req.session.isLogin); //获取session
+  ```
+
 # 遇到的问题
 
 - 在linux中如何后台运行nodejs程序
@@ -931,6 +961,12 @@ Express 提供了内置的中间件 express.static 来设置静态文件
      - 关闭所有应用
 
        `forever stopall`
+     
+  5. 查看所有应用
+  
+     `forever list`
+  
+  [forever参考文档](https://www.jianshu.com/p/b2a721f6ce75)
 
 # 参考文档
 
