@@ -900,42 +900,6 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
 ## 表单处理
 
-- js发送get请求
-
-  ```js
-  //发送get请求
-  function ajaxGetUtil(url,handleFunction){
-  	var httpRequest = new XMLHttpRequest();//第一步：建立所需的对象
-  	httpRequest.open('GET', url, true);//第二步：打开连接  将请求参数写在url中  ps:"./Ptest.php?name=test&nameone=testone"
-  	httpRequest.send();//第三步：发送请求  将请求参数写在URL中
-  
-  	httpRequest.onreadystatechange = function () {
-  		if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-  			handleFunction(JSON.stringify(httpRequest.responseText));//获取到json字符串，还需解析
-  		}
-  	};
-  }
-  ```
-
-- js发送post请求
-
-  ```js
-  //发送get请求
-  function ajaxPostUtil(url,dataObj,handleFunction){
-  	var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-  	httpRequest.open('post', url); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
-      httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置普通类型数据,如(a=1&b=2)
-  	httpRequest.setRequestHeader("Content-type","application/json");//设置json类型数据,如({a:1,b:2})
-  	httpRequest.send(JSON.stringify(dataObj));//发送请求 将json写入send中
-  
-  	httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
-  		if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-  			handleFunction(JSON.stringify(httpRequest.responseText));//获取到json字符串，还需解析
-  		}
-  	};
-  }
-  ```
-
 - 获取get请求的数据
 
   ```js
@@ -979,6 +943,36 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 
 [详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
 
+## express-session模块
+
+这是一个session模块,可以快速的将session添加到express框架中
+
+使用
+
+- 安装
+
+  `cnpm i express-session -S`
+
+- 创建
+
+  ```js
+  var session = require("express-session");
+  app.use(
+    session({
+      secret: "this is a string key", //加密的字符串，里面内容可以随便写
+      resave: false, //强制保存session,即使它没变化
+      saveUninitialized: true //强制将未初始化的session存储，默认为true
+    })
+  );
+  ```
+
+- 使用
+
+  ```js
+  req.session.isLogin=true; //创建session
+  console.log(req.session.isLogin); //获取session
+  ```
+
 # 遇到的问题
 
 - 在linux中如何后台运行nodejs程序
@@ -1004,6 +998,12 @@ Express 提供了内置的中间件 express.static 来设置静态文件
      - 关闭所有应用
 
        `forever stopall`
+     
+  5. 查看所有应用
+  
+     `forever list`
+  
+  [forever参考文档](https://www.jianshu.com/p/b2a721f6ce75)
 
 # 参考文档
 
