@@ -40,9 +40,55 @@ springboot内嵌了tomcat容器,使得创建项目更加的快捷和便利,而�
 
 - 为代码质量设置高标准,具有有意义的,最新和准确的javadoc
 
-
-
 # Core
+
+spring最重要的两个核心技术是IOC(控制反转)和AOP(面向切面)
+
+- IOC在spring框架中起到了承上启下的作用,包括对于AOP来说,都需要使用到IOC
+- spring framework有自己的AOP框架,它在概念上易于理解,并且能够解决80%的面向切面的编程需求
+
+spring还提供了与AspectJ的AOP框架集成的接口,能够无缝的进行切换
+
+## [IOC Container](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans)
+
+### Introduction to the Spring IoC Container and Beans
+
+bean: 由spring容器管理的对象成为bean;它是由spring IoC容器实例化,组装和管理的对象,bean之间的依赖关系也由spring Ioc容器进行管理
+
+ioc的原理: 通过构造函数参数,工厂方法的参数或在构造函数和工厂方法返回后的对象来设置bean的依赖关系,容器在创建bean时将其依赖注入
+
+
+
+`org.springframework.beans`和`org.springframework.context`包是Spring Framework的IoC容器的基础
+
+`BeanFactory`接口提供了一种能够产生任何对象的高级配置机制,`ApplicationContext`是`BeanFactory`的子接口。
+
+`ApplicationContext`:
+
+- 更容易和AOP集成
+- 更好的国际化
+- 利于事件发布(回调)
+- 特定与应用层的上下文,如`WebApplicationContext`,用于web应用程序
+
+简单的说,`BeanFactory`是一个非常抽象的类,提供了框节配置和基本功能,而`ApplicationContext`则是它的一个子类,针对一些特殊的场景进行了完善
+
+
+
+## [Resource](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#resources)
+
+## [Validation,Data Binding,Type Conversion](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validation)
+
+## [Spring Expression Language (SpEL)](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#expressions)
+
+## [Aspect Oriented Programming(AOP)](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop)
+
+## [Spring AOP APIs](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-api)
+
+## [Null-safety](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#null-safety)
+
+## [Data Buffers and Codecs](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#databuffers)
+
+## [Appendix](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#appendix)
 
 # Testing
 
