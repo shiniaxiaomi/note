@@ -84,7 +84,163 @@ ioc的流程图
 
 通过实例化类和配置元数据，即可创建一个可用和可配置的应用程序系统
 
-### Configuration Metadata
+### (元数据配置)Configuration Metadata
+
+spring Ioc容器接受一个配置元数据，就可以将为我们实例化，配置和组装一系列的beans
+
+#### 三种元数据配置方式
+
+配置元数据支持简单直观的XML格式进行配置，也支持java注解进行配置
+
+- xml的配置方式：能够快速的修改并无需触及源代码或重新编译他们
+- 注解配置方式：注解在其声名中提供了大量的上下文，使得配置更加的简短和简洁，但是这样会导致配置去中心化并且难易控制
+- spring还支持xml和注解公用的方式
+
+#### xml方式
+
+```xml
+<beans>
+	<bean id="people" class="com.lyj.People">
+    	... <!-- 依赖bean或配置该bean的属性 -->
+    </bean>
+</beans>
+```
+
+#### 注解方式
+
+```java
+@Configuration
+public void ConfigurationClasss(){
+    @Bean
+    public People getPeople(){
+        return new People();
+    }
+}
+```
+
+更多注解
+
+ [`@Configuration`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html), [`@Bean`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html), [`@Import`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html), and [`@DependsOn`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/DependsOn.html)
+
+### 创建ioc容器
+
+spring提供了`ApplicationContext`构造器,我们可以为其指定配置元数据来创建ico容器
+
+```java
+ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");//可以传入多个xml配置文件
+```
+
+services.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- services -->
+
+    <bean id="petStore" class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+        <property name="itemDao" ref="itemDao"/>
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <!-- more bean definitions for services go here -->
+
+</beans>
+```
+
+xml配置文件可以相互的引用
+
+```xml
+<beans>
+    <import resource="services.xml"/>
+    <import resource="resources/messageSource.xml"/>
+    <import resource="/resources/themeSource.xml"/><!-- 该xml需要位于resources目录下 -->
+
+    <bean id="bean1" class="..."/>
+    <bean id="bean2" class="..."/>
+</beans>
+```
+
+spring推荐使用指定xml的绝对路径,而不是相对路径或者是classpath下的路径,因为这样会使得配置文件和应用耦合
+
+### 使用ioc容器
+
+```java
+// create and configure beans(创建并配置bean)
+ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
+
+// retrieve configured instance(取回配置实例)
+PetStoreService service = context.getBean("petStore", PetStoreService.class);
+
+// use configured instance(使用实例)
+List<String> userList = service.getUsernameList();
+```
+
+spring不推荐使用上述方法进行获取对应的bean,而是通过@Autowire注解自动注入
+
+### bean 概述
+
+在容器中的bean的父类就是BeanDefinition对象,其中包含了以下内容
+
+- 包限定的类名: 通常是由实际的实现类定义
+- bean的行为配置: bean在容器中的行为方式(范围,生命周期等等)
+- bean的相互引用
+- 在创建对应bean中设置一些配置,例如创建连接池相关的bean是可以配置连接池的大小等等
+
+bean可配置的属性
+
+| Property                 | Explained in…                                                |
+| :----------------------- | :----------------------------------------------------------- |
+| Class                    | [Instantiating Beans](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-class) |
+| Name                     | [Naming Beans](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-beanname) |
+| Scope                    | [Bean Scopes](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-scopes) |
+| Constructor arguments    | [Dependency Injection](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-collaborators) |
+| Properties               | [Dependency Injection](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-collaborators) |
+| Autowiring mode          | [Autowiring Collaborators](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-autowire) |
+| Lazy initialization mode | [Lazy-initialized Beans](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-lazy-init) |
+| Initialization method    | [Initialization Callbacks](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-lifecycle-initializingbean) |
+| Destruction method       | [Destruction Callbacks](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-lifecycle-disposablebean) |
+
+### bean的命名
+
+name和id都不是必须的,如果我们都没有指定,则ioc容器会为bean生成一个唯一的名称
+
+通过类路径中的组件扫描, 容器为bean生成的名称通常以类名的小写字母开头,并使用了驼峰命名
+
+为bean定义别名
+
+- xml
+
+  ```xml
+  <alias name="fromName" alias="toName"/>
+  ```
+
+- 注解
+
+  ```java
+  @Autowired("people1") //默认容器为其生成的名称为people
+  People people;
+  ```
+
+### 实例化bean
+
+bean的定义本质上是为了创建一个或多个实例对象
+
+- 使用构造函数实例化
+- 使用静态工厂方法实例化
+- 使用实例工厂方法实例化
+
+
+
+
+
+
+
+
 
 
 
