@@ -51,7 +51,7 @@ spring还提供了与AspectJ的AOP框架集成的接口,能够无缝的进行切
 
 ## [IOC Container](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans)
 
-### Introduction to the Spring IoC Container and Beans
+### 简介 the Spring IoC Container and Beans
 
 bean: 由spring容器管理的对象成为bean;它是由spring IoC容器实例化,组装和管理的对象,bean之间的依赖关系也由spring Ioc容器进行管理
 
@@ -71,6 +71,22 @@ ioc的原理: 通过构造函数参数,工厂方法的参数或在构造函数�
 - 特定与应用层的上下文,如`WebApplicationContext`,用于web应用程序
 
 简单的说,`BeanFactory`是一个非常抽象的类,提供了框节配置和基本功能,而`ApplicationContext`则是它的一个子类,针对一些特殊的场景进行了完善
+
+### IoC Container 概述
+
+`org.springframework.context.ApplicationContext`接口负责为IOC容器实例化、配置和组装bean,该类通过读取配置原数据来实例化、配置和组装bean,配置元数据的方式可以是xml、java注解或者是Java代码来实现。
+
+spring提供了几个`ApplicationContext`接口的实现,`Class PathXmlApplicationContext`或者`FileSystemApplicationContext`,他们都可以使用在单一应用中。我们可以在xml中声名容器使用java注解或代码来作为配置元数据。
+
+ioc的流程图
+
+![1568091058850](.img/.springFramework/1568091058850.png)
+
+通过实例化类和配置元数据，即可创建一个可用和可配置的应用程序系统
+
+### Configuration Metadata
+
+
 
 
 
