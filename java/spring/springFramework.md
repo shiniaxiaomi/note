@@ -84,45 +84,7 @@ ioc的流程图
 
 通过实例化类和配置元数据，即可创建一个可用和可配置的应用程序系统
 
-### (元数据配置)Configuration Metadata
-
-spring Ioc容器接受一个配置元数据，就可以将为我们实例化，配置和组装一系列的beans
-
-#### 三种元数据配置方式
-
-配置元数据支持简单直观的XML格式进行配置，也支持java注解进行配置
-
-- xml的配置方式：能够快速的修改并无需触及源代码或重新编译他们
-- 注解配置方式：注解在其声名中提供了大量的上下文，使得配置更加的简短和简洁，但是这样会导致配置去中心化并且难易控制
-- spring还支持xml和注解公用的方式
-
-#### xml方式
-
-```xml
-<beans>
-	<bean id="people" class="com.lyj.People">
-    	... <!-- 依赖bean或配置该bean的属性 -->
-    </bean>
-</beans>
-```
-
-#### 注解方式
-
-```java
-@Configuration
-public void ConfigurationClasss(){
-    @Bean
-    public People getPeople(){
-        return new People();
-    }
-}
-```
-
-更多注解
-
- [`@Configuration`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html), [`@Bean`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html), [`@Import`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html), and [`@DependsOn`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/DependsOn.html)
-
-### 创建ioc容器
+#### 创建ioc容器
 
 spring提供了`ApplicationContext`构造器,我们可以为其指定配置元数据来创建ico容器
 
@@ -167,7 +129,7 @@ xml配置文件可以相互的引用
 
 spring推荐使用指定xml的绝对路径,而不是相对路径或者是classpath下的路径,因为这样会使得配置文件和应用耦合
 
-### 使用ioc容器
+#### 使用ioc容器
 
 ```java
 // create and configure beans(创建并配置bean)
@@ -181,6 +143,44 @@ List<String> userList = service.getUsernameList();
 ```
 
 spring不推荐使用上述方法进行获取对应的bean,而是通过@Autowire注解自动注入
+
+### (元数据配置)Configuration Metadata
+
+spring Ioc容器接受一个配置元数据，就可以将为我们实例化，配置和组装一系列的beans
+
+#### 三种元数据配置方式
+
+配置元数据支持简单直观的XML格式进行配置，也支持java注解进行配置
+
+- xml的配置方式：能够快速的修改并无需触及源代码或重新编译他们
+- 注解配置方式：注解在其声名中提供了大量的上下文，使得配置更加的简短和简洁，但是这样会导致配置去中心化并且难易控制
+- spring还支持xml和注解公用的方式
+
+#### xml方式
+
+```xml
+<beans>
+	<bean id="people" class="com.lyj.People">
+    	... <!-- 依赖bean或配置该bean的属性 -->
+    </bean>
+</beans>
+```
+
+#### 注解方式
+
+```java
+@Configuration
+public void ConfigurationClasss(){
+    @Bean
+    public People getPeople(){
+        return new People();
+    }
+}
+```
+
+更多注解
+
+ [`@Configuration`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html), [`@Bean`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html), [`@Import`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html), and [`@DependsOn`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/DependsOn.html)
 
 ### bean 概述
 
@@ -205,7 +205,7 @@ bean可配置的属性
 | Initialization method    | [Initialization Callbacks](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-lifecycle-initializingbean) |
 | Destruction method       | [Destruction Callbacks](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans-factory-lifecycle-disposablebean) |
 
-### bean的命名
+#### bean的命名
 
 name和id都不是必须的,如果我们都没有指定,则ioc容器会为bean生成一个唯一的名称
 
@@ -226,12 +226,80 @@ name和id都不是必须的,如果我们都没有指定,则ioc容器会为bean�
   People people;
   ```
 
-### 实例化bean
+#### 实例化bean
 
 bean的定义本质上是为了创建一个或多个实例对象
 
 - 使用构造函数实例化
+
+  1. spring使用反射获取类的构造函数,然后进行实例化
+
+  2. spring要bean需要有一个空构造器,如果有重写了构造器,则还需要手动创建一个空的构造器,因为此时java不会为你自动创建一个空的构造器了
+
+  3. 示例
+
+     实体类
+
+     ```Java
+     public class ThingOne {
+         public ThingOne(ThingTwo thingTwo, int years, String ultimateAnswer) {
+             // ...
+         }
+     }
+     ```
+
+     xml配置
+
+     - 配置对象
+
+       ```xml
+       <beans>
+           <bean id="beanOne" class="x.y.ThingOne">
+               <constructor-arg ref="beanTwo"/>
+           </bean>
+       </beans>
+       ```
+
+     - 配置其他类型参数
+
+       使用type进行匹配
+
+       ```xml
+       <beans>
+           <bean id="beanOne" class="x.y.ThingOne">
+               <!-- 使用type进行匹配 -->
+               <constructor-arg type="int" value="7500000"/>
+               <constructor-arg type="java.lang.String" value="42"/>
+           </bean>
+       </beans>
+       ```
+
+       使用index进行匹配
+
+       ```xml
+       <beans>
+           <bean id="beanOne" class="x.y.ThingOne">
+               <!-- 或使用index进行匹配 -->
+               <constructor-arg index="1" value="7500000"/>
+           	<constructor-arg index="2" value="42"/>
+           </bean>
+       </beans>
+       ```
+
+       使用name进行匹配
+
+       ```xml
+       <beans>
+           <bean id="beanOne" class="x.y.ThingOne">
+               <!-- 使用name进行匹配 -->
+               <constructor-arg name="years" value="7500000"/>
+               <constructor-arg name="ultimateAnswer" value="42"/>
+           </bean>
+       </beans>
+       ```
+
 - 使用静态工厂方法实例化
+
 - 使用实例工厂方法实例化
 
 
