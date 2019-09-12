@@ -260,6 +260,10 @@ $ git commit -m "remove test.txt"
 
 # 远程仓库
 
+## 删除关联的远程分支
+
+`git remote remove origin`
+
 ## 关联远程仓库
 
 `git remote add origin git@github.com:michaelliao/learngit.git`
