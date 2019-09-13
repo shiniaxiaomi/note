@@ -163,8 +163,6 @@ cd /usr/local/nginx目录下:,看到如下4个文件
 - logs日志文件
 - sbin主要二进制程序
 
-
-
 # nginx命令
 
 ## nginx常用命令
