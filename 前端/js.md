@@ -1301,11 +1301,53 @@ function whichButton(event) {
 </html>
 ```
 
-# 其他
+# 积累
 
 ## 使用js刷新页面
 
 `location.reload();`
+
+## 全局按键事件
+
+```js
+document.onkeydown=function (event) {
+    var key = event.keyCode;
+    if(key == 13){
+        //...
+    }
+    event.preventDefault();//阻止默认事件
+}
+```
+
+## 复制对象而不是引用
+
+复制对象
+
+```js
+var obj={a:1,b:2};
+var obj2=$.extend(true,{},obj);
+```
+
+赋值数组
+
+```js
+var obj2 =JSON.parse(JSON.stringify(obj));
+```
+
+## jQuery和js对象的相互转化
+
+jQuery转js
+
+```js
+$("div")[0]
+$("div").get(0)
+```
+
+js转jQuery
+
+```js
+$(document.getElementById("demo"))
+```
 
 # 参考文档
 
