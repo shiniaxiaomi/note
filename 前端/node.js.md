@@ -599,6 +599,22 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
       console.log(process.memoryUsage());
       ```
 
+# OS模块
+
+获取操作系统相关的信息
+
+安装
+
+`const os = require('os');`
+
+使用
+
+- 操作系统名称:
+
+  `os.type()`
+
+  > 基于linux的返回linux,基于苹果的返回Darwin,基于windows的返回Windows_NT
+
 # [fs模块](https://www.runoob.com/nodejs/nodejs-fs.html)
 
 标准的文件操作API,文件系统模块(fs)

@@ -134,6 +134,10 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 > 目前的版本指针指向的是最顶上的最新节点
 
+## 未提交的代码进行回退(撤销)
+
+`git checkout -- file`
+
 ## 版本回退
 
 `git reset --hard HEAD^`
