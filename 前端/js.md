@@ -1282,23 +1282,26 @@ delete myObj.cars.car1;
 <!DOCTYPE html>
 <html>
 <head>
-<script>
-function whichButton(event) {
-  document.getElementById("demo").innerHTML = event.keyCode;
-}
-</script>
 </head>
 
-<body onkeyup="whichButton(event)">
-
+<body onkeyup="document.getElementById('demo').innerHTML = event.keyCode;">
 <p><b>注释：</b>尝试此示例时，请确保右框架具有焦点！</p>
-
 <p>单击此页面，然后按键盘上的键。</p>
-
 <p id="demo"></p>
 
 </body>
 </html>
+```
+
+随便打开一个页面,并直接在控制台输入即可运行
+
+```js
+document.getElementsByTagName("html")[0].innerHTML=`
+<body onkeyup="document.getElementById('demo').innerHTML = event.keyCode;">
+<p><b>注释：</b>尝试此示例时，请确保右框架具有焦点！</p>
+<p>单击此页面，然后按键盘上的键。</p>
+<p id="demo"></p>
+`
 ```
 
 # 积累

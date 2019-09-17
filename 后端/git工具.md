@@ -1089,7 +1089,27 @@ $ cat .gitconfig
   export LESSHARESET=utf-8  
   ```
 
-  
+
+## 解决git中账号更改导致不能push和pull的问题
+
+当在`git clone`的时候,出现以下报错
+
+```shell
+remote: HTTP Basic: Access denied
+fatal: Authentication failed for 'http://******/java/gh-assemble.git/'
+```
+
+问题原因
+
+- 远程服务端的用户名和密码与当前系统中git保存的用户名和密码有冲突
+
+解决办法
+
+- 执行命令`git config –-system –-unset credential.helper`,再重新输入账号和密码即可
+
+- 如果解决还解决不了,则执行`git config –-global http.emptyAuth true`
+
+  > 出现显示`error: key does not contain a section: –-system`,则使用将cmd使用管理员身份运行,再执行命令即可
 
 # 参考文档
 
