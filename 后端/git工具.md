@@ -1111,6 +1111,10 @@ fatal: Authentication failed for 'http://******/java/gh-assemble.git/'
 
   > 出现显示`error: key does not contain a section: –-system`,则使用将cmd使用管理员身份运行,再执行命令即可
 
+## git记住用户名和密码
+
+`git config --global credential.helper store`
+
 # 参考文档
 
 [廖雪峰的git教程](https://www.liaoxuefeng.com/wiki/896043488029600)
