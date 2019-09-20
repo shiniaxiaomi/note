@@ -561,57 +561,87 @@ app.get('/file/:name', function (req, res, next) {
 });
 ```
 
+该函数还支持更细粒度化的操作
 
+```javascript
+// 根据不同用户的id和fileName来发送对应的文件
+app.get('/user/:uid/photos/:file', function(req, res){
+  var uid = req.params.uid
+    , file = req.params.file;
 
-
-
-# 表单处理
-
-- 获取get请求的数据
-
-  ```js
-  //获取todoList的数据
-  app.get("/getTodoList", function(req, res) {
-      console.log(req.query);//获取链接中的参数
-      res.send(todoListData);
+  req.user.mayViewFilesFrom(uid, function(yes){
+    if (yes) {
+      res.sendFile('/uploads/' + uid + '/' + file);
+    } else {
+      res.status(403).send("Sorry! You can't see that.");
+    }
   });
-  ```
+});
+```
 
-- 获取post请求的数据(普通数据)
+#### res.sendStatus(statusCode)
 
-  ```js
-  var express = require("express"); //导入express模块
-  var bodyParser = require('body-parser');
-  // 创建 application/x-www-form-urlencoded 编码解析
-  var urlencodedParser = bodyParser.urlencoded({ extended: false });
-  var app = express(); //获取app对象
-  
-  //获取todoList的数据
-  app.post("/saveTodoList",urlencodedParser, function(req, res) {
-      console.log(req.body)
-      res.send({'code':1,"data":''});
-  });
-  ```
+直接发送一个http状态码以直接结束请求
 
-- 获取post请求的数据(json类型数据)
+```javascript
+res.sendStatus(200); // equivalent to res.status(200).send('OK')
+res.sendStatus(403); // equivalent to res.status(403).send('Forbidden')
+res.sendStatus(404); // equivalent to res.status(404).send('Not Found')
+res.sendStatus(500); // equivalent to res.status(500).send('Internal Server Error')
+```
 
-  ```js
-  var express = require("express"); //导入express模块
-  var bodyParser = require('body-parser');
-  var app = express(); //获取app对象
-  
-  //获取todoList的数据
-  app.post("/saveTodoList",bodyParser.json(), function(req, res) {
-      console.log(req.body)
-      res.send({'code':1,"data":''});
-  });
-  ```
+#### res.set(field [, value])
 
-  
+设置response响应的header信息
 
-[详细文档](https://www.runoob.com/nodejs/nodejs-express-framework.html): 关键词搜索`process_get`
+```javascript
+res.set('Content-Type', 'text/plain');
 
+res.set({
+  'Content-Type': 'text/plain',
+  'Content-Length': '123',
+  'ETag': '12345'
+});
+```
 
+#### res.status(code)
+
+设置http响应的状态码,并可以进行下一步操作
+
+```javascript
+res.status(403).end();
+res.status(400).send('Bad Request');
+res.status(404).sendFile('/absolute/path/to/404.png');
+```
+
+# 模板渲染
+
+`app.engine(ext, callback)`
+
+使用该方法可以创建一个模板渲染引擎
+
+```javascript
+var fs = require('fs') // this engine requires the fs module
+app.engine('ntl', function (filePath, options, callback) { // 定义template engine
+  fs.readFile(filePath, function (err, content) {
+    if (err) return callback(err)
+    // this is an extremely simple template engine
+    var rendered = content.toString().replace('#title#', '<title>' + options.title + '</title>')
+    .replace('#message#', '<h1>' + options.message + '</h1>')
+    return callback(null, rendered)
+  })
+})
+app.set('views', './views') // 指定要渲染的视图的目录
+app.set('view engine', 'ntl') // 注册 template engine
+```
+
+使用模板引擎进行渲染
+
+```javascript
+app.get('/', function (req, res) {
+  res.render('index', { title: 'Hey', message: 'Hello there!' })
+})
+```
 
 # 相关模块
 
