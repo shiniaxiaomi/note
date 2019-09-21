@@ -142,6 +142,15 @@ options参数
     }
   }
   ```
+  
+  简单使用
+  
+  ```js
+  app.use("", express.static("/css"));
+  app.use("", express.static("/js"));
+  ```
+  
+  
 
 ## express对象
 
