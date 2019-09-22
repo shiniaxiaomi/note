@@ -819,6 +819,8 @@ cd('/home/zhangzhi/logs');
   child.stdin.end();
   ```
 
+# [解压/压缩模块](http://npm.taobao.org/package/compressing)
+
 # 遇到的问题
 
 - 在linux中如何后台运行nodejs程序
