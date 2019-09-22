@@ -826,8 +826,90 @@ http {
 - 关闭命令 : /usr/sbin/nginx -s stop
 - 重启命令 : /usr/sbin/nginx -s reload
 
+# 调试nginx
+
+## 将nginx的常用参数打印在页面上
+
+```nginx
+worker_processes  1;
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       7000;
+        server_name  localhost;
+
+        location / {
+            default_type    text/html;
+            return 200 
+            '
+            arg_name : $arg_name</br>
+            hostname : $hostname</br>
+            args : $args</br>
+            content_length : $content_length</br>
+            content_type : $content_type</br>
+            document_root : $document_root</br>
+            host : $host </br>
+            http_user_agent : $http_user_agent</br>
+            http_cookie : $http_cookie</br>
+            limit_rate : $limit_rate</br>
+            request_method : $request_method</br>
+            remote_addr : $remote_addr</br>
+            remote_port : $remote_port</br>
+            remote_user : $remote_user</br>
+            request_filename : $request_filename</br>
+            scheme : $scheme</br>
+            server_protocol : $server_protocol</br>
+            server_addr : $server_addr</br>
+            server_name : $server_name</br>
+            server_port : $server_port</br>
+            request_uri : $request_uri</br>
+            uri : $uri</br>
+            document_uri : $document_uri</br>
+            ';
+        }
+    }
+}
+
+```
+
+## nginx直接输出文本
+
+```nginx
+# 返回文本
+location / {
+    return 502 "服务正在升级，请稍后再试……";
+}
+# 返回文本
+location / {
+    default_type    text/plain;
+    return 502 "服务正在升级，请稍后再试……";
+}
+# 返回html
+location / {
+    default_type    text/html;
+    return 502 "服务正在升级，请稍后再试……";
+}
+# 返回json
+location / {
+    default_type    application/json;
+    return 502 '{"status":502,"msg":"服务正在升级，请稍后再试……"}';
+}
+```
+
 
 
 # 参考文档
 
+[nginx官方文档](http://nginx.org/en/docs/)
+
+[nginx中文文档](http://www.nginx.cn/doc/)
+
 [nginx 反向代理](https://www.cnblogs.com/ysocean/p/9392908.html)
+
+https://www.cnblogs.com/linuxws/p/10588156.html
