@@ -1352,6 +1352,16 @@ js转jQuery
 $(document.getElementById("demo"))
 ```
 
+## 同步的执行方法
+
+添加`async`关键字即可
+
+```js
+async function test(filePath,targetPath){
+  await fs.createReadStream(filePath).pipe(unzip.Extract({ path: targetPath }));
+}
+```
+
 # 参考文档
 
 [JavaScript教程](https://www.w3school.com.cn/js/index.asp)
