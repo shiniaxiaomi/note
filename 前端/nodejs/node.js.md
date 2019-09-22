@@ -763,6 +763,10 @@ npm install shelljs  --save
 
 ## shelljs基本使用
 
+基本的简单使用
+
+> 如果发现一些命令执行后没有达到效果, 需要考虑一下是否是异步的问题造成的
+
 ```js
 var shell=require('shelljs');
 shell.mkdir("-p",'/tmp/a/b/c/d');//递归创建目录
@@ -779,6 +783,22 @@ shell.ls('*.js').forEach(function (file) {});//使用ls命令并遍历文件
 shell.sed('-i', 'PROGRAM_VERSION', 'v0.1.3', 'source.js');//直接将souce.js中的PROGRAM_VERSION替换成v0.1.3(支持正则表达式)
 
 shell.exec('git commit -am "Auto-commit"');//执行git命令
+```
+
+使用shelljs基本上是异步的操作,所以在使用时要配合上回调函数
+
+```js
+// 在使用unzip命令解压时,使用回调函数对解压后的文件进行操作
+shell.exec("unzip -O gbk -d " + targetPath + " " + filePath, function(code,stdout,stderr) {
+      //再对解压后的文件进行一些操作...(此时就需要回调函数来解决,因为该操作是异步的)
+    });
+```
+
+如果不想使用回调函数,可以添加以下opition来命令同步执行
+
+```js
+shell.exec("unzip -O gbk -d " + targetPath + " " + filePath,{async:true})
+//接下来就可以直接对解压的文件进行操作了...
 ```
 
 ## shelljs使用全局模式
