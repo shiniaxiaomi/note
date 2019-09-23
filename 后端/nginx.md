@@ -213,6 +213,152 @@ cd /usr/local/nginx目录下:,看到如下4个文件
 
 ## http核心模块
 
+http核心模块是指一个http包裹的代码块中,如
+
+```nginx
+http{
+ 	default_type : text/html;
+    location / {
+        ...
+    }
+    ...
+}
+```
+
+http模块中包含了一些重要的参数
+
+- location
+- listen
+- root
+- server
+- ...
+
+### location
+
+语法: location 正则表达式 { ... }
+
+使用范围: 在server代码块中使用
+
+location会根据请求的url进行正则表达式的匹配,如果匹配到之后,则会执行其代码块中的一些操作
+
+location的匹配规则 ( 优先级从高到低 )
+
+1. = 精确匹配,优先级最高
+2. ^~ 普通字符串匹配,不会使用正则表达式进行匹配,当匹配成功后则停止location匹配
+
+
+
+
+
+```nginx
+worker_processes  1;
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       7000;
+        server_name  localhost;
+
+        # 1
+        location = /abc {
+            default_type    text/html;
+            return 200 '= /abc';
+        }
+
+        # 3
+        location ~ /abc.*ddd{
+             default_type    text/html;
+            return 200 '/abcde';
+        }
+
+        # location ~* /abc.*ddd{
+        #     default_type    text/html;
+        #     return 200 '/abcd';
+        # }
+
+        # 2
+        location ~* \.(gif|jpg|jpeg)$ {
+            default_type    text/html;
+            return 300 'gif|jpg|jpeg';
+        }
+
+        # 4
+        location / {
+            default_type    text/html;
+            return 200 
+            '
+            arg_name : $arg_name</br>
+            hostname : $hostname</br>
+            args : $args</br>
+            content_length : $content_length</br>
+            content_type : $content_type</br>
+            document_root : $document_root</br>
+            host : $host </br>
+            http_user_agent : $http_user_agent</br>
+            http_cookie : $http_cookie</br>
+            limit_rate : $limit_rate</br>
+            request_method : $request_method</br>
+            remote_addr : $remote_addr</br>
+            remote_port : $remote_port</br>
+            remote_user : $remote_user</br>
+            request_filename : $request_filename</br>
+            scheme : $scheme</br>
+            server_protocol : $server_protocol</br>
+            server_addr : $server_addr</br>
+            server_name : $server_name</br>
+            server_port : $server_port</br>
+            request_uri : $request_uri</br>
+            uri : $uri</br>
+            document_uri : $document_uri</br>
+            ';
+        }
+    }
+}
+
+```
+
+
+
+
+
+
+
+
+
+1. 精准匹配: `= 表达式`
+
+   > 必须全部相等,如`location = /like { ... }`
+
+2. 普通匹配: `/表达式`
+
+   > 如果url的开头匹配了`/表达式`,则算匹配成功(url包含了表达式,并且是在开头全部匹配)
+
+   两种形式
+
+   1. `/abc`
+   2. `^~ /abc`
+
+   如果哪个表达式匹配的更多,则会优先走哪个表达式
+
+3. 正则匹配
+
+   `~ /Dog`：大小写敏感
+
+   `~* /Dog`：忽略大小写
+
+4. 通用匹配
+
+   `/` : 任何请求都会匹配到
+
+
+
+
+
 ### error_page
 
 语法: *error_page code [ code... ]* *[ = | =answer-code ]* uri
@@ -393,7 +539,15 @@ server {
 
 ### nginx变量
 
-用到了自己再去网上查
+nginx的日志打印示例
+
+```nginx
+log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';  
+```
+
+> nginx日志将会输出对应的变量到日志中,nginx对于`$`开头的变量会进行字符串替换操作(即将`$remote_addr - $remote_user`替换成`127.0.0.1 - lyj`)
 
 ## http upstream模块
 
