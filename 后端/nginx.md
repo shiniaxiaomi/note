@@ -207,11 +207,13 @@ cd /usr/local/nginx目录下:,看到如下4个文件
 
 `systemctl list-units --type=service`
 
-
-
 # nginx模块
 
-## http核心模块
+nginx语法
+
+所有的语句都通过`;`来结束,没有`;`则会报错
+
+## [http核心模块](http://www.nginx.cn/doc/standard/httpcore.html)
 
 http核心模块是指一个http包裹的代码块中,如
 
@@ -233,7 +235,50 @@ http模块中包含了一些重要的参数
 - server
 - ...
 
-### location
+### server
+
+语法: server { ... }
+
+上下文: http
+
+> 指定虚拟服务器的配置
+
+参数
+
+#### server_name
+
+语法: server_name name [... ]
+
+> 该参数用来区分请求到该服务器使用的hostname(即域名),如果server都监听着80端口,那么可以指定不同的server_name用来区别来自不同的域名访问的请求,并做对应的处理
+>
+> 默认为hostname, 所以可以不填写
+
+示例
+
+```nginx
+server {
+    listen 80;
+    default_type text/plain;
+    server_name www.aaa.com;
+    location /{
+        return 200 "aaa";
+    }
+}
+server {
+    listen 80;
+    default_type text/plain;
+    server_name www.bbb.com;
+    location /{
+        return 200 "bbb";
+    }
+}
+```
+
+> 前提条件: `www.aaa.com`和`www.bbb.com`的ip都指向当前这台nginx服务所在的ip
+>
+> 上面两台虚拟服务器都监听着80端口,如果现在使用`www.aaa.com`网址访问时,将会返回`aaa`,如果使用`www.bbb.com`访问,则会返回`bbb`
+
+#### location
 
 语法: location 正则表达式 { ... }
 
@@ -241,162 +286,126 @@ http模块中包含了一些重要的参数
 
 location会根据请求的url进行正则表达式的匹配,如果匹配到之后,则会执行其代码块中的一些操作
 
+------
+
 location的匹配规则 ( 优先级从高到低 )
 
-1. = 精确匹配,优先级最高
-2. ^~ 普通字符串匹配,不会使用正则表达式进行匹配,当匹配成功后则停止location匹配
+1. `=` 精确匹配,优先级为1(最高)
 
+2. `^~` 普通字符串匹配,不会使用正则表达式进行匹配,当匹配成功后则停止location匹配,优先级为2
 
+3. `~`或`~*` 正则匹配,优先级为3
 
+   > `~`为区分大小写,`~*`为不区分大小写
 
+4. `/xxx`其他匹配,优先级为4
+
+示例
 
 ```nginx
-worker_processes  1;
-events {
-    worker_connections  1024;
+# 优先级1(精确匹配)
+location =/abc{
+	default_type    text/html;
+    return 200 '= /abc';
 }
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
-    sendfile        on;
-    keepalive_timeout  65;
-    server {
-        listen       7000;
-        server_name  localhost;
-
-        # 1
-        location = /abc {
-            default_type    text/html;
-            return 200 '= /abc';
-        }
-
-        # 3
-        location ~ /abc.*ddd{
-             default_type    text/html;
-            return 200 '/abcde';
-        }
-
-        # location ~* /abc.*ddd{
-        #     default_type    text/html;
-        #     return 200 '/abcd';
-        # }
-
-        # 2
-        location ~* \.(gif|jpg|jpeg)$ {
-            default_type    text/html;
-            return 300 'gif|jpg|jpeg';
-        }
-
-        # 4
-        location / {
-            default_type    text/html;
-            return 200 
-            '
-            arg_name : $arg_name</br>
-            hostname : $hostname</br>
-            args : $args</br>
-            content_length : $content_length</br>
-            content_type : $content_type</br>
-            document_root : $document_root</br>
-            host : $host </br>
-            http_user_agent : $http_user_agent</br>
-            http_cookie : $http_cookie</br>
-            limit_rate : $limit_rate</br>
-            request_method : $request_method</br>
-            remote_addr : $remote_addr</br>
-            remote_port : $remote_port</br>
-            remote_user : $remote_user</br>
-            request_filename : $request_filename</br>
-            scheme : $scheme</br>
-            server_protocol : $server_protocol</br>
-            server_addr : $server_addr</br>
-            server_name : $server_name</br>
-            server_port : $server_port</br>
-            request_uri : $request_uri</br>
-            uri : $uri</br>
-            document_uri : $document_uri</br>
-            ';
-        }
-    }
+# 优先级2(普通字符串匹配)
+location ^~ /abcd{
+    default_type    text/html;
+    return 200 '/abcd111';
 }
-
+# 优先级3(正则匹配)
+location ~ /abc.*d{
+    default_type    text/html;
+    return 200 '/abcde';
+}
+# 优先级4(其他匹配)
+location /abcrrrr{
+    default_type    text/html;
+    return 200 '/abcde33';
+}
+# 优先级4(其他匹配)
+# 该匹配模式被最后匹配,因为在相同优先级下,匹配的越多的优先级会越高
+location / {
+    default_type    text/html;
+    return 200 "/"
+}
 ```
 
+- 当请求`/abc`时,返回`= /abc`
 
+- 当请求`/abcd`时,返回`/abcd111`
 
+- 当请求`/abcddd`时,返回`/abcde`
 
+- 当请求`/abcrrrr111`时,返回`/abcde33`
 
+- 当请求`/fff`时,返回`/`
 
+  > 因为全都没有匹配上,只有`/`匹配上了,`/`的匹配规则无论如何都会匹配上任何请求
 
+注意点
 
+- 不同的匹配模式只是匹配url的前面部分,如果匹配到后
+  - 匹配的优先级不同,根据优先级从高到低进行选择
+  - 匹配的优先级相同,根据匹配url的个数越多,优先级越高,则优先选择
+- 当匹配完成后,进入到了对应的location中,则根据location中的定义进行返回数据
+  - 如果返回资源,则location中可以指定资源的根路径,然后根据url去找,如果找到了则返回,如果没找到返回error_page
+  - 如果是转发,则可以修改url或者保持url不变进行转发到不同的服务器中
 
-1. 精准匹配: `= 表达式`
+#### listen
 
-   > 必须全部相等,如`location = /like { ... }`
+语法: listen address:port
 
-2. 普通匹配: `/表达式`
+作用域: server
 
-   > 如果url的开头匹配了`/表达式`,则算匹配成功(url包含了表达式,并且是在开头全部匹配)
-
-   两种形式
-
-   1. `/abc`
-   2. `^~ /abc`
-
-   如果哪个表达式匹配的更多,则会优先走哪个表达式
-
-3. 正则匹配
-
-   `~ /Dog`：大小写敏感
-
-   `~* /Dog`：忽略大小写
-
-4. 通用匹配
-
-   `/` : 任何请求都会匹配到
-
-
-
-
-
-### error_page
-
-语法: *error_page code [ code... ]* *[ = | =answer-code ]* uri
-
-默认: *no*
-
-作用域:  *http, server, location*
-
-**该指令指定URI, URI将显示所指示的错误,并且可以指定返回的错误状态码。**
+> 指定监听服务器的哪个端口, 默认`80`端口
 
 示例:
 
 ```nginx
-error_page   404          /404.html;
-
-error_page   502 503 504  /50x.html;
-error_page   403          http://example.com/forbidden.html;
-error_page   404          = @fetch;
-error_page 	 404   =200   /.empty.gif; #指定返回的状态码是200
+listen 8000; # 监听服务器的8000端口
+listen 443 default ssl; # 监听服务器的443端口,并开启ssl
 ```
 
-用法:
+### default_type
 
-```ngin
-http{
-	error_page   404          /404.html;
-}
-```
+语法: default_type 类型
 
----
+上下文: http, server, location
+
+> 设置返回值的类型, 默认值为`text/plain`
+
+其他参数值
+
+- `text/html`
+
+  > 返回html格式
+
+- `application/x-ns-proxy-autoconfig;`
+
+- `application/octet-stream`
+
+  > 返回文件类型
+
+- ...
+
+### root
+
+语法: root path
+
+上下文: http, server, location
+
+> 指定资源文件的根目录 , 默认的根目录是html目录
 
 ### index
 
-语法: *index file [file...]*
+语法: index file [file...]
 
-默认: *index index.html*
+作用域: http, server, location
 
-作用域: *http, server, location*
+> 可以指定首页文件 默认: index index.html
+>
+> 注意: `index`需要配合`root`进行使用
 
 **可以指定首页的文件;文件按其枚举的顺序进行先后显示**
 
@@ -408,134 +417,26 @@ http{
 }
 ```
 
----
+### error_page
 
-### listen
+语法: error_page code [code...] [=|= 指定返回状态码] url
 
-语法: *listen address:port [ default [ backlog=num | rcvbuf=size | sndbuf=size | accept_filter=filter | deferred | bind | ssl ] ]*
+上下文:  http, server, location
 
-默认: *listen 80*
-
-作用域: *server*
-
-**listen指令指定所包含的服务器接受的地址和端口。可以只指定地址、端口或服务器名作为地址。**
+> 如果发生错误的状态和code相同,则会匹配到该error_page,你可以修改返回的状态码(通过`= 状态码`来修改),并指定返回发生错误时返回对应的页面
+>
+> 该参数相当于重定向,即如果发生错误,则在重定向到指定url
+>
+> 注意: `error_page`如果要返回资源目录中的页面,则需要配合`root`进行使用
 
 示例:
 
 ```nginx
-listen 127.0.0.1:8000;
-
-listen 127.0.0.1;
-listen 8000;
-listen *:8000;
-listen localhost:8000;
-
-listen  443 default ssl;
+error_page 404 /404.html; # 发生404错误时,返回404.html页面
+error_page 502 503 504  /50x.html; # 发生502,503,504这三种其中一种错误时,返回50x.html页面
+error_page 403 http://example.com/forbidden.html; # 可以指定返回对应的url
+error_page 404 =200 /.empty.gif; #发生404错误时,修改返回的状态码为200,并返回empty.gif文件
 ```
-
-用法:
-
-```nginx
-server{
-    listen 8000;
-}
-```
-
----
-
-### location
-
-语法: *location [=|~|~\*|^~] /uri/ { ... }*
-
-默认: no
-
-作用域: server
-
-**这个指令允许根据URI进行不同的配置。它可以同时使用文字字符串和正则表达式进行配置。要使用正则表达式，必须使用前缀**
-
-
-
-四种匹配 ( **匹配顺序从上到下**: 精准匹配 > 普通匹配 > 正则匹配 > 通用匹配 )
-
-- 精准匹配
-  - `= /like`：精确匹配（必须全部相等）
-- 普通匹配
-  - `/img/a.png`: 需要正好匹配
-  - `^~ /static/`：以某个常规字符串开头进行匹配
-- 正则匹配
-  - `~ /Dog`：大小写敏感
-  - `~* /Dog`：忽略大小写
-- 通用匹配
-  - `/` : 任何请求都会匹配到
-
-**总结**:
-
-> 发送到nginx上的请求会根据我们指定的匹配规则进行匹配
->
-> - 如果匹配成功
->   - 如果匹配的location中指向的是资源,那么就会按照location中指定的root资源文件夹去找对应请求url中的资源文件(文件的路径必须要和请求中的url相对应,如果没有找到,则返回404页面)
->   - 如果匹配的location中指向的是分发服务(proxy_pass),则将url原封不动的转发到指定的服务器上
->
-> - 如果匹配失败
->   - 返回404页面
-
----
-
-### root
-
-语法: *root path*
-
-默认: *root html*
-
-作用域: *http, server, location*
-
-**root指定请求的文档根。例如，使用这个配置**
-
-```nginx
-location  /i/ {
- 	root  /spool/w3;
-}
-```
-
----
-
-### server
-
-语法: *server {...}*
-
-默认: *no*
-
-作用域: *http*
-
-**为虚拟服务器指定配置,可以指定服务器的listen,server_name,location等**
-
-> - listen: 监听的端口
-> - server_name: 服务器的虚拟名称
-> - location: 分发方式 
-
----
-
-### server_name
-
-语法: *server_name name [... ]*
-
-默认: *server_name hostname*
-
-作用域: *server*
-
-**nginx会根据`server_name`和`port`进行筛选,把请求发送到对应的server中**
-
-> `server_name`(本质上是域名或者是ip) **必须是对应着nginx服务所在的ip**
-
-示例:
-
-```nginx
-server {
- 	server_name   example.com  www.example.com;
-}
-```
-
----
 
 ### nginx变量
 
@@ -549,148 +450,89 @@ log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
 
 > nginx日志将会输出对应的变量到日志中,nginx对于`$`开头的变量会进行字符串替换操作(即将`$remote_addr - $remote_user`替换成`127.0.0.1 - lyj`)
 
-## http upstream模块
+详细的变量查看可以看本文的`调试nginx`中的`将nginx的常用参数打印在页面上`
 
-### HttpIndex模块
+## upstream模块
 
-这个模块提供一个简单方法来实现在轮询和客户端IP之间的后端服务器负荷平衡。
+该模块提供了一个简单方法来实现服务器的负载均衡
 
-示例:
+通过轮询和ip_hash来实现负载均衡
+
+### 轮询实现
 
 ```nginx
-upstream backend  {
-  server backend1.example.com weight=5;
-  server backend2.example.com:8080;
-  server unix:/tmp/backend3;
+# 设置轮询器,取名为myServer
+upstream myServer {
+    server 47.105.165.211:80 weight=5;
+    server 47.105.165.211:8000;
+    server 47.105.165.211:8001;
 }
  
 server {
   location / {
-    proxy_pass  http://backend;
+    proxy_pass  http://myServer;
   }
 }
 ```
-
----
 
 ### ip_hash
 
 语法: ip_hash
 
-默认: none
-
 作用域: upstream
 
-该指令使请求基于客户机的ip地址分布在上行流之间。哈希的键是客户机的c类网络地址。此方法保证客户机请求将始终传输到相同的服务器。但是如果这个服务器被认为是无效的，那么这个客户机的请求将被转移到另一个服务器。这使得客户机总是连接到同一服务器的可能性很高。
+> 该命令可以根据客户端的ip进行分发,客户端分发到同一台服务器的可能性很大
 
 示例:
 
 ```nginx
-upstream backend {
+upstream myServer {
   ip_hash;
   server   backend1.example.com;
   server   backend2.example.com;
-  server   backend3.example.com  down;
-  server   backend4.example.com;
 }
 ```
 
-## HttpGzip模块
+> 在轮询的基础上加上`ip_hash`命令即可
 
-使用示例:
-
-```nginx
-gzip             on; # 开启或者关闭gzip模块
-gzip_min_length  1000;# 设置允许压缩的页面最小字节数，页面字节数从header头中的Content-Length中进行获取。
-gzip_proxied     expired no-cache no-store private auth;# Nginx作为反向代理的时候启用
-gzip_types       text/plain application/xml; # 匹配MIME类型进行压缩，（无论是否指定）"text/html"类型总是会被压缩的。
-```
-
-## HttpHeaders模块
-
-本模板可以设置HTTP报文的头标。
-
-示例:
-
-```nginx
-expires     24h;
-expires     0;
-expires     -1;
-expires     epoch;
-add_header  Cache-Control  private;
-```
-
----
-
-### add_header 
-
-语法： *add_header name value*
-
-默认值： *none*
-
-作用域： *http, server, location*
-
-**当HTTP应答状态码为 200、204、301、302 或 304 的时候，增加指定的HTTP头标。**
-
----
-
-### expires
-
-语法： *expires [time|epoch|max|off]*
-
-默认值： *expires off*
-
-作用域： *http, server, location*
-
-**使用本指令可以控制HTTP应答中的“Expires”和“Cache-Control”的头标，（起到控制页面缓存的作用）。**
-
-**可以在time值中使用正数或负数。“Expires”头标的值将通过当前系统时间加上您设定的 time 值来获得。**
-
-- 负数：`Cache-Control: no-cache`
-- 正数或零：`Cache-Control: max-age = #`,`#` 为您指定时间的秒数
-
-## HttpProxy模块
-
-此模块专伺将请求导向其它服务.
-
-示例:
-
-```nginx
-location / {
-	proxy_pass        http://localhost:8000;
-	proxy_set_header  X-Real-IP  $remote_addr;
-}
-```
-
----
+## Proxy模块
 
 ### proxy_pass
 
-**语法: *proxy_pass URL*
+语法: proxy_pass URL
 
-默认值: *no*
+上下文: location
 
-上下文: *location, if in location*
-
-**该指令会将url转发到指定的服务器**
+> 该指令会将url转发到指定的服务器
 
 ```nginx
-location  /some/path/ {
+location  / {
 	proxy_pass   http://127.0.0.1;
 }
 ```
 
----
+轮询
+
+```nginx
+upstream myServer {
+    server 47.105.165.211:8000;
+    server 47.105.165.211:8001;
+}
+server {
+  location / {
+    proxy_pass  http://myServer;
+    # proxy_pass  http://72cun.cn; # 也可以直接转发到指定的服务上
+  }
+}
+```
 
 ### proxy_redirect
 
-语法: *proxy_redirect [ default|off|redirect replacement ]*
+语法: proxy_redirect [ default|off|redirect replacement ]
 
-默认值: *proxy_redirect default*
+上下文: http, server, location
 
-上下文: *http, server, location*
-
-**该指令可以修改请求的url,并进行转发**
+> 该指令可以修改请求的url,并进行转发, 默认值为`default`
 
 示例:
 
@@ -704,46 +546,7 @@ location  /some/path/ {
 
 ---
 
-### proxy_set_header
-
-语法: *proxy_set_header header value*
-
-默认值: *Host and Connection*
-
-上下文: *http, server, location*
-
-**该指令允许重新定义和添加一些将被传输到代理服务器的请求头行。**
-
-示例:
-
-```nginx
-proxy_set_header Host $http_host;
-```
-
-### 负载均衡
-
-示例:
-
-```nginx
-http {
-    upstream myproject {
-        server 127.0.0.1:8000 weight=3;
-        server 127.0.0.1:8001;
-        server 127.0.0.1:8002;
-        server 127.0.0.1:8003;
-    }
-
-    server {
-        listen 80;
-        server_name www.domain.com;
-        location / {
-        	proxy_pass http://myproject;
-        }
-    }
-}
-```
-
-## HttpRewrite模块
+## Rewrite模块
 
 该模块允许使用正则表达式改变URI，并且根据变量来转向以及选择配置。
 
@@ -812,13 +615,11 @@ if ($invalid_referer) {
 
 ### return
 
-语法: *return code*
+语法: return code url
 
-默认值: *none*
+上下文: server,location
 
-作用域: *server, location, if*
-
-**这个指令根据规则的执行情况，返回一个状态值给客户端。可使用值包括：204，400，402-406，408，410，411，413，416以及500-504。也可以发送非标准的444代码-未发送任何头信息下结束连接。**
+> 用于返回给客户端的状态码和对应的文件
 
 ---
 
@@ -1031,6 +832,8 @@ http {
 }
 
 ```
+
+![1569254819744](.img/.nginx/1569254819744.png)
 
 ## nginx直接输出文本
 
