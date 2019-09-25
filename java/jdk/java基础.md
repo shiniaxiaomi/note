@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 打包命令jar的参数
 
 - `-c`: 创建新的jar包
@@ -18,3 +22,8 @@
 
   > jar -cvf jar包名称 要打包的目录 
 
+
+
+# 参考文档
+
+https://blog.csdn.net/u014252871/article/details/53434530
