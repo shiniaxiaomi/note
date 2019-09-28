@@ -41,6 +41,31 @@ public class LinkedListDemo {
 }
 ```
 
+### LinkedHashSet
+
+按照放入顺序摆放的一个set集合
+
+```java
+//按字符串原有的字符顺序，输出字符集合，即重复出现并靠后的字母不输出
+//输入: abcqweracb
+//输出: abcqwer
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        LinkedHashSet<Character> hashSet = new LinkedHashSet<>();
+        
+        String s = scanner.nextLine();
+        for(int i=0;i<s.length();i++){
+            hashSet.add(s.charAt(i));
+        }
+        Iterator<Character> iterator = hashSet.iterator();
+        while(iterator.hasNext()){
+            System.out.print(iterator.next());
+        }
+    }
+}
+```
+
 ## 树
 
 ### TreeSet
@@ -182,6 +207,45 @@ public class JDKHashTableDemo {
 ```
 
 # 工具
+
+## 在牛客网上代码提交报错的一些注意事项
+
+需要标准的输入输出格式
+
+```java
+//不能包含包名
+//类名必须是Main
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);//创建一个输入
+        //你的代码必须要有一层while (scanner.hasNext())包裹,不然会提示你的输出为空
+        while (scanner.hasNext()) {
+			//...你的代码实现
+            //使用scanner.nextInt()读取int
+            //使用scanner.next()读取string
+        }
+    }
+}
+```
+
+## java输入输出
+
+```java
+public class demo1 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        //读取下一个整数,以回车结束
+        int i = scanner.nextInt();
+        System.out.println(i);
+        //读取下一个字符串,以空格结束
+        String next = scanner.next();
+        System.out.println(next);
+        //读取下一行,以回车结束
+        String s = scanner.nextLine();
+        System.out.println(s);
+    }
+}
+```
 
 ## 排序
 
