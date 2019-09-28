@@ -210,9 +210,10 @@ public class JDKHashTableDemo {
 
 ## 在牛客网上代码提交报错的一些注意事项
 
-需要标准的输入输出格式
+### 需要标准的输入输出格式
 
 ```java
+import java.util.Scanner;
 //不能包含包名
 //类名必须是Main
 public class Main {
@@ -227,6 +228,88 @@ public class Main {
     }
 }
 ```
+
+### 注意事项
+
+- 如果出现代码运算和本地不一致的情况,看一下是否是输出的时候没有回车换行,导致牛客网不能识别你输出的结果
+
+- 牛客网的判题规则是:
+
+  1. 如果你输出了正确的值,牛客网会默认接着测试其他测试用例,所以一定要输出的结果一定要记得回车换行
+
+  2. 如果你输出的结果是多个的,那么如果你输出的第一值就错了,那么牛客网就直接报错,不会再让你继续输出,所以非常的不好调试(非常不友好)
+
+     > 解决办法: 就是将要输出的结果打印一行输出,然后再回车换行,可以查看自己程序运行的所有结果,只能这样进行调试
+
+### 快速获取牛客网的测试用例
+
+```java
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()) {
+			int nextInt = scanner.nextInt();
+            System.out.println(nextInt);
+        }
+    }
+}
+```
+
+### 直接跳出递归的方法
+
+在递归返回值上返回true
+
+每次递归调用完后接收到true,则继续return true
+
+### 递归思想
+
+把这个解空间看成一个多叉树,首先有一个root节点,由root节点衍生出的节点就是第一个节点的几种可能性,如果有9中可能,则root节点则会有9个孩子节点,那么这个9个孩子节点又在各自的有9个节点...,这样就形成了一个棵多叉树,在利用剪枝缩小范围,最终得到解的过程
+
+递归代码的模板
+
+- 首先先把模板写成一个多叉树的深度优先遍历的代码
+
+  在一开始的时候就是将第一个节点抓住,让其衍生出孩子节点,再在其孩子节点中衍生出其他节点
+
+  每次都是从一个节点出发,遍历该节点下的节点
+
+  如二叉树的遍历
+
+  ```java
+  //先序遍历
+  public void preOrder(Node node){
+      //每次遍历一进来之后就可以处理该当前访问的节点
+      //或者做一些范围的控制(如剪枝等)
+      System.out.print(node.value+" ");
+      //这个代码就是一个剪枝的过程,即不符合条件的直接return,不会再去访问该节点下的子节点
+      if(node.value<0){
+      	return;
+      }
+      
+      //由一个节点衍生出两个节点(左子树和右子树)
+      preOrder(node.leftChildren);//访问左节点
+      preOrder(node.rightChildren);//访问右节点
+  }
+  ```
+
+  再如多叉树的遍历
+
+  ```java
+  //先序遍历
+  public void preOrder(Node node){
+      System.out.print(node.value+" ");//访问当前节点
+      
+      //由一个节点衍生出九个节点
+      for(int i=0;i<9;i++){
+          //或者是在for循环时剪枝,如果不符合条件,则不会去访问其对应的子节点
+           if(node[i].value<0){
+           	continue;
+           }
+           preOrder(node的各个孩子节点);//访问该节点的九个孩子节点
+      }
+  }
+  ```
 
 ## java输入输出
 
