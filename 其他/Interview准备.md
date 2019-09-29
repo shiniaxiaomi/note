@@ -8,9 +8,122 @@ https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/s/IBbD3CmVWsTL9ymHg6gG
 
 ### JDK和JRE的区别
 
+- JDK: java Develpment Kit的简称,java开发工具包,提供了java的开发环境和运行环境
+- JRE: Java Runtime Environment的简称,java运行环境,为java的运行提供了所需环境
+
+具体来说JDK其实包含了JRE.同时还包含了编译java源码的编译器javac,还包含了很多java程序调试和分析的工具; 简单来说: 如果你需要运行Java程序,只需要安扎u那个JRE就可以了,如果你需要编写java程序,需要安扎u那个JDK(因为你需要javac进行编译)
+
 ### ==和equals的区别
 
+#### ==的理解
+
+对于基本类型和引用类型,==的作用效果是不同的,如下所示
+
+- 基本类型: 比较的是值是否相同
+- 引用类型: 比较的是引用是否相同
+
+代码示例
+
+```java
+String x = "string";
+String y = "string";
+String z = new String("string");
+System.out.println(x==y); // true
+System.out.println(x==z); // false
+System.out.println(x.equals(y)); // true
+System.out.println(x.equals(z)); // true
+```
+
+> 因为x和y指向的时同一个引用,所以`==`也是true,而new String()方法则重新开辟了内存空间,所以`==`结果为false,而equals比较的一直是值,所以结果都为true
+
+#### equals解读
+
+equals本质上就是==,只不过Sring和Integer等类重写了equals方法,把它变成了值比囧啊; 看如下代码:
+
+首先看默认情况下equals比较一个有相同值的对象
+
+```java
+class Cat {
+    public Cat(String name) {
+        this.name = name;
+    }
+    private String name;
+}
+
+Cat c1 = new Cat("王磊");
+Cat c2 = new Cat("王磊");
+System.out.println(c1.equals(c2)); // false
+```
+
+> 结果为false,接下来去看一下equals源码就知道了
+
+equals源码如下:
+
+```java
+public boolean equals(Object obj) {
+    return (this == obj);
+}
+```
+
+> 所以equals本质上就是==
+
+那么问题来了,两个相同值的String的equals方法为什么返回的是true呢,接下来看一下String类中对equals方法的重写
+
+```java
+public boolean equals(Object anObject) {
+    if (this == anObject) {//如果引用相等,则肯定相等
+        return true;
+    }
+    if (anObject instanceof String) {//如果是字符串,则继续比较
+        String anotherString = (String)anObject;//获取要比较字符串
+        int n = value.length;
+        if (n == anotherString.value.length) {//如果长度相等,则继续比较
+            char v1[] = value;
+            char v2[] = anotherString.value;
+            int i = 0;
+            while (n-- != 0) {//比较每个字符是否相等
+                if (v1[i] != v2[i])
+                    return false;
+                i++;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+> 因为String类重写了Object的equals方法,所以把引用比较改成了值比较
+
+#### 总结
+
+==对于基本类型来说是值比较,对于引用类型来说比较的是引用; 而equals默认情况下是引用比较,只是很多类重写了equals方法,比如String,Integer等,把从引用比较改成了值比较,所以一般情况下equals比较的是值是否相等
+
 ### 两个对象的hashCode()相同,则equals()也一定为true,对吗
+
+不对,两个对象的hashCode()相同,equals()不一定为true
+
+代码示例: 
+
+```java
+String str1 = "通话";
+String str2 = "重地";
+System.out.println(String.format("str1：%d | str2：%d", 
+                     str1.hashCode(),str2.hashCode()));
+System.out.println(str1.equals(str2));
+```
+
+> 执行结果:
+>
+> str1：1179395 | str2：1179395
+>
+> false
+
+代码解读: 很显然"通话"和"重地"的hashCode()相同,然而equals()则为false,因为在散列表中,hashCode相等即为两个键值对的哈希值想到等,然而哈希值相等,并
+
+
+
+
 
 ### final在java中有什么作用
 
