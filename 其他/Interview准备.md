@@ -1406,42 +1406,234 @@ public class BroomFactory extends VehicleFactory {
 // 测试类
 public class Test {
    public static void main(String[] args) {
-       VehicleFactory factory = new BroomFactory();
-       Moveable m = factory.create();
+       VehicleFactory factory = new BroomFactory();//实例化一个Broom工厂
+       Moveable m = factory.create();//工厂创建Broom
        m.run();
+       
+       VehicleFactory factory2 = new PlaneFactory();//实例化一个Plane工厂
+       Moveable m2 = factory2.create();//工厂创建Plane
+       m2.run();
    }
 }
 ```
 
+这种方式解决了普通工厂模式的需要手动判断的问题,但是该模式的缺陷是,如果当要生产的种类非常多的时候,那么具体工厂的类将会泛滥,也会变得很难维护
 
+#### 抽象工厂模式
+
+与工厂方法模式不同的是,工厂方法模式中的工厂只生产单一的产品,而抽象工厂模式中的工厂将生产多个产品
+
+```java
+/抽象工厂类
+public abstract class AbstractFactory {
+   public abstract Vehicle createVehicle();
+   public abstract Weapon createWeapon();
+   public abstract Food createFood();
+}
+```
+
+```java
+//具体工厂类，其中Food,Vehicle，Weapon是抽象类，
+public class DefaultFactory extends AbstractFactory{
+   @Override
+   public Food createFood() {
+       return new Apple();
+   }
+   @Override
+   public Vehicle createVehicle() {
+       return new Car();
+   }
+   @Override
+   public Weapon createWeapon() {
+       return new AK47();
+   }
+}
+```
+
+```java
+//测试类
+public class Test {
+   public static void main(String[] args) {
+       AbstractFactory f = new DefaultFactory();
+       Vehicle v = f.createVehicle();
+       v.run();
+       Weapon w = f.createWeapon();
+       w.shoot();
+       Food a = f.createFood();
+       a.printName();
+   }
+}
+```
 
 ### 代理模式
 
+代理模式有两种: 静态代理和动态代理;
+
+静态代理
+
+...
+
+动态代理
+
+...
+
 ### 简单工厂和抽象工厂有什么区别
+
+#### 简单工厂模式
+
+这个模式本身很简单而且使用在业务比较简单的情况下; 一般用于小项目或者具体产品很少扩展的情况下
+
+它由三种角色组成:
+
+1. 工厂类: 这是本模式的核心,含有一定的商业逻辑和判断逻辑,根据逻辑不同,产生具体的工厂产品
+2. 抽象产品: 它一般是具体产品抽象(一般为抽象类或接口)
+3. 具体产品: 工厂类所创建的对象
+
+使用类图表示他们之间的关系
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1569941533143.webp)
+
+#### 抽象工厂
+
+先来认识下什么是产品族： 位于不同产品等级结构中，功能相关联的产品组成的家族。
+
+![点击查看原始大小图片](.img/.Interview%E5%87%86%E5%A4%87/640-1569941581367.webp)
+
+> 图中的BmwCar和BenzCar就是两个产品树（产品层次结构）；而如图所示的BenzSportsCar和BmwSportsCar就是一个产品族。他们都可以放到跑车家族中，因此功能有所关联。同理BmwBussinessCar和BenzBusinessCar也是一个产品族。
+
+可以这么说,他和工厂方法模式的却别就在于需要创建对象的复杂程度上,而且抽象工厂模式是三个里面最为抽象,最具一般性的; 抽象工厂模式用意为: 给客户端提供一个接口,可以创建多个产品族中的产品对象
+
+使用抽象工厂模式还要满足以下条件:
+
+1. 系统中有多个产品族,而系统一次只可能消费其中一族产品
+2. 同属于同一个产品族的产品一起使用
+
+抽象工厂模式的角色组成:
+
+- 抽象工厂: 这个是抽象工厂模式的核心,他与应用程序无关,是具体工厂角色必须实现的接口或者必须继承的父类(一般为抽象类或接口)
+- 具体的工厂: 他含有和具体业务逻辑相关的代码,由应用程序调用以创建对应的具体产品的对象
+- 抽象产品: 定义了产品的一些接口
+- 具体产品: 具体工厂角色所创建的对象,该对象的类需要继承或实现抽象产品的接口
 
 # 框架
 
 ## spring
 
+https://mp.weixin.qq.com/s/eHK5wqAv5UgYoYUnpFCxzA
+
 ### 为什么要使用spring?
+
+#### 简介
+
+- 目的: 解决企业应用开发的复杂性
+- 功能: 使用基本的javabean代替EJB,并提供了个呢个多的企业应用功能
+- 范围: 任何java应用
+
+简单来说,spring是一个轻量级的控制反转IOC和面向切面AOP的容器框架
+
+#### 轻量
+
+从大小与开销两方面而言spring都是轻量的; 完整的spring框架可以在一个大小为1MB多的jar文件里发布, 并且spring所需要处理的开销也是微不足道的; 此外,spring是非侵入式的,spring应用中的对象不依赖于spring的特定类
+
+#### 控制反转IOC
+
+spring通过一种吃呢各位控制反转IOC的技术促进了松耦合; 当应用了IOC,一个对象依赖的其他对象会通过被动的方式传递进来,而不是这个对象自己创建或者查找依赖对象; 你可以认为IOC与JNDI相反,他不是对象从同期中查找依赖,而是容器在对象初始化时不等对象请求就主动将依赖传递给它
+
+#### 面向切面AOP
+
+spring提供了面向切面编程的丰富支持,允许通过分离应用的业务逻辑与系统服务进行内聚性的开发,应用对象只实现他们应该做的,如完成业务逻辑,仅此而已,他们并不负责其他的系统级的关注点,例如日志或者事务
+
+#### 容器
+
+spring包含并管理应用对象的配置和生命周期,在这个意义上它是一种容器,你可以配置你的每个bean如何被创建,基于一个可配置原型,你的bean可以创建一个单独的实例或者每次需要时都生成一个新的实例(以及他们是如何相互关联的),然而,spring不应该被混同于传统的重量级的EJB容器
+
+#### 框架
+
+spring可以将简单的组件配置,组合称为复杂的应用; 在spring中,应用对象被声明式的组合,典型的式在一个xml文件中; spring也提供了很多基础功能(事务管理,持久化框架集成等),将用用逻辑的开发留给你
+
+所有spring的这些特征使你能够编写更干净,更可管理,并且更易于测试的代码,他们也为spring中的各种模块提供了基础支持
 
 ### 解释一下什么是AOP
 
+AOP(Aspect-Oriented Programming,面向切面编程),可以说是OOP(Object-Oriented Programming,面向对象编程)的补充和完善; OOP引入封装,继承和多态性等概念来建立一种对象层次结构,用以模拟公共行为的一个集合; 当我们需要为分散的对象引入公共行为的时候,OOP则显得无能为力,也就是说,OOP允许你定义从上到下的关系,但并不适合定义从左到由的关系,如日志功能; 日志代码往往水平的散布在所有对象层次中,而与它所散布到的对象的核心功能毫无关系; 对于其他类型的代码,如安全性,异常处理和透明的持续性也是如此; 这种散布在各处的无关的代码被称为横切(cross-cutting)代码,在OOP设计中,它导致了大量代码的重复,而不利于各个模块的重用
+
+而AOP技术则恰恰相反,它利用一种称为"横切"的技术,剖解来封装的对象内部,并将那些影响了多个类的公共行为封装到一个可重用模块,并将其命名为"Aspect",即方面,简单的说,就是将那些与业务无关,却为业务模块所共同调用的逻辑封装起来,便于减少系统的重复代码,降低模块间的耦合度,并有利于未来的可操作性和可维护性; AOP代表的是一个横向的关系,如果说"对象"是一个空心的圆柱体,其中封装的是对象的属性和行为,那么面向切面编程就仿佛一把利刃,将这些空心圆柱切开,以获得其内部的消息;而剖开的切面,也就是所谓的"切面"了,然后它又以巧夺天工的手法将这些剖开的切面复原,不留任何痕迹
+
+使用"横切"技术,AOP把软件系统分为两个部分: 核心关注点和横切关注点; 业务处理的主要流程是核心关注点,与之关系不大的部分是横切关注点; 横切关注点的一个特点是,他们经常发生在核心关注点的多处,而各处都基本相似; 比如权限认证,日志,事务处理等; AOP的作用就是在于分离系统中的各种关注点,将核心关注点和横切关注点分离开来
+
 ### 解释一下什么是IOC
+
+Inversion Of Control(控制反转或被称为自动注入)
+
+IOC理论提出的观点大体时这样的: 借助于"第三方"实现居于依赖关系的对象之间的解耦,如下图所示:
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1569977433328.webp)
+
+由于引入了中间位置的"第三方",也就是IOC容器,使得A,B,C,D这4个对象没有了耦合关系,齿轮之间的传动全部依靠IOC容器了,全部对象的控制权全部上缴给IOC容器,所以,IOC容器称为了整个系统的关键核心,它起到了一种类似于"粘合剂"的作用,把系统中的所有对象粘合在一起发挥作用,如果没有这个"粘合剂",对象于对象之间会彼此失去联系
+
+我们再来做个实验: 就是把上图中的IOC容器拿掉,然后再来看看这套系统
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1569977683740.webp)
+
+我们看到,这时A,B,C,D这4个对象之间已经没有了耦合关系,彼此毫无联系,这样的话,当你在实现A的时候,就根本无需再去考虑B,C,D了,对象之间的依赖关系已经降低到了最低程度; 
+
+系统在没有引入IOC容器之前,对象A依赖对象B,那么对象A在初始化或者运行到某一点的时候,自己必须要主动去创建对象B或者使用已经创建的对象B,无论是创建还是使用对象B,控制权都在自己手上
+
+在系统引入IOC容器之后,这样情况就发生变化了; 由于IOC容器的加入,对象A与对象B之间失去了直接联系,所以,当对象A与运行到需要对象B的时候,IOC容器会主动创建一个对象B注入到对象A需要的地方,此时,对象B的创建已经不是由我们自己决定,而是由IOC容器决定,我们的决定权已经反转到了IOC容器手上,即对象A获得依赖对象B的过程,由主动行为变为了被动行为,控制权颠倒过来了
 
 ### spring有哪些主要模块
 
+spring框架至今已集成20多个模块; 这些模块主要分为和核心容器,数据访问,web,aop,工具,消息和测试模块
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1569979511894.webp)
+
 ### spring常用的注入方式有哪些?
+
+spring通过依赖注入DI实现了IOC控制反转,常用的注入方式主要有三种:
+
+1. 构造方法注入
+2. setter注入
+3. 基于注解的注入
 
 ### spring中的bean是线程安全的吗
 
+spring容器本身并没有提供bean的线程安全策略,因此可以说spring容器中的bean本身不具备线程安全的特性,但是具体还是要结合具体的scope的bean去研究
+
 ### spring支持几种bean的作用域?
+
+当通过spring容器创建一个bean实例时,不仅可以完成bean的实例化,还可以为bean指定特定的作用域,spring支持如下5种作用域:
+
+1. singleton: 单例模式,在整个spring ioc容器中,使用singleton定义的bean将只有一个实例
+2. prototype: 原型模式,每次通过容器的getBean方法获取prototype定义的bean时,都将产生一个新的bean实例
+3. request: 对于每次http请求,使用request定义的bean都将产生一个新实例,即每次http请求将会产生不同的bean实例,只有在web应用中使用spring时,该作用域才有效
+4. session: 对于每次http session,使用session定义的bean产生一个新实例,同样只有在web应用中使用spring时,该作用域才有效
+5. globalsession: 每个全局的http session,使用session定义的bean都将产生一个新实例; 典型情况下,仅在使用portlet context的时候有效; 同样只有在web应用中使用spring时,该作用域才有效
+
+其中比较常用的时singleton和prototype两种作用域; 对于singleton作用域的bean,每次请求该bean都将获得相同的实例,容器负责跟踪bean实例的状态,负责维护bean实例的生命周期行为; 如果一个bean被设置成prototype作用域,程序每次请求该id的bean,spring都会新创建一个bean实例,然后返回给程序,在这种情况下,spring仅仅使用new关键字创建bean实例,一旦创建成功,容器不再跟踪实例,也不会维护bean实例的状态
+
+如果不指定bean的作用域,spring默认使用singleton作用域; java在创建java实例时,需要进行内存申请; 销毁实例时,需要完成垃圾回收,这些工作都会导致系统开销的增加, 因此,prototype作用域bean的创建,销毁代价比较大; 而singleton作用域的bean实例一旦创建成功,可以重复使用,因此,除非必要,否则尽量避免将bean设置成prototype作用域
 
 ### spring自动装配bean有哪些方式?
 
+- 隐式的bean发现机制和自动装配(即注解方式)
+- 在java代码中或者xml中进行显示配置
+
+当然这些方式可以配合使用
+
 ### spring事务实现方式有哪些?
 
+1. 编程式事务管理对于基于POJO的应用来说是唯一选择, 我们需要在代码中调用beginTransaction(),commit(),rollback()等事务管理相关的方法,这就是编程式事务管理
+2. 基于TransactionProxyFactoryBean的声明式事务管理
+3. 基于@Transactional的声明式事务管理
+4. 基于Aspectj AOP配置事务
+
 ### 说一下spring的事务隔离?
+
+事务隔离级别指的是一个事务对数据的修改与另一个并行的事务的隔离程度,当多个事务同时访问相同数据时,如果没有采取必要的隔离机制,就可能发生以下问题:
+
+1. 脏读: 一个事务读到另一个事务未提交的更新数据
+2. 幻读: 例如第一个事务对一个表中的数据进行了修改,比如这种修改涉及到表中的"全部数据行",同时,第二个事务也修改这个表中的数据,这种修改时向表中插入"一行新数据",那么,以后就会发生操作第一个事务的用户发现表中还存在没有修改的数据行,就好像发生了幻觉一样
+3. 不可重复读: 比方说在同一个事务中先后执行两条一摸一样的select语句,期间在此事务中没有执行过任何ddl语句,但先后得到的结果不一致,这就是不可重复读
 
 ## springmvc
 
@@ -1449,11 +1641,55 @@ https://mp.weixin.qq.com/s/eHK5wqAv5UgYoYUnpFCxzA
 
 ### 说一下springmvc运行流程
 
+运行流程图:
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1569981153827.webp)
+
+运行流程描述:
+
+1. 用户向服务器发送请求,请求被spring前端控制器Servlet DispatchServlet捕获
+2. DispatchServlet对请求url进行解析,得到请求资源标识符(URI),然后根据该URI,调用HandlerMapping获得该Handler(Controller映射)配置的所有相关的对象(包括Handler对象以及Handler对象对应的拦截器),最后以HandlerExecutionChain对象的形式返回
+3. DispatchServlet根据获得的Handler(Controller映射),选择一个合适的HandlerAdapter(如果成功获得HandlerAdapter后,此时将开始执行拦截器的preHandler方法)
+4. 提取Request中的模型数据,填充Handler入参,开始执行Handler(Controller),在填充Handler的入参过程中,根据你的配置,spring将帮你做一些额外的工作
+   - HttpMessageConveter: 将请求消息(如json,xml等数据)转化称为一个对象,将对象转化为指定的响应信息
+   - 数据转化: 对请求消息进行数据转化,如String转换成Integer,Double等
+   - 数据格式转化: 对请求消息进行数据格式化,如将字符串格式化为日期等
+   - 数据验证: 验证数据的有效性(长度,格式等),验证结果存储到BindingResult或Error中
+5. Handler(对应的Controller)执行完成之后,向DispatchServlet返回一个ModelAndView对象
+6. 根据返回的ModelAndView,选择一个合适的ViewResolver(必须时已经注册到spring容器中的VieResolver)返回给DispatchServlet
+7. ViewResolver结合Model和View,来渲染视图
+8. 将渲染结果返回给客户端
+
 ### springmvc有哪些组件
+
+springmvc的核心组件:
+
+1. DispatchServlet: 中央控制器,把请求给转发到具体的控制类
+2. Controller: 具体处理请求的控制器
+3. HandlerMapping: 映射处理器,负责映射中将处理器转发给Controller时的映射策略
+4. ModelAndView: 服务层返回的数据和视图层的封装类
+5. ViewResolver: 视图解析器,解析具体的视图
+6. Interceptors: 拦截器,负责拦截我们定义的请求然后做处理工作
 
 ### @RequestMapping的作用是什么?
 
+RequestMapping是一个用来处理地址映射的注解,可用于类或方法上; 用于类上,表示类中的所有响应请求的方法都是以该地址作为父路径
+
+RequestMapping注解有6个属性,下面分为3类进行说明:
+
+1. value和method
+   - value: 指定请求的实际地址,指定的地址可以是URL Template模式
+   - method: 指定请求的method类型,如get,post,put等
+2. consumes和produces
+   - consumes: 指定处理请求的接收内容类型(Content-Type),例如application/json,text/html等
+   - produces: 指定返回的内容类型,仅当request请求头中的(Accept)类型中包含该指定类型才返回
+3. params和headers
+   - params: 指定request中必须包含某些参数值时,才让该方法处理
+   - headers: 指定request中必须包含某些指定的header值时,才让该方法处理请求
+
 ### @Autowired的作用是什么?
+
+详细见http://blog.csdn.net/u013257679/article/details/52295106
 
 ## springboot
 
@@ -1461,15 +1697,86 @@ https://mp.weixin.qq.com/s/UscOEtOBq5qjy1-SJLYtaw
 
 ### 什么是springboot
 
+springboot是一个框架,一种全新的编程规范,它的产生简化了框架的使用,所谓简化是指简化了spring众多框架中所需要的大量且繁琐的配置文件,所以springboot是一个服务于框架的框架,服务范围是简化配置文件
+
 ### 为什么要用springboot
+
+- 使得编码变简单
+- 使得配置变简单
+- 使得部署变简单
+- 使得监控变简单
+- spring的不足
 
 ### springboot核心配置文件是什么
 
+两种常用的配置文件
+
+- properties文件
+- yml文件
+
 ### springboot配置文件有哪几种类型?它们有什么区别?
+
+配置文件有两种: properties和yml; 相对于properties文件而言,yml文件更年轻,也有很多的坑,yml通过空格来确定层级关系,是配置文件结构更清晰,但也会因为微不足道的空格而破坏层级关系
 
 ### springboot有哪些方式可以实现热部署?
 
+1. 使用spring loaded
+
+   在pom文件中添加如下代码
+
+   ```java
+   <build>
+           <plugins>
+               <plugin>
+                   <!-- springBoot编译插件-->
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+                   <dependencies>
+                       <!-- spring热部署 -->
+                       <!-- 该依赖在此处下载不下来，可以放置在build标签外部下载完成后再粘贴进plugin中 -->
+                       <dependency>
+                           <groupId>org.springframework</groupId>
+                           <artifactId>springloaded</artifactId>
+                           <version>1.2.6.RELEASE</version>
+                       </dependency>
+                   </dependencies>
+               </plugin>
+           </plugins>
+       </build>
+   ```
+
+   添加完毕后需要是哟个mvn指令运行
+
+   - 首先找到IDEA中的Edit configurations,在左上角点击加号,选择maven,输入项目名
+
+     ![img](.img/.Interview%E5%87%86%E5%A4%87/640-1570002239005.webp)
+
+   - 点击保存将会在IDEA项目运行位置出现,点击绿色箭头运行即可
+
+     ![img](.img/.Interview%E5%87%86%E5%A4%87/640-1570002287878.webp)
+
+2. 使用spring-boot-devtools
+
+   在项目的pom文件中添加依赖
+
+   ```java
+    <!--热部署jar-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+    </dependency>
+   ```
+
+   然后使用shift+ctrl+alt+/ 选择"Registry",然后勾选compiler.automake.allow.when.app.running
+
 ### jpa和hibernate有什么区别?
+
+- JPA,java Persistence API,是java ee5的标准ORM接口,特使ejb3规范的一部分
+- Hibernate,当今很流行的orm框架,是JPA的一个实现,但是器功能是JPA的超集
+- JPA和Hibernate之间的关系,可以简单的理解为JPA是标准接口,Hibernate是实现; 那么Hibernate是如何实现于JPA的这种关系的呢?Hibernate主要是通过三个组件来实现的,即hibernate-annotation,hibernate-entitymanager和hibernate-core
+  - hibernate-annotation: 是hibernate支持annotation方式配置的基础,它包括了标准的JPA annotation以及hibernate的核心实现,提供了hibernate所有的核心功能
+  - hibernate-entitymanager: 实现了标准的JPA,可以把它看成hibernate-core和JPA之间的适配器,它并不直接提供ORM的功能,而实对hibernate-core进行封装,使得Hibernate符合JPA的规范
+  - hibernate-core: 是hibernate的核心实现,提供了Hibernate所有核心功能
 
 ## springcloud
 
@@ -1477,9 +1784,40 @@ https://mp.weixin.qq.com/s/UscOEtOBq5qjy1-SJLYtaw
 
 ### 什么是springcloud
 
+从字面理解,spring cloud就是致力于分布式系统,云服务的框架
+
+springcloud为开发人员提供了快速构建分布式系统中一些常见模式的工具,例如:
+
+- 配置管理
+- 服务注册与发现
+- 断路器
+- 智能路由
+- 服务间调用
+- 负载均衡
+- 控制总线
+- 一次性令牌
+- 全局锁
+- 领导选举
+- 分布式会话
+- 集群状态
+- 分布式消息
+- ...
+
+使用springcloud,开发人员可以开箱即用的实现这些模式的服务和应用程序; 这些服务可以在任何环境下运行,包括分布式环境,也包括开发人员自己的电脑
+
 ### springcloud断路器的作用是什么
 
+在springcloud中国你使用Hystrix来实现断路器的功能,断路器可以防止一个应用程序多次视图执行一个操作,即很可能失败,允许它继续而不等待故障恢复会浪费CPU,而它确定该故障是持久的; 断路器模式也使因公程序能够检测古装是否已经解决,如果问题四核已经得到纠正,应用程序可以尝试调用操作
+
+断路器增加了稳定性和灵活性,以一个系统,提供稳定性,而系统从故障恢复,并尽量减少此故障对性能的影响,它可以榜之快速的拒绝对一个请求的操作,即很可能失败,而不是等待操作超时(或不返回)的请求,以保持系统的响应事件,如果断路器提高每次改变状态的时间的事件,该信息可以被用来检测由断路器保护系统的部件的健康状况,或以提醒管理员当断路器跳闸,以在打开状态
+
 ### springcloud的核心组件有哪些?
+
+1. 服务发现-Netflix Eureka
+2. 客户端负载均衡-Nerflix Ribbon
+3. 断路器-Netflix Hystrix
+4. 服务网关-Netflix Zuul
+5. 分布式配置-springcloud Config
 
 ## mybatis
 
@@ -1487,21 +1825,111 @@ https://mp.weixin.qq.com/s/teI5po4wHfIScppMXiU-Bg
 
 ### mybatis中#{}和${}的区别是什么
 
+- `#{}`是预编译处理,`${}`是字符串替换
+- mybatis在处理`#{}`时,会将sql中的`#{}`替换为?号,调用PreparedStatement的set方法来赋值
+- mybatis在处理`${}`时,就是把`${}`替换成变量的值
+- 使用`#{}`可以有效的防止sql注入,提高系统安全性
+
 ### mybatis有几种分页方式?
+
+1. 数组分页
+2. sql分页
+3. 拦截器分页
+4. RowBounds分页
 
 ### mybatis逻辑分页和物理分页的区别是什么
 
+- 物理分页速度上并不一定快于逻辑分页,逻辑分页速度上也并不一定快于物理分页
+- 物理分页总是优于逻辑分页: 没有必要将属于数据库端的压力加诸到应用的端来,就算速度上存在一定优势,然后其他性能上的有点足以弥补这个缺点
+
 ### mybatis是否支持延迟加载?延迟加载的原理是什么?
+
+mybaits仅支持association关联对象和collection关联集合对象的延迟加载,assocation指的就是一对一,collection指的就是一对多查询,在mybatis配置文件中,可以配置是否启动延迟加载lazyLoadingEnabled=true|false
+
+它的原理时,使用CGLIB创建目标对象的代理对象,当调用目标方法时,进入拦截器方法,比如调用a.getB().getName(),拦截器invoke()方法发现a.getB()为null,那么就会单独发送实现保存好的查询关联B对象的sql,把B查询出来后,然后调用a.setB(b),于是a的对象b属性就有值l,接着完成a.getB().getName()方法的调用,这就是延迟加载的基本原理
+
+当然了,不光时mybatis,几乎所有的包括hibernate,支持延迟加载的原理都是一样
 
 ### 说一下mybatis的一级缓存和二级缓存?
 
+一级缓存: 基于PrepetualCache的HashMap本地缓存,器存储作用域为Session,当Session flush或者close之后,该Session中的所有Cache就将清空,默认打开一级缓存
+
+二级缓存: 与一级缓存机制相同,默认也是采用PrepetualCache的HashMap存储,不同在于其存储作用域为Mapper(Namespace),并且可自定义存储源,如Ehcache; 默认不打开二级缓存,要开启二级缓存,使用二级缓存属性类需要实现Serializable序列化接口(可用来保存对象的状态),可在它的映射文件中配置`<cache/>`
+
+对于缓存数据更新机制,当某一个作用域(一级缓存Session/二级缓存Namespace)的进行了C/U/D操作后,默认该作用域下所有select中的缓存将被clear
+
 ### mybatis和hibernate的区别有哪些?
+
+1. mybaits和hibernate不同,它不完全是一个ORM框架,因为mybatis需要程序员自己编写sql语句
+2. mybatis直接编写原生态sql,可以严格控制sql执行性能,灵活度高,非常适合对关系数据模型要求不高的软件开发,因为这类软件需求变化频繁,一旦需求变化要求迅速输出成果,但是灵活的前提是mybatis无法左到数据库无关性,如果需要实现支持多种数据库的软件,则需要自定义多套sql映射文件,工作量大
+3. hibernate对象/关系映射能力强,数据无关性好,对于关系模型要求高的软件,如果用hibernate开发可以节省很多代码,提高效率
 
 ### mybatis有哪些执行器(Executor)
 
+1. SimpleExecutor: 每次执行一次update或select,就开启一个Statement对象,用完立刻关闭Statement对象
+2. ReuseExecutor: 执行update或select,以sql作为key查找Statement对象,存在就是用,不存在就创建,用完后,不关闭Statement对象,而是放置于Map中,供下一次使用,简而言之,就是重复使用Statement对象
+3. BatchExecutor: 执行update(没有select,JDBC批处理不支持select),将所有sql都添加到批处理中(addBatch()),等待统一执行(executeBatch()),它缓存了多个statement对象,每个statement对象都是addBatch()完毕后,等待逐一执行executeBatch()批处理,于JDBC批处理相同
+
 ### mybatis分页插件的实现原理是什么?
 
+分页插件的基本原理是使用mybatis提供的插件接口,实现自定义插件,在插件的拦截方法内拦截待执行的sql,然后重写sql,根据dialect方法,添加对应的物理分页语句和物理分页参数
+
 ### mybatis如何编写一个自定义插件
+
+Mybatis自定义插件针对Mybatis四大对象（Executor,StatementHandler ,ParameterHandler ,ResultSetHandler ）进行拦截，具体拦截方式为： 
+
+- Executor：拦截执行器的方法(log记录) 
+- StatementHandler ：拦截Sql语法构建的处理 
+- ParameterHandler ：拦截参数的处理 
+- ResultSetHandler ：拦截结果集的处理 
+
+Mybatis自定义插件必须实现Interceptor接口:    
+
+```java
+public interface Interceptor {
+    Object intercept(Invocation invocation) throws Throwable;
+    Object plugin(Object target);
+    void setProperties(Properties properties);
+}
+```
+
+> intercept方法：拦截器具体处理逻辑方法 
+>
+> plugin方法：根据签名signatureMap生成动态代理对象 
+>
+> setProperties方法：设置Properties属性
+
+自定义插件demo：
+
+```java
+// ExamplePlugin.java
+@Intercepts({@Signature(
+      type= Executor.class,
+      method = "update",
+      args = {MappedStatement.class,Object.class})})
+public class ExamplePlugin implements Interceptor {
+      public Object intercept(Invocation invocation) throws Throwable {
+          Object target = invocation.getTarget(); //被代理对象
+          Method method = invocation.getMethod(); //代理方法
+          Object[] args = invocation.getArgs(); //方法参数
+          // do something ...... 方法拦截前执行代码块
+          Object result = invocation.proceed();
+          // do something .......方法拦截后执行代码块
+          return result;
+      }
+      public Object plugin(Object target) {
+        	return Plugin.wrap(target, this);
+      }
+      public void setProperties(Properties properties) {
+      }
+}
+```
+
+一个@Intercepts可以配置多个@Signature，@Signature中的参数定义如下： 
+
+- type：表示拦截的类，这里是Executor的实现类；
+- method：表示拦截的方法，这里是拦截Executor的update方法；
+- args：表示方法参数。
 
 ## rabbitmq
 
@@ -1561,17 +1989,38 @@ https://mp.weixin.qq.com/s/ZI86U4r3ZppYE3KkmKLNWw
 
 ### zookeeper是什么
 
+zookeeper是一个分布式的,开放源码的风不是应用程序协调服务,是google chubby的开源实现,是hadoop和hbase的重要组件; 它是一个为分布式应用提供一致性服务的软件,提供的功能包括: 配置维护,域名服务,分布式同步,组服务等
+
 ### zookeeper都有哪些功能
+
+- 集群管理: 监控节点存活状态,运行请求等
+- 主节点选举: 主节点挂掉之后可以从备用的节点开始新一轮选主,主节点选举说的就是这个选举的过程,使用zookeeper可以协助完成这个过程
+- 分布式锁: zookeeper提供两种锁:独占锁和共享锁; 独占锁即一次只能有一个线程使用资源,共享锁是读锁共享,读写互斥,即可以有多线程同时读一个资源,如果要使用写锁也只能有一个线程使用,zookeeper可以对分布式锁进行控制
+- 命名服务: 在分布式系统种,通过使用命名服务,客户端应用能够根据执行名字来获取资源或者服务的地址,提供者等信息
 
 ### zookeeper有几种部署模式?
 
+三种部署模式:
+
+1. 单机部署: 一台集群上运行
+2. 集群部署: 多台集群运行
+3. 伪集群部署: 一台集群启动多个zookeeper实例运行
+
 ### zookeeper怎么保证主从节点的状态同步?
+
+zookeeper的核心是原子官博,这个机制保证了各个server之间的同步,实现这个机制的协议叫做zab协议; zab协议有两种模式,分别是恢复模式(选主)和广播模式(同步); 当服务启动或者在领导者崩溃后,zab就进入恢复模式,当领导者被选举出来,且大多数server完成了和leader的状态同步以后,恢复模式就结束了; 状态同步保证了leader和server具有相同的系统状态
 
 ### 集群中为什么要有主节点?
 
+在分布式环境中,有些业务逻辑只需要在集群中的某一台机器进行执行,其他的机器可以共享这个结果,这样可以大大减少重复计算,提高性能,所以就需要主节点
+
 ### 集群中有3台服务器,其中一个节点宕机,这个时候zookeeper还可以使用吗?
 
+可以继续使用,单数服务器只要没超过一般的服务器宕机就可以继续使用
+
 ### 说一下zookeeper的通知机制?
+
+客户端会对某个znode建立一个watcher事件,当该znode发生变化时,这些客户端会收到zookeeper的通知,然后客户端可以根据znoode变化来做出业务上的改变
 
 ## mysql
 
@@ -1579,33 +2028,137 @@ https://mp.weixin.qq.com/s/BXSfeO1B_uaPy2tSdEvp-A
 
 ### 数据库的三范式是什么?
 
+- 第一范式: 强调的是列的原子性,即数据库表的每一列都是不可分割的原子数据项
+- 第二范式: 要求实体的属性完全依赖于关键字; 所谓完全依赖是指不能存在仅依赖主关键字一部分的属性
+- 第三范式: 任何非主属性不依赖于其他非主属性
+
 ### 一张自增表里面总共有17条数据,删除了最后2条数,重启mysql数据库,有插入了一条数据,此时id是几?
+
+- 表引擎是MyISAM,那么id就是18
+- 表引擎是InnoDB,那么id就是15
+
+InnoDB表只会把自增主键的最大id记录在内存中,所有重启之后会导致最大id丢失
 
 ### 如何获取当前数据库版本?
 
+使用select version()获取当前mysql数据库版本
+
 ### 说一下ACID是什么
+
+- Atomicity(原子性): 一个事务中的所有操作,或者全部完成,或者全部不完成,不会结束在中间某个环节; 事务在执行过程中发生错误,会被恢复(Rollback)到事务开始前的状态,就像这个事务从来没有执行过一样,即事务不可分割
+- Consistency(一致性): 在书屋开始之前和事务结束以后,数据库的完整性没有被破坏,这表示写入的资料必须完全符合所有的预设约束,触发器,级联回滚等
+- Isolation(隔离性): 数据库允许多个并发事务同时对数据进行读写和修改的能力,隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致; 事务隔离分为不同级别,包括读未提交(Read uncommitted),读提交(read committed),可重复读(repeatable read)和序列化(Serializable)
+- Durability(持久性): 事务处理结束后,对数据的修改就是永久的,即便系统故障也不会丢失
 
 ### char和varchar的区别是什么
 
+char(n): 固定长度类型,比如设置为char(10),当你输入"abc"三个字符的时候,他们占用的空间还是10个字节,其他7个是空字节
+
+char优点: 效率高; 缺点: 占用空间; 使用场景: 存储密码的md5值,固定长度的,使用char非常合适
+
+---
+
+varchar(n): 可变长度,存储的值是每个值占用的字节在加上一个用来记录其长度的字节的长度
+
+所以,从空间上考虑varchar比较合适,从效率上考虑char比较合适
+
 ### float和double的区别是什么
+
+- float最多可以存储8为的十进制数,并在内存中占4个字节
+- double最多可以存储16为的十进制数,并在内存中占8个字节
 
 ### mysql的内连接,左连接,右连接有什么区别
 
+- 内连接
+
+  inner join,把匹配的关联数据显示出来
+
+- 左连接
+
+  left join,左边的表全部显示出来,右边的表显示出符合条件的数据,如果没有则对应的字段显示为null
+
+- 右连接
+
+  right join,和左连接相反
+
 ### mysql索引是怎么实现的
 
-### 怎么验证mysqk的索引是否满足需求?
+索引是满足某种特定查找算法的数据结构,而这些数据结构会以某种方式指向数据,从而实现高效查找数据
+
+具体来说mysql中的索引,不同的数据引擎实现有所不同,但目前主流的数据库引擎的索引都是B+树实现的,B+树的搜索效率,可以达到二分法的性能,找到数据区域之后就找到了完整的数据结构了,所有索引的性能也是更好的
+
+### 怎么验证mysql的索引是否满足需求?
+
+使用explain查看sql是如何执行查询语句的,从而分析你的所以是否满足需求
+
+只需要在sql语句前面加上explain关键字即可
 
 ### 说一下数据库的事务隔离?
 
+mysql的事务隔离是在MySQL.ini配置文件里添加的,在文件的最后添加: transaction-isolation=REPEATABLE-READ
+
+可用的配置值:READ-UNCOMMITTED、READ-COMMITTED、REPEATABLE-READ、SERIALIZABLE
+
+- READ-UNCOMMITTE
+
+  未提交读,最低隔离级别,事务未提交前,就可被其他书屋读取(会出现幻读,脏读,不可重复读)
+
+- READ-COMMITTED
+
+  提交读,一个事务提交后才能被其他事务读取到(会造成幻读,不可重复读)
+
+- REPEATABLE-READ
+
+  可重复度,默认级别,保证多次读取同一个数据时,其值都和事务开始的内容时一直,禁止读取到别的事务未提交的数据(会造成幻读)
+
+- SERIALIZABLE
+
+  序列化,代价最高最可靠的隔离级别,该隔离级别能防止脏读,不可重复读,幻读
+
+> - 脏读
+>
+>   表示一个书屋能够读取另一个事务中还未提交的数据,比如,某个事务尝试插入记录A,此时该事务还未提交,然后另一个事务尝试读取了记录A
+>
+> - 不可重复读
+>
+>   指在一个事务内,多次读同一数据
+>
+> - 幻读
+>
+>   指同一事务内多次查询返回的结果集不一样; 比如同一个事务A第一次查询时候有n条记录,但是第二次同等条件下查询却有n+1条记录,这就好像产生了幻觉; 发生幻读的原因也是另外一个事务新增或者删除或修改了第一个事务结果集里面的数据,同一个记录的数据内容被修改了,所有数据行的记录就变多或变少了
+
 ### 说一下mysql常用的引擎?
+
+InnoDB引擎: InnoDB引擎提供给了对数据库acid事务的支持,并且还提供了行级锁和外键的约束,它的设计的目标就是处理大数据容量的数据库系统; mysql的时候,InnoDB会在内存中建立缓冲池,用于缓冲数据和索引,但是该引擎时不持支全文搜索,同时启动也比较慢,它时不会保存表的行数的,所有当进行select count(*) from table执行的时候,需要进行扫描全表,由于锁的粒度小,写操作时不会锁定全表的,所以在并发度较高的场景下使用会提升效率
+
+MyIASM引擎: 不提供事务的支持,也不支持行级锁和外键; 因此当执行插入和更新语句时,即执行写操作的时候需要锁定整个表,所有会导致效率较低,不过和InnoDB不同的时,MyIASM引擎时保存了表的行数,于是当进行select count(*) from table语句时,可以直接的读取已经保存的值而不需要进行扫描全表;所以如果表的读操作远远多于写操作时,并且不需要事务的支持,可以使用该引擎
 
 ### 说一下mysql的行锁和表锁
 
+MyISAM只支持表锁,InnoDB支持表锁和行锁,默认为行锁
+
+- 表锁: 开销小,加锁快,不会出现死锁; 锁定力度大,发生冲突的概率最高,并发量最低
+- 行锁: 开销大,加锁慢,会出现死锁; 锁定力度小,发生锁冲突的概率小,并发度高
+
 ### 说一下乐观锁和悲观锁?
+
+- 乐观锁: 每次去拿数据的时候都认为别人不会修改数据,所以不会上锁,但是在提交更新的时候会判断一下在此期间别人有没有去更新这个数据
+- 悲观锁: 每次去拿数据的时候都认为别人会修改数据,所有每次在拿数据的时候都会上锁,这样别人想拿这个数据就会被阻止,直到这个锁被释放
+
+数据库的乐观锁需要自己实现,在表里面添加一个version字段,每次修改成功值加1,这样每次修改的时候先对比一下,自己拥有的version和数据现在的version是否一致,如果不一致就不修改,这样就实现了乐观锁
 
 ### mysql问题排查都有哪些手段?
 
+- 使用show processlist命令查看当前所有连接信息
+- 使用explain命令查询sql语句执行计划
+- 开启慢查询日志,查看慢查询的sql
+
 ### 如何做mysql的性能优化?
+
+- 为搜索字段创建索引
+- 避免使用select *,列出需要查询的字段
+- 垂直分割分表
+- 选择正确的存储引擎
 
 ## redis
 
@@ -1613,31 +2166,98 @@ https://mp.weixin.qq.com/s/5I1Y77GN76h_OkVH1TisvA
 
 ### redis是什么?都有哪些使用场景?
 
+redis时一个开源的使用ANSI C语言编写,支持网络,可基于内存也可持久化的日志型,key-value数据库,并提供多种语言的API
+
+Redis的使用场景:
+
+- 数据高并发的读写
+- 海量数据的读写
+- 对扩展性要求高的数据
+
 ### redis有哪些功能?
+
+- 数据缓存功能
+- 分布式锁的功能
+- 支持数据持久化
+- 支持事务
+- 支持消息队列
 
 ### redis和memecache有什么区别
 
+- memecache所有的值军事简单的字符串,redis作为其替代者,支持更为丰富的数据类型
+- redis的速度比memecache快很多
+- redis可以持久化数据
+
 ### redis为什么是单线程的?
+
+因为cpu不是redis的瓶颈,redis的瓶颈最有可能是机器内存或者网络戴娟; 既然单线程容易实现,而且cpu又不会成为瓶颈,那么就顺理成章的采用单线程的方案了
+
+关于redis的性能,官方网站也有,普通笔记本轻松处理每秒几十万的请求
+
+而且单线程并不代表就慢,nginx和nodehs也都是高性能单线程的代表
 
 ### 什么是缓存穿透?怎么解决?
 
+缓存穿透: 指查询一个一定不存在的数据,由于缓存是不命中时需要从数据库查询,查不到数据则不写入缓存,这将导致这个不存在的数据每次请求都要到数据库查询,造成缓存穿透
+
+解决方案: 最简单粗暴的方法是如果一个查询返回的数据为空(不管是数据不存在,还是系统故障),我们就把这个空结果进行缓存,但它的过期时间会很短,最长不超过5分钟
+
 ### redis支持的数据类型有哪些?
+
+string,list,hash,set,zset
 
 ### redis支持的java客户端都有哪些?
 
-### jedis和redisson有哪些区别?
+Redisson,Jedis,lettuce等,官方推荐使用Redisson
+
+### jedis和redisson有哪些区别
+
+Jedis是Redis的java实现的客户端,其API提供了比较全面的redis命令的支持
+
+Redisson实现了分布式的可扩展的java数据结构,和Jedis相比,功能较为简单,不支持字符串操作,不支持排序,事务,管道,分区等redis特性; Redisson的宗旨是促进使用者对redis的关注分离,从而让使用者能够将精力更集中的放在处理业务逻辑上
 
 ### 怎么保证缓存和数据库的一致性?
 
+- 合理设置缓存的过期时间
+- 新增,更改,删除数据库操作时同步更新redis,可以使用事务机制来保证数据的一致性
+
 ### redis持久化有几种方式?
+
+Redis的持久化有两种方式
+
+- RDB(Redis Database): 指定的时间间隔能对你的数据进行快照存储
+- AOF(Append Only File): 每个收到的写命令都通过write函数追加到文件中
 
 ### redis怎么实现分布式锁?
 
+redis分布式锁其实就是在系统里面占一个"坑",其它程序也要占"坑"的时候,占用成功了就可以继续执行,失败了就只能放弃或者稍后再试
+
+占坑一般使用setnx(set if not exists)指令,值允许被一个程序占有,使用完调用del是否释放锁
+
+### redis分布式锁有什么缺陷?
+
+redis分布式锁不能解决超时的问题,分布式锁有一个超时时间,程序的执行如果超出了锁的超时时间就会出现问题
+
 ### redis如何做内存优化?
+
+尽可能使用散列表(hash),散列表使用的内存非常小,所以你应该尽可能的将你的数据模型抽象到一个散列表里面
+
+比如你的web系统中有一个用户对象,不要为这个用户的名称,姓氏,邮箱,密码设置单独的key,而实应该把这个用户的所有信息存储到一张散列表里里面
 
 ### redis淘汰策略有哪些?
 
+- volatile-lru: 从已设置过期时间的数据集中挑选最近最少使用的数据淘汰
+- volatile-ttl: 从已设置过期时间的数据集中挑选将要过期的数据淘汰
+- volatile-randow: 从已设置过期时间的数据集中任意选择数据淘汰
+- allkeys-lru: 从数据集中挑选最近最少使用的数据淘汰
+- allkeys-random: 从数据集中挑选最近最少使用的数据淘汰
+- no-envication: 禁止驱逐数据
+
 ### redis常见的性能问题有哪些?该如何解决?
+
+- 主服务器写内存快照,会阻塞主线程的工作,当快照比较大时对性能影响非常大.会间断性暂停服务,所以主服务器最好不要写内存快照
+
+- redis主从复制的性能问题,为了主从复制的速度和连接的稳定性,主从库最好在同一个局域网内
 
 ## Oracle
 
@@ -1649,33 +2269,139 @@ https://mp.weixin.qq.com/s/OcJvAuRG_mG9S3EYPcItCg
 
 ### 说一下jvm的主要组成部分?及其作用?
 
+- 类加载器(ClassLoader)
+- 运行时数据区(Runtime Data Area)
+- 执行引擎(Execution Engine)
+- 本地库接口(Native Interface)
+
+组件的作用: 首先通过类加载器(ClassLoader)会把java代码转化成字节码,运行时数据区(Runtime Data Area)再把字节码加载到内存中,而字节码文件只是JVM的一套指令集规范,并不能直接交给底层操作系统去执行,因此需要特定的命令解析器执行引擎(Executor Engine),将字节码翻译成底层系统指令,再交由CPU去执行,而这个过程中需要调用其他语言的本地库接口(Native Interface)来实现整个程序的功能
+
 ### 说一下jvm运行时数据区?
 
-### 说一下堆栈的区别?
+- 程序计数器
+- 虚拟机栈
+- 本地方法栈
+- 堆
+- 方法区
+
+有的区域随着虚拟机进程的启动而存在,有的区域则依赖用户进程的启动和结束而创建和销毁
+
+![img](.img/.Interview%E5%87%86%E5%A4%87/640-1570023684503.webp)
+
+### 说一下堆和栈的区别?
+
+1. 栈内存存储的时局部变量,而堆内存存储的是实体
+2. 栈内存的更新速度要快于堆内存,因为局部的声明周期很短
+3. 栈内存存放的变量声明周期一旦结束就会被释放,而堆内存够存放的实体会被垃圾回收机制不定时的回收
 
 ### 队列和栈是什么?有什么区别?
 
+- 队列和栈都是被用来预存储数据的
+- 队列允许先进先出检索元素,但也有例外的情况,Deque接口允许从两端检索元素
+- 栈和队列很相似,但它运行对元素进行后进后出进行检索
+
 ### 什么是双亲委派模型?
+
+在接受啊双亲委派模型之前先说下类加载器; 对于任意一个类,都需要由加载它的类加载器和这个类本身一同确立在JVM中的唯一性,每个类加载器,都有一个独立的名称空间; 类加载器就是根据指定全限定名称将class文件加载到JVM内存,然后再转化为class对象
+
+类加载器分类:
+
+- 启动类加载器(Bootstrap ClassLoader),是虚拟机自身的一部分,用来加载JAVA_HOME/lib目录中的,或者被-Xbootclasspath参数所指定的路径中并且被虚拟机识别的类库
+- 其他类加载器
+- 扩展类加载器
+- 应用程序类加载器(Application ClassLoader): 负责加载用户类路径(classpath)下的指定类库,我么可以直接使用这个类加载器,一般情况下,如果我们没有定义类加载器默认就是用这个加载器
+
+双亲委派模型: 如果一个类加载器收到了类加载的请求,它首先不会自己去加载这个类,而是把这个请求委派给父类加载器去完成,每一层的类加载器都是如此,这样所有的加载请求都会被传送到顶层的启动类加载器中,中有当父类加载无法完成加载请求(它的搜索范围中没有找到需要的类)时,子加载器才会尝试去加载类
 
 ### 说一下类加载的执行过程?
 
+类加载分为以下5个步骤:
+
+1. 加载: 根据查找路径找到相应的class文件然后导入
+2. 检查: 检查加载的class文件的正确性
+3. 准备: 给类中的静态变量分配内存空间
+4. 解析: 虚拟机将常量池中的符号引用替换成直接引用的过程; 符号引用就理解为一个标识,而在直接引用直接指向内存中的地址
+5. 初始化: 对静态变量和静态代码块执行初始化工作
+
 ### 怎么判断对象是否可以被回收?
+
+一般有两种方法来判断:
+
+- 引用计数器: 为每个对象创建一个引用技术,有对象引用时计数器+1,引用被释放时计数器-1,当计数器为0时就可以被回收,它有一个缺点不能解决循环引用的问题
+- 可达性分析: 从GC Roots开始向下搜索,搜索所走过的路径称为引用链,当一个对象到达GC Roots没有任何引用链相连时,则证明此对象是可以被回收的
 
 ### java中都有哪些引用类型?
 
+- 强引用
+- 软引用
+- 弱引用
+- 虚引用
+
 ### 说一下jvm有哪些垃圾回收算法?
+
+- 标记-清除算法
+- 标记-整理算法
+- 复制算法
+- 分代算法
 
 ### 说一下jvm有哪些垃圾回收器?
 
+- Serial：最早的单线程串行垃圾回收器。
+- Serial Old：Serial 垃圾回收器的老年版本，同样也是单线程的，可以作为 CMS 垃圾回收器的备选预案。
+- ParNew：是 Serial 的多线程版本。
+- Parallel 和 ParNew 收集器类似是多线程的，但 Parallel 是吞吐量优先的收集器，可以牺牲等待时间换取系统的吞吐量。
+- Parallel Old 是 Parallel 老生代版本，Parallel 使用的是复制的内存回收算法，Parallel Old 使用的是标记-整理的内存回收算法。
+- CMS：一种以获得最短停顿时间为目标的收集器，非常适用 B/S 系统。
+- G1：一种兼顾吞吐量和停顿时间的 GC 实现，是 JDK 9 以后的默认 GC 选项。
+
 ### 详细介绍一下CMS垃圾回收器
+
+CMS是英文Concurrent Mark-Sweep的简称,是以牺牲吞吐量为代价来获得最短回收停顿时间的垃圾回收器,对于要求服务器响应速度的应用上,这种垃圾回收期非常适合,在启动JVM的参数加上"-XX:+UseConcMarkSweepGC"来指定使用CMS垃圾回收器
+
+CMS使用的是标记-清除的算法实现的,所以在gc的时候会大量的内存碎片,当剩余内存不能满足程序运行要求是,系统会将出现Concurrent Mode Failure,临时CMS会采用Serial Old回收器进行垃圾清除,此时的性能将会被降低
 
 ### 新生代垃圾回收器和老生代垃圾回收器都有哪些?有什么区别?
 
+- 新生代回收器：Serial、ParNew、Parallel Scavenge
+- 老年代回收器：Serial Old、Parallel Old、CMS
+- 整堆回收器：G1
+
+新生代垃圾回收器一般采用的是复制算法,复制算法的优点就是效率高,缺点是内存利用率低;
+
+老年代回收器一般采用标记-整理算法进行垃圾回收
+
 ### 简述分代垃圾回收器是怎么工作的?
+
+分代回收器有两个分区: 老年代和新生代,新生代默认的空间占总空间的1/3,老年代默认占比为2/3
+
+新生代使用的是复制算法,新生代有3个分区: Eden, To Survivor ,From Survivor,他们的默认占比是8:1:1,它们的执行流程如下
+
+- 把Eden+From Survivor存活的对象放入To Survivor区
+- 清空Eden和From Survivor分区
+- From Survivor和To Survivor分区交换,From Survivor变To Survivor,To Survivor变From Survivor
+
+每次在From Survivor到To Survivor移动时都存活的对象,年龄就+1,当年龄到达15(默认配置是15)时,升级为老年代,大对象也会直接进入老年代
+
+老年代当空间占用到达某个值之后就会触发全局垃圾收回,一般使用标记整理的执行算法,以上这些循环往复就构成了整个分代垃圾回收的整体执行流程
 
 ### 说一下jvm调优的工具
 
+JDK自带了很多监控工具,都位于JDK的bin目录下,其中最常用的是jconsole和jvisualvm这两款视图监控工具
+
+- jconsole: 用于对JVM中的内存,线程和类等进行监控
+- jvisualvm: JDK自带的全能分析工具,可以分析: 内存快照,线程快照,程序死锁,监控内存的变化,gc变化等
+
 ### 常见的jvm调优的参数都有哪些?
+
+- -Xms2g: 初始化堆大小为2g
+- -Xmx2g: 堆最大内存为2g
+- -XX:NewRatio=4: 设置新生代和老年代的内存比例是1:4
+- -XX:SurvivorRatio=8: 设置新生代中Eden和Survivor的比例是8:1
+- -XX:+UseParNewGC: 指定使用ParNew+Serial Old垃圾回收器组合
+- -XX:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合
+- -XX:+UseConcMarkSweeoGC: 指定使用CMS+Serial Old垃圾回收器组合
+- -XX:+PrintGC: 开启打印gc信息
+- -XX:+PrintGCDetails: 打印gc详细信息
 
 # 参考文档
 
