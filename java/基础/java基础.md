@@ -1324,6 +1324,154 @@ Instant instant = clock.instant();
 Date legacyDate = Date.from(instant);   // legacy java.util.Date
 ```
 
+## 反射
+
+### 概述
+
+java反射机制是在运行状态中,对于任意一个类,都能够知道这个类的所有属性和方法; 对于任意一个对象,都能够调用它的任意一个方法和属性; 这种动态获取的信息以及动态调用对象的方法的功能被成为java语言的反射机制
+
+总结:
+
+- 反射就是把java类中的各种成分映射成一个个的java对象
+
+  例如: 一个类有:成员变量,方法,构造函数,包等信息,利用反射技术一个类进行解析,把一个个组成部分映射成一个个对象; 
+
+一个类的正常加载过程:
+
+1. 当我们使用new一个对象的时候,jvm会取加载我们对应的.class文件
+2. jvm会取磁盘上找到对应的.class文件,并加载到jvm内存中
+3. 将.class文件读入内存,并创建一个对应的对象
+
+反射就是在得到class对象后,反向获取对象的各种信息
+
+### 为什么需要反射
+
+Java中编译类型有两种:
+
+1. 静态编译: 在编译时确定类型,绑定对象即可
+2. 动态编译: 运行时确定类型,绑定对象; 动态编译最大限度的发挥了java的灵活性,体现了多态的应用,可以降低类之间的耦合度
+
+java反射是java被视为动态语言的一个关键:
+
+- 这个机制允许程序在运行时透过Reflection APIs取得任何一个已知名称的class的内部信息，包括其modifiers（诸如public、static等）、superclass（例如Object）、实现之interfaces（例如Cloneable），也包括fields和methods的所有信息，并可于运行时改变fields内容或唤起methods。
+- Reflection可以在运行时加载、探知、使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。
+- 反射（reflection）允许静态语言在运行时（runtime）检查、修改程序的结构与行为。在静态语言中，使用一个变量时，必须知道它的类型。在Java中，变量的类型信息在编译时都保存到了class文件中，这样在运行时才能保证准确无误；换句话说，程序在运行时的行为都是固定的。如果想在运行时改变，就需要反射这东西了。
+
+实现Java反射机制的类都位于java.lang.reflect包中：
+
+1. Class类：代表一个类
+2. Field类：代表类的成员变量（类的属性）
+3. Method类：代表类的方法
+4. Constructor类：代表类的构造方法
+5. Array类：提供了动态创建数组，以及访问数组的元素的静态方法
+
+**一句话概括就是使用反射可以赋予jvm动态编译的能力，否则类的元数据信息只能用静态编译的方式实现，例如热加载，Tomcat的classloader等等都没法支持。**
+
+### 使用
+
+获取Class对象的三种方式:
+
+1. 对象.getClass();
+2. 任何数据类型(包括基本数据类型)都有一个"静态"的class属性
+3. 通过Class类的静态方法: forName来获取
+
+当获取Class对象之后,就可以获取该对象的所有方法和变量,而且可以变量赋值或者调用其方法,或者创建该对象实例
+
+#### Student对象
+
+```java
+public class Student {
+    public int age;
+    public String name;
+    public Student() {
+    }
+    public Student(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+    public void hello(String msg){
+        System.out.println(this.name+":"+msg);
+    }
+
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+```
+
+#### 对象.getClass()
+
+```java
+public class Test {
+    public static void main(String[] args) throws Exception {
+        Student student = new Student();//创建一个student对象
+        Class<? extends Student> aClass = student.getClass();//通过对象.getClass()获取到Class对象
+        Method hello = aClass.getMethod("hello", String.class);//获取对象的方法
+        hello.invoke(student, "nihao");//方法的调用
+    }
+}
+```
+
+#### 类名.class
+
+```java
+public class Test1 {
+    public static void main(String[] args) throws Exception {
+        Student student = Student.class.newInstance();//通过类名.class获取到Class对象
+        student.setName("jack");
+        student.hello("nihao");
+    }
+}
+```
+
+#### Class.forName()
+
+```java
+public class Test2 {
+    public static void main(String[] args) throws Exception {
+        Class<?> aClass = Class.forName("reflect.Student");//指定对象所在的位置
+        Student student = (Student)aClass.newInstance();
+        student.setName("jack");
+        student.hello("nihao");
+        
+        //通过反射调用方法
+        Method hello = aClass.getMethod("hello", String.class);
+        hello.invoke(student,"I love you!");
+
+        //获取所有公共字段
+        Field[] fields = aClass.getFields();
+        for (Field field : fields) {
+            System.out.println(field.toString());
+        }
+        //获取所有私有字段
+        Field[] declaredFields = aClass.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            System.out.println(declaredField.toString());
+        }
+
+        //获取所有公共方法
+        Method[] methods = aClass.getMethods();
+        for (Method method : methods) {
+            System.out.println(method.toString());
+        }
+        //获取所有私有方法
+        Method[] declaredMethods = aClass.getDeclaredMethods();
+        for (Method declaredMethod : declaredMethods) {
+            System.out.println(declaredMethod.toString());
+        }
+    }
+}
+```
+
 ## 网络编程
 
 略
