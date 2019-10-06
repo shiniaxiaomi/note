@@ -1048,7 +1048,7 @@ public class FruitGenerator implements Generator<String> {
 
 #### 泛型方法
 
-泛型方法比较复杂,泛型方法是在调用方法的时候知名泛型的具体类型
+泛型方法比较复杂,泛型方法是在调用方法的时候知道泛型的具体类型
 
 举个例子:
 
@@ -1062,70 +1062,49 @@ public <T> T genericMethod(Class<T> tClass)throws InstantiationException ,
 
 > 说明:
 >
-> 1. public与返回值中间<T>非常重要,可以理解未声明此方法未泛型方法
+> 1. public与返回值中间<T>非常重要,可以理解为声明此方法是泛型方法
 > 2. 只有声明了<T>的方法才是泛型方法,泛型类中的使用了泛型成员的方法并不是泛型方法
 > 3. <T>表明该方法将使用泛型类型T,此才可以在方法中使用泛型类型T
 > 4. 与泛型类的定义一样,此处T可以随便写为任意标识
+> 5. 最终的泛型类型由最终的返回值类型确定
 
 ##### 基本用法
 
+定义一个MyList类
+
 ```java
-public class GenericFruit {
-    class Fruit{
-        @Override
-        public String toString() {
-            return "fruit";
-        }
+public class MyList<T> {
+    //定义一个Object数组,用于接受任意的类型
+    Object[] arr=new Object[100];
+    int index=0;
+
+    //普通的方法
+    public void add(T t){
+        arr[index++]=t;
     }
 
-    class Apple extends Fruit{
-        @Override
-        public String toString() {
-            return "apple";
-        }
+    //普通的方法
+    public T get(int index){
+        return (T) arr[index];
     }
 
-    class Person{
-        @Override
-        public String toString() {
-            return "Person";
-        }
-    }
-
-    class GenerateTest<T>{
-        public void show_1(T t){
-            System.out.println(t.toString());
-        }
-
-        //在泛型类中声明了一个泛型方法，使用泛型E，这种泛型E可以为任意类型。可以类型与T相同，也可以不同。
-        //由于泛型方法在声明的时候会声明泛型<E>，因此即使在泛型类中并未声明泛型，编译器也能够正确识别泛型方法中识别的泛型。
-        public <E> void show_3(E t){
-            System.out.println(t.toString());
-        }
-
-        //在泛型类中声明了一个泛型方法，使用泛型T，注意这个T是一种全新的类型，可以与泛型类中声明的T不是同一种类型。
-        public <T> void show_2(T t){
-            System.out.println(t.toString());
-        }
+    //泛型方法,最终的泛型类型由最终的返回值确定
+    public <E> E add1(E e){
+        arr[index++]=e;
+        return e;
     }
 
     public static void main(String[] args) {
-        Apple apple = new Apple();
-        Person person = new Person();
+        MyList<String> myList = new MyList<>();
+        myList.add("sfsd");
 
-        GenerateTest<Fruit> generateTest = new GenerateTest<Fruit>();
-        //apple是Fruit的子类，所以这里可以
-        generateTest.show_1(apple);
-        //编译器会报错，因为泛型类型实参指定的是Fruit，而传入的实参类是Person
-        //generateTest.show_1(person);
+        String s = myList.get(0);
+        System.out.println(s);
 
-        //使用这两个方法都可以成功
-        generateTest.show_2(apple);
-        generateTest.show_2(person);
-
-        //使用这两个方法也都可以成功
-        generateTest.show_3(apple);
-        generateTest.show_3(person);
+        Integer integer = myList.add1(1);
+        System.out.println(integer);
+        
+//      String s1 = myList.get(2);//报错,因为索引2存储的是Integer类型的,但是再get的时候进行了强转为String,因此会报类型转化异常
     }
 }
 ```
