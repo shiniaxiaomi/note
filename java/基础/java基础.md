@@ -1485,10 +1485,16 @@ public class Test2 {
 
   > jar -cvf jar包名称 要打包的目录 
 
+# 参考手册
+
+[JDK1.8在线中文版](https://blog.fondme.cn/apidoc/jdk-1.8-google/)
+
+[JDK13官方API](https://docs.oracle.com/en/java/javase/13/docs/api/)
+
+[Oracle官方api下载](https://www.oracle.com/technetwork/java/api-141528.html)
+
 # 参考文档
 
 [java入门教程-w3cschool](https://www.w3cschool.cn/java/java-tutorial.html)
-
-JDK1.8手册
 
 https://blog.csdn.net/u014252871/article/details/53434530
