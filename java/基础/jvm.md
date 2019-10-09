@@ -81,7 +81,7 @@ java代码通过编译之后生成字节码文件(class文件),通过:`java Hell
 - java堆
   
 1. OutOfMemory: 堆无法扩展时
-  
+
 - 方法区
   
   1. OutOfMemory: 超出内存容量
@@ -442,38 +442,14 @@ java堆对象的收回
 
 ### Serial收集器(复制算法)
 
+新生代单线程收集器,标记和清理都是单线程,优点时简单高效;
+
+单线程一方面以为这它只会使用一个cpu或一个线程去完成垃圾收集工作,另一方面也意味着它进行垃圾收集时必须暂停其他线程的所有工作,直到它收集结束为止;是client级别默认的GC方法,可以通过`-XX:+UseSerialGC`来强制指定。
+
+![img](.img/.jvm/20180601155229506.png)
+
+> 说明：1. 需要STW（Stop The World），停顿时间长。2. 简单高效，对于单个CPU环境而言，Serial收集器由于没有线程交互开销，可以获取最高的单线程收集效率。
+
 ### Serial Old收集器(标记-整理算法)
 
-### ParNew收集器(复制算法)
-
-### Parallel Scavenge收集器(复制算法)
-
-### Parallel Old收集器(标记-整理算法)
-
-### CMS(Concurrent Mark Sweep)收集器(标记-清除算法)
-
-### G1收集器
-
-
-
-## GC的类型
-
-https://blog.csdn.net/mccand1234/article/details/52078645#Young_Generation_79
-
-### YoungGC
-
-### OldGC
-
-### FullGC
-
-## Minor GC,Full GC触发条件
-
-## 降低GC的调优策略
-
-# 参考文档
-
-[深入详细讲解JVM原理](https://blog.csdn.net/know9163/article/details/80574488)
-
-https://www.cnblogs.com/yuechuan/p/8984262.html
-
-http://blog.itpub.net/29609890/viewspace-2219916/
+老年代单线程收集器,Serial收集器的老年代版本。它的优点是实现简单高效，但是缺点是会给用户带来停顿。
