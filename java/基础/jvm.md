@@ -442,14 +442,124 @@ java堆对象的收回
 
 ### Serial收集器(复制算法)
 
-新生代单线程收集器,标记和清理都是单线程,优点时简单高效;
-
-单线程一方面以为这它只会使用一个cpu或一个线程去完成垃圾收集工作,另一方面也意味着它进行垃圾收集时必须暂停其他线程的所有工作,直到它收集结束为止;是client级别默认的GC方法,可以通过`-XX:+UseSerialGC`来强制指定。
-
-![img](.img/.jvm/20180601155229506.png)
-
-> 说明：1. 需要STW（Stop The World），停顿时间长。2. 简单高效，对于单个CPU环境而言，Serial收集器由于没有线程交互开销，可以获取最高的单线程收集效率。
-
 ### Serial Old收集器(标记-整理算法)
 
-老年代单线程收集器,Serial收集器的老年代版本。它的优点是实现简单高效，但是缺点是会给用户带来停顿。
+### ParNew收集器(复制算法)
+
+### Parallel Scavenge收集器(复制算法)
+
+### Parallel Old收集器(标记-整理算法)
+
+### CMS(Concurrent Mark Sweep)收集器(标记-清除算法)
+
+### G1收集器
+
+
+
+## GC的分类及健康状态
+
+https://blog.csdn.net/mccand1234/article/details/52078645#Young_Generation_79
+
+### YoungGC/MinorGC
+
+回收Eden区
+
+YoungGC是最频繁发生的,同时YoungGC的问题也是最难定位的,这里给出YoungGC的三种问题定位方法:
+
+1. 查看服务器SWAP&IO情况,如果服务器发生Swap,会严重拖慢GC效率,导致STW时间异常长,拉长接口响应时间,从而影响用户体验
+2. 查看StringTable情况
+3. 排查每次YoungGC后幸存对象大小(JVM模型基于分配的对象朝生夕死的假设设计,如果每次YoungGC后幸存的对象较大,可能存在问题)
+
+可参考的健康的GC状况给出建议YoungGC频率5秒/次，经验值3秒~6秒/次都是比较合理的:
+
+- 如果YoungGC频率远高于这个值,例如例如20秒/次，30秒/次，甚至60秒/次,这种情况下,JVM相当空闲,处于基本上无事可做的状态,建议缩容,减少服务器浪费
+- 如果YoungGC频率远低于这个值，例如1秒/次，甚至1秒/好多次,这种情况下,JVM相当繁忙,建议按照如下步骤进行初步诊断
+  1. 检查新生代,Eden区在整个堆占比在25%~40%比较合理,如果太小,建议扩大Xmn
+  2. 检查SurviorRatio,保持默认值8即可,Eden:S0:S1=8:1:1是一个比较合理的值
+
+### OldGC
+
+只单独回收老年代的只有CMS GC
+
+触发CMS GC条件比较简单,JVM有一个线程定时扫描老年代,如果发现老年代占比超过参数`-XX:CMSInitiatingOccupancyFraction=75`设定值（CMS条件下默认为68%），就会触发CMS GC
+
+> （定时时间设置`XX:CMSWaitDuration=2000`）（Old区占比设置：-`XX:CMSInitiatingOccupancyFraction=75`）（`-XX:+UseCMSInitiatingOccupancyOnly` 只有在Old区占比满足条件的情况下才触发CMS GC）
+
+可参考的健康的GC状况给出建议CMS GC频率不超过1天/次，如果CMS GC频率1天发生数次，甚至上10次，说明你的GC情况病的不轻了，建议按照如下步骤进行初步症断：
+
+1. 检查新生代和老年代的比值,尽量留60%以上的堆空间给老年代(一般为2/3)
+2. 通过jstat查看每次YoungGC后晋升到老年代的对象占比,如果发现每次YoungGC后老年代涨好几个百分点，甚至上10个点，说明有大对象,建议dump（jmap -dump:format=b,file=app.bin pid）后用MAT分析；
+3. 如果不停的CMS GC，Old区降不下去，建议先执行jmap -histo pid | head -n20 查看TOP20对象分布，如果除了[B和[C，即byte[]和char[]，还有其他占比较大的实例，如下图所示中TOP1的Object数组，也可通过dump后用MAT分析问题；
+4. 如果TOP20对象中有StandartSession对象，排查你的业务代码中有没有显示使用HttpSession，例如String id = request.getSession().getId();，一般的OLTP系统几乎不会使用HttpSession，且HttpSession的的生命周期很长，会加快Old区增长速度；
+
+### FullGC/MajorGC
+
+回收整个java堆
+
+1. 如果配置CMS，由于CMS采用标记清理算法，会有内存碎片的问题，推荐配置一个查看内存碎片程度的JVM参数PrintFLSStatistics。
+2. 如果配置ParallelOldGC，那么每次Old区满后，会触发FullGC，如果FullGC频率过高，也可以通过上面OldGC段落提及的排查方法；
+3. 如果没有配置-XX:+DisableExplicitGC，即没有屏蔽System.gc()触发FullGC，那么可以通过排查GC日志中有System字样判断是否System.gc()触发；或者通过jstat -gccause pid 2s pid判定，LGCC表示最近一次GC原因，如果为"System.gc"，表示由System.gc()触发，GCC表示当前GC原因，如果当前没有GC，那么就是No GC。
+
+## Minor GC,Full GC触发条件
+
+### MinorGC触发条件
+
+- Eden区满了,或者新创建的对象大小大于了Eden区所剩余的空间
+- Full GC的时候会先触发Minor GC
+
+### Full GC触发条件
+
+- Minor GC后存活的对象晋升到老年代时由于悲观策略的原因，有两种情况会触发Full GC, 一种是之前每次晋升的对象的平均大小 > 老年代剩余空间；一种是Minor GC后存活的对象超过了老年代剩余空间。这两种情况都是因为老年代会为新生代对象的晋升提供担保，而每次晋升的对象的大小是无法预测的，所以只能基于统计，一个是基于历史平均水平，一个是基于下一次可能要晋升的最大水平。这两种情况都是属于promotion failure
+- CMS失败，发生concurrent mode failure会引起Full GC，这种情况下会使用Serial Old收集器，是单线程的，对GC的影响很大。concurrent mode failure产生的原因是老年代剩余的空间不够，导致了和gc线程并发执行的用户线程创建的大对象(由PretenureSizeThreshold控制新生代直接晋升老年代的对象size阀值)不能进入到老年代，只要stop the world来暂停用户线程，执行GC清理。可以通过设置CMSInitiatingOccupancyFraction预留合适的CMS执行时剩余的空间
+- 新生代直接晋升到老年代的大对象超过了老年代的剩余空间，引发Full GC
+- **Perm永久代空间不足会触发Full GC，可以让CMS清理永久代的空间**。设置CMSClassUnloadingEnabled即可
+- **System.gc()引起的Full GC**，可以设置DisableExplicitGC来禁止调用System.gc引发Full GC
+
+## 降低GC的调优策略
+
+### 年轻代和老年代的大小优化
+
+- `-Xms`,`-Xmx`通常设置为相同的值,避免运行时哟啊不断扩展JVM内存,这个值决定了JVM堆所能使用的最大内存
+- `-Xmn`决定了新生代空间的大小,新生代Eden,S0,S1三个区域的比例可以通过`-XX:SurvivorRatio`来控制(假如值为4表示Eden:S0:S1 = 4:1:1 )
+- `-XX:MaxTenuringThreshold `控制对象在经过多少次monorGC之后进入老年代,此参数只有在Serial串行GC时有效
+- `-XX:PermSize`,`-XX:MaxPermSize`用来控制方法区的大小,通常设置为相同的值
+
+注意事项:
+
+1. 避免新生代大小设置过小
+
+   这样会造成: 1. minorGC次数频繁; 2.可能导致大对象直接进入老年代,当老年代内存不足时,会触发FullGC
+
+2. 避免新生代大小设置过大
+
+   这样会造成: 1.老年代变小,可能导致FullGC频繁执行; 2.minorGC执行回收的时间大幅度增加
+
+3. 避免Survivor区域过大或过小
+
+   `-XX:SurvivorRatio`参数的值过大,就意味着Eden区变大,minorGC次数会降低,但两块Survivor区会变小,如果超过Survivor区内存大小的对象在minorGC后仍没被回收,则会直接进入老年代
+
+   `-XX:SurvivorRatio`参数值设置过小，就意味着Eden区域变小，minor GC触发次数会增加,Survivor区会变大,意味着可以存储等多在minorGC后仍存活的对象,避免其进入老年代
+
+4. 合理设置对象在新生代存活的周期
+
+   新生代存活周期的值决定了新生代对象在经过多少次Minor GC后进入老年代。因此这个值要根据自己的应用来调优，Jvm参数上这个值对应的为-XX:MaxTenuringThreshold，默认值为15次。
+
+### 减少GC开销的措施
+
+1. 不要显示调用System.gc(); 此函数建议JVM进行主GC,虽然只是建议而非一定,但很多情况下它会增加主GC的频率,也即增加了间歇性停顿的次数,大大的影响系统性能
+2. 尽量减少临时对象的使用; 临时对象在跳出函数调用后,会成为垃圾,少用临时变量就相当于减少了垃圾的产生,从而延长了出现上述第二触发条件出现的时间,减少了主GC的机会
+3. 对象不用时最好显示设置为Null;一般而言,为null的对象都会被作为垃圾处理,所以将不用的对象显示的设置为null,有利于GC收集器判定垃圾,从而提高了GC的效率
+4. 尽量使用StringBuffer,而不用String来累加字符串; 由于String是固定长的字符串对象,累加String对象时,并非在一个Strig对象中扩增,而是重新创建新的String对象,如Str5=Str1+Str2+Str3+Str4,这条语句执行过程中会产生多个垃圾对象; 
+5. 能用基本类型如int,long,就不用Integer,Long对象; 基本类型变量占用的内存资源相对于对象占用的少得多,如果没有必要,最好使用基本变量
+6. 尽量少用静态对象变量; 静态变量属于全局变量,不会被GC会回收,他们会一直占用内存;
+7. 分散对象创建或删除的时间; 集中在端时间内大量创建新对象,特别是大对象,会导致突然需要大量内存,JVM在面临这种情况时,只能进行主GC,以回收内存或整合内存碎片,从而增加主GC的频率; 集中删除对象道理也一样;
+
+
+
+# 参考文档
+
+[深入详细讲解JVM原理](https://blog.csdn.net/know9163/article/details/80574488)
+
+https://www.cnblogs.com/yuechuan/p/8984262.html
+
+http://blog.itpub.net/29609890/viewspace-2219916/
