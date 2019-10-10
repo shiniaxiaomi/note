@@ -473,6 +473,38 @@ public class ImportTest {
 
    > 结果: Dog{age=1, name='jack', cat=Cat{name='cat'}}
 
+#### 关于ApplicationContextEvent的自定义事件
+
+1. ContextRefreshedEvent
+
+   在`ApplicationContext`初始化或刷新时触发该事件
+
+2. ContextStartedEvent
+
+   在`ApplicationContext`调用`start()`方法时触发该事件
+
+3. ContextStoppedEvent
+
+   在`ApplicationContext`调用`stop()`方法时触发该事件
+
+4. ContextClosedEvent
+
+   在`ApplicationContext`调用`close()`方法时触发该事件
+
+5. RequestHandledEvent
+
+   一个特定于Web的事件,在所有Bean HTTP的请求完成后,触发该事件; 此事件仅适用于使用Spring的Web应用程序`DispatcherServlet`
+
+6. ServletRequestHandledEvent
+
+   该类的子类`RequestHandledEvent`添加了特定于Servlet的上下文信息
+
+```java
+
+```
+
+
+
 ### Java Bean
 
 
