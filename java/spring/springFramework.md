@@ -499,19 +499,482 @@ public class ImportTest {
 
    该类的子类`RequestHandledEvent`添加了特定于Servlet的上下文信息
 
-```java
+继承对应的事件父类
 
+ContextClosedEventTest:
+
+```java
+@Component
+public class ContextClosedEventTest extends ContextClosedEvent {
+    public ContextClosedEventTest(ApplicationContext source) throws InterruptedException {
+        super(source);
+        System.out.println("Closed");
+        Thread.sleep(1000);
+    }
+}
 ```
 
+ContextRefreshedEventTest:
 
+```java
+@Component
+public class ContextRefreshedEventTest extends ContextRefreshedEvent {
+    public ContextRefreshedEventTest(ApplicationContext source) throws InterruptedException {
+        super(source);
+        System.out.println("Refreshed");
+        Thread.sleep(1000);
+    }
+}
+```
+
+ContextStartedEventTest:
+
+```java
+@Component
+public class ContextStartedEventTest extends ContextStartedEvent {
+
+    public ContextStartedEventTest(ApplicationContext source) throws InterruptedException {
+        super(source);
+        System.out.println("Started");
+        Thread.sleep(1000);
+    }
+}
+```
+
+ContextStoppedEventTest:
+
+```java
+@Component
+public class ContextStoppedEventTest extends ContextStoppedEvent {
+    public ContextStoppedEventTest(ApplicationContext source) throws InterruptedException {
+        super(source);
+        System.out.println("Stopped");
+        Thread.sleep(1000);
+    }
+}
+```
+
+EventTest:
+
+```java
+@Component
+@ComponentScan("annotation.event")
+public class EventTest{
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(EventTest.class);
+    }
+}
+```
+
+> 运行结果:
+>
+> Closed
+> Refreshed
+> Started
+> Stopped
 
 ### Java Bean
 
+#### bean的作用域
 
+默认将每个IOC容器中的bean设置为单例,使用scope注解可以改变其为多例
 
+#### bean的生命周期
 
+生命周期流程图:
+
+![](.img/.SpringFramework/20160802083636909)
+
+具体流程:
+
+1. 实例化`BeanFactoryPostProcessor`
+2. 执行`BeanFactoryPostProcessor`的`postProcessBeanFactory()`方法
+3. 实例化`BeanPostProcessor`实现类
+4. 实例化`InstantiationAwareBeanPostProcessor`实现类
+5. 执行`InstantiationAwareBeanPostProcessor`的`postProcessBeforInstantiation()`方法
+6. 执行Bean的构造方法
+7. 执行`InstantiationAwareBeanPostProcessor`的`postProcessPropertyValues()`方法
+8. 为Bean注入属性
+9. 调用`BeanNameAware`的`setBeanName()`方法
+10. 调用`BeanFactoryAware`的`setBeanFactory()`方法
+11. 执行`BeanPostProcess`的`postProcessBeforeInitialization()`方法
+12. 执行`InitializingBean`的`afterPropertiesSet()`方法
+13. 调用Bean的init-method属性执行的初始化方法
+14. 执行`BeanPostProcessor`的`postProcessAfterInitialization()`方法
+15. 执行`InstantiationAwareBeanPostProcessor`的`postProcessAfterInitialization()`方法
+16. 容器初始化成功,执行业务代码后,下面开始销毁容器
+17. 调用`DiposibleBean`的`Destory()`方法
+18. 调用Bean的destory-method属性指定的初始化方法
+
+#### bean的生命周期中的回调函数Demo
+
+```java
+@Component
+public class BeanEvent implements BeanPostProcessor, InstantiationAwareBeanPostProcessor {
+    
+    //在bean的构造函数之前调用
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+        System.out.println("postProcessBeforeInstantiation:"+beanName);
+        return null;
+    }
+
+    //在bean的构造函数之后调用
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessAfterInstantiation:"+beanName);
+        return false;
+    }
+
+    //在给bean设置属性的时候调用
+    public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessProperties:"+beanName);
+        return null;
+    }
+
+    //在bean初始化之前调用
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessBeforeInitialization:"+beanName);
+        return null;
+    }
+
+    //在bean初始化之后调用
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("postProcessAfterInitialization:"+beanName);
+        return null;
+    }
+}
+```
+
+测试类:
+
+```java
+@Component
+@ComponentScan("annotation.beanTest")
+public class BeanTest {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(BeanTest.class);
+    }
+}
+```
+
+> 运行结果:
+>
+> postProcessBeforeInstantiation:beanTest
+> postProcessAfterInstantiation:beanTest
+> postProcessBeforeInitialization:beanTest
+> postProcessAfterInitialization:beanTest
 
 ## AOP(重要)
+
+AOP即面向切面编程
+
+使用AOP需要引入对应的maven依赖(AspectJ)
+
+> 其实只需要AspectJ的aspectjweaver.jar(可以使用注解方式),Spring AOP的实现是使用JDK自带的aop实现的
+
+```xml
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>1.9.4</version>
+</dependency>
+```
+
+### 定义概念
+
+- Aspect
+
+  切面,是公共抽取出来的模块的集中点; 使用`@Aspect`注解来定义一个切面类
+
+- Join point
+
+  连接点,在程序执行过程中的一个点,例如方法的执行或异常的处理等; 在Spring AOP中,连接点始终代表方法的执行
+
+- Advice
+
+  通知,切面在特定的连接点处所采取的操作,如前置通知,后置通知等
+
+- Pointcut
+
+  切入点,和连接点匹配的谓词,建议与切入点表达式配合使用; 切入点表达式匹配的连接点的概念是AOP的核心
+
+- Target object
+
+  一个或多个切面通知的对象,也称通知对象; 由于Spring AOP是使用运行时代理实现的,因此该对象始终是代理对象
+
+- AOP proxy
+
+  AOP代理对象,由AOP框架创建的一个对象,用于实现切面编程; 在Spring Framework中,AOP代理是JDK动态代理或CGLIB代理
+
+- Weaving
+
+  编织,将切面与其他对象链接以创建通知的对象; 这可以在编译时（例如使用AspectJ编译器）,加载时或在运行时完成,像其他纯Java AOP框架一样,Spring AOP时在运行时执行编织的;
+
+### AOP的5种通知机制
+
+- Before advice
+
+  前置通知,在方法运行前调用
+
+- After returning advice
+
+  返回通知,在方法的返回时调用
+
+- After throwing advice
+
+  异常通知,在方法抛出异常时调用
+
+- After (finally) advice
+
+  后置通知,在方法结束后调用
+
+- Around advice
+
+  环绕通知,在方法的调用前后都会被调用
+
+### 切点表达式
+
+//todo
+
+
+
+
+
+### xml配置-AOP使用Demo
+
+1. 定义一个业务类
+
+   ```java
+   //它将在xml中注入到IOC容器中
+   public class Person {
+       public String hello(String str) throws Exception {
+           System.out.println("打招呼:"+str);
+           int i=0;//是否抛出异常的开关,用于测试异常通知
+           if(i==1){
+               throw new Exception("java");
+           }
+           return str;
+       }
+   }
+   ```
+
+2. 定义一个切面的处理类
+
+   > 发生通知后会调用该处理类的对应的方法
+
+   ```java
+   public class AspectClass {
+       
+       //前置通知
+       public void beforeLog(){
+           System.out.println("before log");
+       }
+       
+       //后置通知
+       public void afterLog(){
+           System.out.println("after log");
+       }
+       
+       //环绕通知
+       public void aroundLog(ProceedingJoinPoint pjp) throws Throwable {
+           //============在业务方法执行之前
+           System.out.println("aroundBeforeLog");
+           //============在业务方法执行之前
+           pjp.proceed();//执行业务方法
+           //============在业务方法执行之后
+           System.out.println("aroundAfterLog");
+           //============在业务方法执行之后
+       }
+       
+       //返回通知
+       //不获取返回值
+   //    public void afterReturningLog(){
+   //        System.out.println("afterReturning log");
+   //    }
+       //需要获取返回值
+       public void afterReturningLog(Object retVal){
+           System.out.println("afterReturning log:"+retVal);
+       }
+       
+       //异常通知
+       //不获取异常信息
+   //    public void afterThrowingLog(){
+   //        System.out.println("afterThrowing log");
+   //    }
+       //需要获取异常信息
+       public void afterThrowingLog(Exception ex){
+           System.out.println("afterThrowing log:"+ex.getMessage());
+       }
+   }
+   ```
+
+3. 配置xml文件
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8" ?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+   
+       <!-- 将业务类注入IOC容器 -->
+       <bean id="person" class="xml.AOP.Person"></bean>
+   
+       <!-- 将切面类注入IOC容器 -->
+       <bean id="aspectClass" class="xml.AOP.AspectClass"></bean>
+       
+       <!-- 开启AOP功能 -->
+       <aop:aspectj-autoproxy/>
+   
+       <!-- AOP的配置 -->
+       <aop:config>
+           <!-- 声明一个切面,并指定切面处理类 -->
+           <aop:aspect id="aspectClass" ref="aspectClass">
+               <!-- 声明一个可重用的切点 -->
+               <aop:pointcut id="log" expression="execution(* hello(..))"></aop:pointcut>
+   
+               <!-- 指定前置通知要调用的方法 -->
+               <aop:before method="beforeLog" pointcut-ref="log"></aop:before>
+               <!-- 指定后置通知要调用的方法 -->
+               <aop:after method="afterLog" pointcut="execution(* hello(..))"></aop:after>
+   
+               <!-- 指定环绕通知要调用的方法 -->
+               <!-- 发现一个问题:如果使用环绕通知后,则返回通知将无法获取到返回值(所以推荐使用前置通知和后置通知) -->
+               <!--<aop:around method="aroundLog" pointcut-ref="log" arg-names="pjp"></aop:around>-->
+   
+               <!-- 指定返回通知要调用的方法 -->
+               <!-- 不获取返回值 -->
+               <!--<aop:after-returning method="afterReturningLog" pointcut-ref="log"></aop:after-returning>-->
+               <!-- 需要获取返回值 -->
+               <aop:after-returning method="afterReturningLog" returning="retVal" pointcut-ref="log"></aop:after-returning>
+   
+               <!-- 指定异常通知要调用的方法 -->
+               <!-- 不获取异常信息 -->
+               <!--<aop:after-throwing method="afterThrowingLog" pointcut-ref="log"></aop:after-throwing>-->
+               <!-- 需要获取异常信息 -->
+               <aop:after-throwing method="afterThrowingLog" throwing="ex" pointcut-ref="log"></aop:after-throwing>
+           </aop:aspect>
+       </aop:config>
+   </beans>
+   ```
+
+4. 测试类
+
+   > 加载配置文件,获取业务类并调用其方法
+
+   ```java
+   public class AOPTest {
+       public static void main(String[] args) throws Exception {
+           ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("xml/springAOP.xml");
+           context.getBean(Person.class).hello("hello");//获取对象并调用对应的方法
+       }
+   }
+   ```
+
+   > 运行结果:
+   >
+   > before log
+   > 打招呼:hello
+   > after log
+   > afterReturning log:hello
+
+### 注解配置-AOP使用Demo
+
+1. 定义一个业务类
+
+   ```java
+   @Component //该业务类必须要被IOC容器管理
+   public class Person {
+       public String hello(String str) throws Exception {
+           System.out.println("打招呼:"+str);
+           int i=0;//是否抛出异常的开关,用于测试异常通知
+           if(i==1){
+               throw new Exception("java");
+           }
+           return str;
+       }
+   }
+   ```
+
+2. 定义一个切面类
+
+   ```java
+   @Component
+   @Aspect //标记该类为一个切面类,该注解不能被IOC容器扫描到,所以需要加上@Component才能够被处理
+   public class AspectClass {
+       //定义一个可重复使用的切点
+       @Pointcut("execution(* hello(..))") //使用切点表达式来选择需要切入(织入)的方法
+       public void log(){}
+   
+       //前置通知
+       @Before(value = "log()")
+       public void beforeLog(){
+           System.out.println("before log");
+       }
+   
+       //后置通知
+       @After("execution(* hello(..))")
+       public void afterLog(){
+           System.out.println("after log");
+       }
+   
+       //环绕通知
+   //    @Around("log()")
+   //    public void aroundLog(ProceedingJoinPoint pjp) throws Throwable {
+   //        //============在业务方法执行之前
+   //        System.out.println("aroundBeforeLog");
+   //        //============在业务方法执行之前
+   //        pjp.proceed();//执行业务方法
+   //        //============在业务方法执行之后
+   //        System.out.println("aroundAfterLog");
+   //        //============在业务方法执行之后
+   //    }
+   
+       //返回通知
+       //不获取返回值
+   //    @AfterReturning("log()")
+   //    public void afterReturningLog(){
+   //        System.out.println("afterReturning log");
+   //    }
+       //需要获取返回值
+       @AfterReturning(pointcut = "log()",returning = "retVal")
+       public void afterReturningLog(Object retVal){
+           System.out.println("afterReturning log:"+retVal);
+       }
+   
+       //异常通知
+       //不获取异常信息
+   //    @AfterThrowing("log()")
+   //    public void afterThrowingLog(){
+   //        System.out.println("afterThrowing log");
+   //    }
+       //需要获取异常信息
+       @AfterThrowing(pointcut = "log()",throwing = "ex")
+       public void afterThrowingLog(Exception ex){
+           System.out.println("afterThrowing log:"+ex.getMessage());
+       }
+   }
+   ```
+
+3. 开启AOP功能
+
+   ```java
+   @Configuration
+   @EnableAspectJAutoProxy //使用注解开启AOP(该类需要被IOC管理才能生效,所以需要加上@Configuration或者@Component)
+   @ComponentScan("annotation.AOP")
+   public class AOPTest {
+       public static void main(String[] args) throws Exception {
+           AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AOPTest.class);
+           context.getBean(Person.class).hello("hello");//获取对象并调用对象被切面的方法(该对象必须是被IOC容器管理的)
+       }
+   }
+   ```
+
+   > 运行结果:
+   >
+   > before log
+   > 打招呼:hello
+   > after log
+   > afterReturning log:hello
 
 ## 静态资源
 
