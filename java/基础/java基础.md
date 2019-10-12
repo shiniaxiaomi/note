@@ -155,8 +155,6 @@ char数据类型可以存储任何字符
 
 所有的包装类（Integer、Long、Byte、Double、Float、Short）都是抽象类Number的子类。
 
-![img](../jdk/.img/.java%E5%9F%BA%E7%A1%80/1459506097805010.jpg)
-
 - 整数型
   - Byte
   - Short
@@ -274,10 +272,6 @@ String c = new String("chenssy");
 ```
 
 > new关键字一定会产生一个对象chenssy(注意这个chenssy和上面的chenssy不同),同时这个对象是存储在堆中的,所以上面应该产生了两个对象: 保存在栈中的c和保存在堆中的chenssy,但是在java根本就不存在两个完全一摸一样的字符串对象,故堆中的chenssy应该是引用字符串常量池中的chenssy; 
-
-具体的关系图如下:
-
-![img](../jdk/.img/.java%E5%9F%BA%E7%A1%80/249993-20161107151613077-1171623003.png)
 
 总结:
 
