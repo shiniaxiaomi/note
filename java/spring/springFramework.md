@@ -679,6 +679,8 @@ AOP即面向切面编程
 </dependency>
 ```
 
+spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,`@ComponentScan`,`@Bean`,`@Aspect`,`@Pointcut`等,像web应用中的`@Controller`,`@RequestMapping`等,都可以利用AOP来实现
+
 ### 定义概念
 
 - Aspect
@@ -731,7 +733,7 @@ AOP即面向切面编程
 
   环绕通知,在方法的调用前后都会被调用
 
-### 切点表达式
+### 切点表达式(excution)
 
 表达式的语法:
 
@@ -751,43 +753,184 @@ AOP即面向切面编程
 
 #### 常用切入点表达式
 
-1. 任何公共方法的执行
+切入点的理解:
+
+- 切入点可以理解成是一个上下两层的刀,在指定的方法中切开,方法就会存在于两把刀的中间,而两把刀的中间内容就可以看作是一个点,是连接上面部分和下面部分的点,所以叫做切入点,也叫连接点; 之后我们可以在切入点之前或之后做一些与业务无关的事情,如日志,事务等,这样就可以很好的解耦;
+
+切入点表达式总共分为以下几类:
+
+- 方法描述匹配
+
+  1. `execution()`: 用于匹配方法执行的连接点
+
+- 方法参数匹配
+
+  1. `args()`: 用于匹配当前执行的方法传入的参数为指定类型的执行方法
+  2. `@args()`: 用于匹配当前执行的方法传入的参数持有指定注解的执行方法
+
+- 目标类匹配
+
+  1. `target()`: 用于匹配当前目标对象类型的指定方法;
+
+     > 注意是目标对象的类型匹配,这样就不包括引入接口的类型匹配
+
+  2. `@target()`: 用于匹配当前目标对象类型的指定方法,其中目标对象持有指定的注解
+
+  3. `within()`: 用于匹配指定对象类型内的方法
+
+  4. `@within()`: 用于匹配所有指定注解类型的方法
+
+- 标有指定注解的方法匹配
+
+  1. `@annotation()`: 用于匹配当前执行方法标注指定注解的方法
+
+- 匹配指定名称的bean对象的方法
+
+  1. `bean()`: SpringAOP扩展的表达式,AspectJ没有对应的表达式, 其用于匹配指定名称的bean对象的方法
+
+参考文档:
+
+- [官方文档](https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#aop-pointcuts-designators)
+- [其他博客](https://www.cnblogs.com/duanxz/p/5217689.html)
+
+##### execution表达式
+
+1. 任何公共方法
 
    ```java
-   execution(public * *(..))
+   @Pointcut("execution(public * * (..))")
    ```
 
 2. 任何名称以set开头的方法
 
    ```java
-   execution(* set*(..))
+   @Pointcut("execution(* set* (..))")
    ```
 
    > 可以使用正则表达式来进行方法名的匹配
 
-3. `AccountService`接口定义的任何方法
+3. 某个类的所有方法
 
    ```java
-    execution(* com.xyz.service.AccountService.*(..))
+   @Pointcut("execution(* annotation.AOP.Person.* (..))")
    ```
 
-4. `service`包中定义的任何方法
+4. `AOP`包中所有类的所有方法
 
    ```java
-    execution(* com.xyz.service..(..))
+   @Pointcut("execution(* annotation.AOP.*.* (..))")
    ```
 
-   
+5. `AOP`包或其子包中定义的任何方法
 
-5. `service`包或其子包中定义的任何方法
+   ```java
+   @Pointcut("execution(* annotation.AOP..* (..))")
+   ```
 
-6. `service`包的任何连接点
+##### within表达式
 
-7. `service`包或其子包中的任何连接点
+用来指定包中或类中的所有方法,指定的粒度比execution要大
 
-#### 组合节点表达式
+1. 指定Person类中的所有方法
 
+   ```java
+   @Pointcut("within(annotation.AOP.Person)")
+   ```
 
+2. 指定`AOP`包中的所有类
+
+   ```java
+   @Pointcut("within(annotation.AOP.*)")
+   ```
+
+3. 指定`AOP`包或其子包中的所有方法
+
+   ```java
+   @Pointcut("within(annotation.AOP..*)") 
+   ```
+
+##### args表达式
+
+这个属于动态切入点,开销会比较大,最好减少使用
+
+查询接收了哪些参数的方法,该表达式一般可用在接收到前端传过来的form表单的切面
+
+1. 指定接收了一个参数为String类型的所有方法
+
+   ```java
+   @Pointcut("args(java.lang.String)")
+   ```
+
+##### @annotation表达式
+
+##### bean表达式
+
+指定IOC容器中的bean的名称,那么该bean的所有方法都会被匹配,我们可以使用组合切点表达式使得切点的粒度更小
+
+##### 如果是面向接口去切面
+
+定义一个接口类
+
+```java
+public interface StudyInterfacee {
+    public void study();
+}
+```
+
+实现该接口
+
+```java
+@Component
+public class Person implements StudyInterfacee {
+     public void study() {
+        System.out.println("study");
+    }
+}
+```
+
+测试
+
+```java
+@Configuration
+@EnableAspectJAutoProxy //使用注解开启AOP(该类需要被IOC管理才能生效,所以需要加上@Configuration或者@Component)
+@ComponentScan("annotation.AOP")
+public class AOPTest {
+    public static void main(String[] args) throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AOPTest.class);
+        ((StudyInterfacee)context.getBean("person")).study();//获取对象并调用实现的接口中的方法
+        //或者这样使用
+        //context.getBean(StudyInterfacee.class)).study();
+    }
+}
+```
+
+> 注意: 在获取使用了AOP并且实现了接口的Javabean时,不能再去用原类型获取Javabean,因为使用了代理,所有类型已经发生了变化,我们可以使用Javabean的id(获取后需要转成接口类型)或者是接口类型去获取对应的Javabean
+>
+> 即我们可以使用的方法会被限定在接口中定义的方法
+
+#### 组合切点表达式
+
+可以将切入点进行组合,也可以将切点表达式继续组合
+
+示例:
+
+```java
+//定义一个切点
+@Pointcut("execution(* hello(..))")
+public void log(){}
+
+//切点和切点表达式组合
+@Before(value = "log() && execution(* study(..))")
+public void beforeLog()  {
+    System.out.println("before log");
+}
+
+//切点表达式和切点表达式组合
+@After("execution(* hello(..)) && @annotation(annotation.AOP.LYJ)")
+public void afterLog(){
+    System.out.println("after log");
+}
+```
 
 ### xml配置-AOP使用Demo
 
@@ -1026,6 +1169,8 @@ AOP即面向切面编程
    > after log
    > afterReturning log:hello
 
+### 自定义注解,并使用AOP进行切面使用,可实现参数校验或事务等
+
 ## 静态资源
 
 ## 数据校验
@@ -1049,3 +1194,5 @@ AOP即面向切面编程
 [springFramework官方文档](https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/)
 
 [springFramework API](https://docs.spring.io/spring/docs/5.2.0.RELEASE/javadoc-api/)
+
+[aspectj官方API](https://www.eclipse.org/aspectj/doc/released/runtime-api/index.html)
