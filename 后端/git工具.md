@@ -33,7 +33,7 @@ git config --global user.email "email@example.com"
 
 `git init`
 
-> 初始化好git仓库之后,会在文件夹下多出一个`.git`的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。
+> 初始化好git仓库之后,会在文件夹下多出一个`.Git`的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。
 
 ## 把文件添加到版本库
 
@@ -130,7 +130,7 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 
 
-![1565353821636](./.img/.git工具/1565353821636.png)
+![1565353821636](./.img/.Git工具/1565353821636.png)
 
 > 目前的版本指针指向的是最顶上的最新节点
 
@@ -146,7 +146,7 @@ Date:   Fri May 18 20:59:18 2018 +0800
 
 版本状态图
 
-![1565354190680](./.img/.git工具/1565354190680.png)
+![1565354190680](./.img/.Git工具/1565354190680.png)
 
 ---
 
@@ -178,15 +178,15 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
 
 就是电脑上能够看到的目录,比如`learngit`文件夹就是一个工作区：
 
-![working-dir](./.img/.git工具/0.png)
+![working-dir](./.img/.Git工具/0.png)
 
 ### 版本库（Repository）-包含了暂存区
 
-工作区有一个隐藏目录`.git`，这个不算工作区，而是Git的版本库。**版本库中包含着暂存区**
+工作区有一个隐藏目录`.Git`，这个不算工作区，而是Git的版本库。**版本库中包含着暂存区**
 
 Git的版本库里存了很多东西，其中最重要的就是称为**stage（或者叫index）的暂存区**，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
 
-![1565355268609](./.img/.git工具/1565355268609.png)
+![1565355268609](./.img/.Git工具/1565355268609.png)
 
 > 在`git add .`后,当前修改的文件都会加入到暂存区,在`git commit`后,会把暂存区添加当前分支(默认是master分支)的head节点
 
@@ -270,7 +270,7 @@ $ git commit -m "remove test.txt"
 
 ## 关联远程仓库
 
-`git remote add origin git@github.com:michaelliao/learngit.git`
+`git remote add origin git@github.com:michaelliao/learngit.Git`
 
 > 这样就直接让本地关联上了远程的仓库,但是本地的内容还没有同步到远程仓库,所以还需要将本地仓库推送到远程
 >
@@ -282,7 +282,7 @@ $ git commit -m "remove test.txt"
 
 ## 拉取远程仓库
 
-`git clone https://github.com/shiniaxiaomi/note.git`
+`git clone https://github.com/shiniaxiaomi/note.Git`
 
 > 直接从拉取远程仓库到本地,并直接做好关联,就可以直接使用了
 
@@ -302,7 +302,7 @@ $ git commit -m "remove test.txt"
 
 `HEAD`严格来说不是指向提交，而是指向`master`，`master`才是指向提交的，所以，`HEAD`指向的就是当前分支。如下图所示:
 
-![1565409404088](./.img/.git工具/1565409404088.png)
+![1565409404088](./.img/.Git工具/1565409404088.png)
 
 每次提交，`master`分支都会向前移动一步，这样，随着你不断提交，`master`分支的线也越来越长。
 
@@ -310,7 +310,7 @@ $ git commit -m "remove test.txt"
 
 当我们创建新的分支，例如`dev`时，Git新建了一个指针叫`dev`，指向`master`相同的提交，再把`HEAD`指向`dev`，就表示当前分支在`dev`上：
 
-![1565409527909](./.img/.git工具/1565409527909.png)
+![1565409527909](./.img/.Git工具/1565409527909.png)
 
 所以,Git创建一个分支很快，因为除了增加一个`dev`指针，改改`HEAD`的指向，工作区的文件都没有任何变化！
 
@@ -318,17 +318,17 @@ $ git commit -m "remove test.txt"
 
 从现在开始，对工作区的修改和提交就是针对`dev`分支了，比如新提交一次后，`dev`指针往前移动一步，而`master`指针不变：
 
-![git-br-dev-fd](./.img/.git工具/0-1565409653004.png)
+![git-br-dev-fd](./.img/.Git工具/0-1565409653004.png)
 
 
 
 假如我们在`dev`上的工作完成了，就可以把`dev`合并到`master`上。Git怎么合并呢？最简单的方法，就是直接把`master`指向`dev`的当前提交，就完成了合并：
 
-![git-br-ff-merge](./.img/.git工具/0-1565409749594.png)
+![git-br-ff-merge](./.img/.Git工具/0-1565409749594.png)
 
 合并完分支后，甚至可以删除`dev`分支。删除`dev`分支就是把`dev`指针给删掉，删掉后，我们就剩下了一条`master`分支：
 
-![git-br-rm](./.img/.git工具/0-1565409790707.png)
+![git-br-rm](./.img/.Git工具/0-1565409790707.png)
 
 
 
@@ -492,7 +492,7 @@ $ git commit -m "conflict fixed"
 
 现在，`master`分支和`feature1`分支变成了下图所示：
 
-![git-br-conflict-merged](./.img/.git工具/0-1565415846652.png)
+![git-br-conflict-merged](./.img/.Git工具/0-1565415846652.png)
 
 
 
@@ -550,7 +550,7 @@ Deleted branch feature1 (was 14096d0).
 
 所以，团队合作的分支看起来就像这样：
 
-![git-br-policy](./.img/.git工具/0-1565425746153.png)
+![git-br-policy](./.img/.Git工具/0-1565425746153.png)
 
 ## Bug分支
 
@@ -689,8 +689,8 @@ stash@{0}: WIP on dev: f52c633 add merge
 >
 > ```cmd
 > $ git remote -v
-> origin  git@github.com:michaelliao/learngit.git (fetch)
-> origin  git@github.com:michaelliao/learngit.git (push)
+> origin  git@github.com:michaelliao/learngit.Git (fetch)
+> origin  git@github.com:michaelliao/learngit.Git (push)
 > ```
 >
 > 上面显示了可以抓取(fetch)和推送(push)的`origin`的地址。如果没有推送权限，就看不到push的地址。
@@ -717,7 +717,7 @@ $ git push
 
 ### 抓取分支
 
-`git clone git@github.com:michaelliao/learngit.git`
+`git clone git@github.com:michaelliao/learngit.Git`
 
 >  默认情况下只能拉取到mster分支上的内容
 
@@ -878,7 +878,7 @@ Deleted tag 'v0.1' (was f15b0dd)
 
    ```cmd
    $ git push origin :refs/tags/v0.9
-   To github.com:michaelliao/learngit.git
+   To github.com:michaelliao/learngit.Git
     - [deleted]         v0.9
    ```
 
@@ -891,7 +891,7 @@ Deleted tag 'v0.1' (was f15b0dd)
 > ```cmd
 > $ git push origin --tags
 > Total 0 (delta 0), reused 0 (delta 0)
-> To github.com:michaelliao/learngit.git
+> To github.com:michaelliao/learngit.Git
 >  * [new tag]         v0.9 -> v0.9
 > ```
 
@@ -913,11 +913,11 @@ Deleted tag 'v0.1' (was f15b0dd)
 
 在github中先选择要fork的仓库,比如人气极高的bootstrap项目,点`Fork`就在自己的账号下克隆了一个bootstrap仓库,然后，从自己的账号下clone
 
-> 一定要从自己的账号下clone仓库，这样你才能推送修改。如果从bootstrap的作者的仓库地址`git@github.com:twbs/bootstrap.git`克隆，因为没有权限，你将不能推送修改。
+> 一定要从自己的账号下clone仓库，这样你才能推送修改。如果从bootstrap的作者的仓库地址`git@github.com:twbs/bootstrap.Git`克隆，因为没有权限，你将不能推送修改。
 
 Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/bootstrap`，以及你自己克隆到本地电脑的仓库，他们的关系就像下图显示的那样：
 
-![1565444764864](./.img/.git工具/1565444764864.png)
+![1565444764864](./.img/.Git工具/1565444764864.png)
 
 如果你想修复bootstrap的一个bug，或者新增一个功能，立刻就可以开始干活，干完后，往自己的仓库推送。
 
@@ -933,7 +933,7 @@ Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/boo
 
 ## 忽略文件
 
-在Git工作区的根目录下创建一个特殊的`.gitignore`文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
+在Git工作区的根目录下创建一个特殊的`.Gitignore`文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
 
 忽略文件的原则是：
 
@@ -971,14 +971,14 @@ build
 > - 以方括号“[]”包含单个字符的匹配列表；
 > - 以叹号“!”表示不忽略(跟踪)匹配到的文件或目录。
 >
-> 注意： git 对于 .gitignore配置文件是按行从上到下进行规则匹配的
+> 注意： git 对于 .Gitignore配置文件是按行从上到下进行规则匹配的
 
-最后一步就是把`.gitignore`也提交到Git，就完成了
+最后一步就是把`.Gitignore`也提交到Git，就完成了
 
 ### 小结
 
-- 忽略某些文件时，需要编写`.gitignore`；
-- `.gitignore`文件本身要放到版本库里，并且可以对`.gitignore`做版本管理！
+- 忽略某些文件时，需要编写`.Gitignore`；
+- `.Gitignore`文件本身要放到版本库里，并且可以对`.Gitignore`做版本管理！
 
 ## 配置别名
 
@@ -1016,10 +1016,10 @@ $ git config --global alias.br branch
 
 配置Git的时候，加上`--global`是针对当前用户起作用的，如果不加，那只针对当前的仓库起作用。
 
-配置文件放哪了？每个仓库的Git配置文件都放在`.git/config`文件中：
+配置文件放哪了？每个仓库的Git配置文件都放在`.Git/config`文件中：
 
 ```cmd
-$ cat .git/config 
+$ cat .Git/config 
 [core]
     repositoryformatversion = 0
     filemode = true
@@ -1028,7 +1028,7 @@ $ cat .git/config
     ignorecase = true
     precomposeunicode = true
 [remote "origin"]
-    url = git@github.com:michaelliao/learngit.git
+    url = git@github.com:michaelliao/learngit.Git
     fetch = +refs/heads/*:refs/remotes/origin/*
 [branch "master"]
     remote = origin
@@ -1039,10 +1039,10 @@ $ cat .git/config
 
 别名就在`[alias]`后面，要删除别名，直接把对应的行删掉即可。
 
-而当前用户的Git配置文件放在用户主目录下的一个隐藏文件`.gitconfig`中：
+而当前用户的Git配置文件放在用户主目录下的一个隐藏文件`.Gitconfig`中：
 
 ```cmd
-$ cat .gitconfig
+$ cat .Gitconfig
 [alias]
     co = checkout
     ci = commit
@@ -1061,7 +1061,7 @@ $ cat .gitconfig
 
 在实际开发中,一个仓库(通常只放一个项目)主要存放在两条主分支: master和develop分支; 这个两个分支的生命周期时整个项目周期; 就是说,自创建出来后就不会删除,会随着项目的不断开发不断添加新代码; master分支是在创建git仓库时自动生成的,随即我们就需要从master分支上创建develop分支; 过程如图所示
 
-![这里写图片描述](.img/.git%E5%B7%A5%E5%85%B7/20180624162549140.png)
+![这里写图片描述](.img/.Git%E5%B7%A5%E5%85%B7/20180624162549140.png)
 
 - master
 
@@ -1085,7 +1085,7 @@ $ cat .gitconfig
 
   必须从develop分支创建,完成功能编写后需要合并回develop分支,过程如图所示
 
-  ![这里写图片描述](.img/.git%E5%B7%A5%E5%85%B7/20180624170234573-1569341259011.png)
+  ![这里写图片描述](.img/.Git%E5%B7%A5%E5%85%B7/20180624170234573-1569341259011.png)
 
   
 
@@ -1105,11 +1105,11 @@ $ cat .gitconfig
 
   该分支必须从master分支创建(如原来master分支中的tag为v1.2.0,那么该分支名称则应创建为hotfix-v1.2.1),完成bug修复并上线后,要合并回主分支(master和develop分支),并将master分支打上一个tag标签,标记发布上线后的版本(修改bug一般会在原来版本号的基础的最后一位加上1,如原来版本是v1.2.0,那么修复完bug发布上线的版本为v1.2.1),过程如图所示:
 
-  ![这里写图片描述](.img/.git%E5%B7%A5%E5%85%B7/20180624172850247.png)
+  ![这里写图片描述](.img/.Git%E5%B7%A5%E5%85%B7/20180624172850247.png)
 
 ## 总结图
 
-![这里写图片描述](.img/.git%E5%B7%A5%E5%85%B7/20180624174835949.png)
+![这里写图片描述](.img/.Git%E5%B7%A5%E5%85%B7/20180624174835949.png)
 
 # 问题
 
@@ -1154,7 +1154,7 @@ $ cat .gitconfig
 
 ```shell
 remote: HTTP Basic: Access denied
-fatal: Authentication failed for 'http://******/java/gh-assemble.git/'
+fatal: Authentication failed for 'http://******/java/gh-assemble.Git/'
 ```
 
 问题原因
