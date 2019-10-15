@@ -145,7 +145,7 @@ CALL命令可以在批处理执行过程中调用另一个批处理，当另一�
   >
   > IF EXIST autoexec.bat echo 文件存在！
 
-## **setlocal**(变量延迟加载)
+## setlocal(变量延迟加载)
 
 没有开启延迟加载
 
