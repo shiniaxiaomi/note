@@ -1,7 +1,12 @@
 :: 在使用前还需要进行git和vscode的环境变量配置
 :: 将C:\Program Files\Microsoft VS Code\bin和C:\Program Files\Git\cmd加入到环境变量中即可
 :: 需要自行修改note文件夹的路径
-@set myPath=C:\Users\%userName%\Documents\note\
+@set drive=D:
+@set myPath=%drive%\note\
+
+:: 切换到note目录下
+@cd %myPath%
+@ %drive%
 
 :rechoose
 @set /p choice=请选择push,pull,merge: 
@@ -22,9 +27,8 @@
 
 :gitpush
 @set /p message=输入提交信息: 
-@cd %myPath%
 git add .
-git commit -m %message%
+git commit -m '%message%'
 git push
 @set /p isMerge=如果没有报错直接回车即可退出,如果报错则输入pull来解决冲突: 
 @ if not '%isMerge%' == '' (
@@ -36,7 +40,6 @@ git push
 exit
 
 :gitpull
-@cd %myPath%
 git pull
 @ if '%flag%'=='open' (
     code %myPath%
