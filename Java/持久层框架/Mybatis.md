@@ -877,7 +877,12 @@ MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用
 
 >  这些类中方法的细节可以通过查看每个方法的签名来发现，或者直接查看 MyBatis 发行包中的源代码。 如果你想做的不仅仅是监控方法的调用，那么你最好相当了解要重写的方法的行为。 因为如果在试图修改或重写已有方法的行为的时候，你很可能在破坏 MyBatis 的核心模块。 这些都是更底层的类和方法，所以使用插件的时候要特别当心。 
 
- 通过 MyBatis 提供的强大机制，使用插件是非常简单的，只需实现 Interceptor 接口，并指定想要拦截的方法签名即可 
+现在一些MyBatis 插件比如PageHelper都是基于这个原理，有时为了监控sql执行效率，也可以使用插件机制
+原理： 
+
+![这里写图片描述](.img/.Mybatis/20180701222734152.png)
+
+通过 MyBatis 提供的强大机制，使用插件是非常简单的，只需实现 Interceptor 接口，并指定想要拦截的方法签名即可 
 
 ```java
 // ExamplePlugin.java
@@ -1564,17 +1569,90 @@ Mybatis可以把查询后的结果集映射到指定的JavaBean中,就像映射�
 </select>
 ```
 
-## 高级结果映射
+## (resultMap)高级结果映射
 
+MyBatis 创建时的一个思想是：数据库不可能永远是你所想或所需的那个样子。 我们希望每个数据库都具备良好的第三范式或 BCNF 范式，可惜它们不总都是这样。 如果能有一种完美的数据库映射模式，所有应用程序都可以使用它，那就太好了，但可惜也没有。 而 ResultMap 就是 MyBatis 对这个问题的答案。 
 
+ 比如，我们如何映射下面这个语句？ 
 
+```sql
+<!-- 非常复杂的语句 -->
+<select id="selectBlogDetails" resultMap="detailedBlogResultMap">
+  select
+       B.id as blog_id,
+       B.title as blog_title,
+       B.author_id as blog_author_id,
+       A.id as author_id,
+       A.username as author_username,
+       A.password as author_password,
+       A.email as author_email,
+       A.bio as author_bio,
+       A.favourite_section as author_favourite_section,
+       P.id as post_id,
+       P.blog_id as post_blog_id,
+       P.author_id as post_author_id,
+       P.created_on as post_created_on,
+       P.section as post_section,
+       P.subject as post_subject,
+       P.draft as draft,
+       P.body as post_body,
+       C.id as comment_id,
+       C.post_id as comment_post_id,
+       C.name as comment_name,
+       C.comment as comment_text,
+       T.id as tag_id,
+       T.name as tag_name
+  from Blog B
+       left outer join Author A on B.author_id = A.id
+       left outer join Post P on B.id = P.blog_id
+       left outer join Comment C on P.id = C.post_id
+       left outer join Post_Tag PT on PT.post_id = P.id
+       left outer join Tag T on PT.tag_id = T.id
+  where B.id = #{id}
+</select>
+```
 
+如果我们想把它映射成一个智能的对象模型,这个对象表示一篇博客,它由某位作者所写,有很多博文,每篇博文有零或多条评论和标签; 
 
+我们来看看下面这个完成的例子,它是一个非常复杂的结果映射(假设作者,博客,波文,评论和标签都是类型别名):
 
+```xml
+<!-- 非常复杂的结果映射 -->
+<resultMap id="detailedBlogResultMap" type="Blog">
+  <constructor>
+    <idArg column="blog_id" javaType="int"/>
+  </constructor>
+  <result property="title" column="blog_title"/>
+  <association property="author" javaType="Author">
+    <id property="id" column="author_id"/>
+    <result property="username" column="author_username"/>
+    <result property="password" column="author_password"/>
+    <result property="email" column="author_email"/>
+    <result property="bio" column="author_bio"/>
+    <result property="favouriteSection" column="author_favourite_section"/>
+  </association>
+  <collection property="posts" ofType="Post">
+    <id property="id" column="post_id"/>
+    <result property="subject" column="post_subject"/>
+    <association property="author" javaType="Author"/>
+    <collection property="comments" ofType="Comment">
+      <id property="id" column="comment_id"/>
+    </collection>
+    <collection property="tags" ofType="Tag" >
+      <id property="id" column="tag_id"/>
+    </collection>
+    <discriminator javaType="int" column="draft">
+      <case value="1" resultType="DraftPost"/>
+    </discriminator>
+  </collection>
+</resultMap>
+```
 
+ `resultMap` 元素有很多子元素和一个值得深入探讨的结构。 
 
+下面是`resultMap` 元素的概念视图:
 
-
+### resultMap的子标签
 
 1. `constructor` - 用于在实例化类时，注入结果到构造方法中
    - `idArg` - ID 参数；标记出作为 ID 的结果可以帮助提高整体性能
@@ -1589,15 +1667,58 @@ Mybatis可以把查询后的结果集映射到指定的JavaBean中,就像映射�
    - `case` – 基于某些值的结果映射
      - 嵌套结果映射 – `case` 本身可以是一个 `resultMap` 元素，因此可以具有相同的结构和元素，或者从别处引用一个
 
+---
 
+ResultMap 的属性列表 
 
-
+| 属性          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| `id`          | 当前命名空间中的一个唯一标识，用于标识一个结果映射集。       |
+| `type`        | 类的完全限定名, 或者一个类型别名。                           |
+| `autoMapping` | 如果设置这个属性，MyBatis将会为本结果映射开启或者关闭自动映射。 这个属性会覆盖全局的属性 autoMappingBehavior。默认值：未设置（unset）。 |
 
 ### id & result
 
-### 支持的 JDBC 类型
+```xml
+<id property="id" column="post_id"/>
+<result property="subject" column="post_subject"/>
+```
+
+这些是结果映射最基本的内容。
+
+*id* 和 *result* 元素都将**一个列的值映射到一个简单数据类型**（String, int, double, Date 等）的属性或字段。 
+
+两者不同之处是:  *id* 元素的结果将是对象的标识属性，这会在比较对象实例时用到。 这样可以提高整体的性能，尤其是进行缓存和嵌套结果映射（也就是连接映射）的时候 
+
+---
+
+ Id 和 Result 的属性 
+
+| 属性          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| `property`    | 映射Javabean中的字段名称                                     |
+| `column`      | 映射数据库中的列名                                           |
+| `javaType`    | 用来指定要映射的一个JavaBean对象类型; MyBatis 通常可以推断类型。然而，如果你映射到的是 HashMap，那么你应该明确地指定 javaType 来保证行为与期望的相一致。它的值可以是一个 Java 类的完全限定名，或一个类型别名 |
+| `jdbcType`    | JDBC 类型，所支持的 JDBC 类型参见这个表格之后的“支持的 JDBC 类型”。 只需要在可能执行插入、更新和删除的且允许空值的列上指定 JDBC 类型。这是 JDBC 的要求而非 MyBatis 的要求。如果你直接面向 JDBC 编程，你需要对可能存在空值的列指定这个类型。 |
+| `typeHandler` | 我们在前面讨论过默认的类型处理器。使用这个属性，你可以覆盖默认的类型处理器。 这个属性值是一个类型处理器实现类的完全限定名，或者是类型别名。 |
+
+### 支持的JDBC类型
+
+为了以后可能的使用场景，MyBatis 通过内置的 jdbcType 枚举类型支持下面的 JDBC 类型。
+
+|            |           |               |                 |           |             |
+| ---------- | --------- | ------------- | --------------- | --------- | ----------- |
+| `BIT`      | `FLOAT`   | `CHAR`        | `TIMESTAMP`     | `OTHER`   | `UNDEFINED` |
+| `TINYINT`  | `REAL`    | `VARCHAR`     | `BINARY`        | `BLOB`    | `NVARCHAR`  |
+| `SMALLINT` | `DOUBLE`  | `LONGVARCHAR` | `VARBINARY`     | `CLOB`    | `NCHAR`     |
+| `INTEGER`  | `NUMERIC` | `DATE`        | `LONGVARBINARY` | `BOOLEAN` | `NCLOB`     |
+| `BIGINT`   | `DECIMAL` | `TIME`        | `NULL`          | `CURSOR`  | `ARRAY`     |
 
 ### 构造方法
+
+
+
+
 
 ### 关联
 
@@ -1617,19 +1738,582 @@ Mybatis可以把查询后的结果集映射到指定的JavaBean中,就像映射�
 
 ### 鉴别器
 
-### 自动映射
+## 自动映射
 
-## cache(缓存)
+ MyBatis 可以为你自动映射查询结果。但如果遇到复杂的场景，你需要构建一个结果映射 ; 但是Mybatis允许你可以混合使用这两种方式;
 
-## cache-ref
+### 自动映射查询结果
+
+Mybatis会获取结果中返回的列明并在Java类中查找相同名字的属性(忽略大小写); 这意味着如果发现了ID列和id属性,Mybatis就会将列ID的值赋值给对象的id属性
+
+通过数据库列使用大写字母组成的单词命名,单词间用下划线分隔; 而Java属性一般使用驼峰命名法,为了这两种命名方式之间启动自动映射,需要将  `mapUnderscoreToCamelCase` 设置为 true。 
+
+### 混合使用
+
+甚至在提供了结果映射后，自动映射也能工作。在这种情况下，对于每一个结果映射，在 ResultSet 出现的列，如果没有设置手动映射，将被自动映射。在自动映射处理完毕后，再处理手动映射。 
+
+在下面的例子中，*id* 和 *userName* 列将被自动映射，*hashed_password* 列将根据配置进行映射。 
+
+```xml
+<select id="selectUsers" resultMap="userResultMap">
+  select
+    user_id             as "id",
+    user_name           as "userName",
+    hashed_password
+  from some_table
+  where id = #{id}
+</select>
+```
+
+```xml
+<resultMap id="userResultMap" type="User">
+  <result property="password" column="hashed_password"/>
+</resultMap>
+```
+
+### 自定映射等级
+
+有三种自动映射等级：
+
+- `NONE` - 禁用自动映射。仅对手动映射的属性进行映射。
+- `PARTIAL` - 对除在内部定义了嵌套结果映射（也就是连接的属性）以外的属性进行映射
+- `FULL` - 自动映射所有属性。
+
+默认值是 `PARTIAL`，这是有原因的。当对连接查询的结果使用 `FULL` 时，连接查询会在同一行中获取多个不同实体的数据，因此可能导致非预期的映射。 
+
+>  你可以通过在结果映射上设置 `autoMapping` 属性来为指定的结果映射设置启用/禁用自动映射。 
+
+## 缓存(cache)
+
+MyBatis 内置了一个强大的事务性查询缓存机制，它可以非常方便地配置和定制。 
+
+默认情况下，只启用了本地的会话缓存，它仅仅对一个会话中的数据进行缓存。 要启用全局的二级缓存，只需要在你的 SQL 映射文件中添加一行： 
+
+```xml
+<cache/>
+```
+
+ 这个简单语句的效果如下: 
+
+- 映射语句文件中的所有 select 语句的结果将会被缓存。
+- 映射语句文件中的所有 insert、update 和 delete 语句会刷新缓存。
+- 缓存会使用最近最少使用算法（LRU, Least Recently Used）算法来清除不需要的缓存。
+- 缓存不会定时进行刷新（也就是说，没有刷新间隔）。
+- 缓存会保存列表或对象（无论查询方法返回哪种）的 1024 个引用。
+- 缓存会被视为读/写缓存，这意味着获取到的对象并不是共享的，可以安全地被调用者修改，而不干扰其他调用者或线程所做的潜在修改。
+
+> 注意:  缓存只作用于 cache 标签所在的映射文件中的语句。如果你混合使用 Java API 和 XML 映射文件，在共用接口中的语句将不会被默认缓存。你需要使用 @CacheNamespaceRef 注解指定缓存作用域。 
+
+ 上述的效果可以通过 cache 元素的属性来修改。比如： 
+
+```xml
+<cache
+  eviction="FIFO"
+  flushInterval="60000"
+  size="512"
+  readOnly="true"/>
+```
+
+> 这个更高级的配置创建了一个 FIFO 缓存，每隔 60 秒刷新，最多可以存储结果对象或列表的 512 个引用，而且返回的对象被认为是只读的，因此对它们进行修改可能会在不同线程中的调用者产生冲突 
+
+可用的清除策略有：
+
+- `LRU` – 最近最少使用：移除最长时间不被使用的对象。
+- `FIFO` – 先进先出：按对象进入缓存的顺序来移除它们。
+- `SOFT` – 软引用：基于垃圾回收器状态和软引用规则移除对象。
+- `WEAK` – 弱引用：更积极地基于垃圾收集器状态和弱引用规则移除对象。
+
+默认的清除策略是 LRU。
+
+flushInterval（刷新间隔）属性可以被设置为任意的正整数，设置的值应该是一个以毫秒为单位的合理时间量。 默认情况是不设置，也就是没有刷新间隔，缓存仅仅会在调用语句时刷新。
+
+size（引用数目）属性可以被设置为任意正整数，要注意欲缓存对象的大小和运行环境中可用的内存资源。默认值是 1024。
+
+readOnly（只读）属性可以被设置为 true 或 false。只读的缓存会给所有调用者返回缓存对象的相同实例。 因此这些对象不能被修改。这就提供了可观的性能提升。而可读写的缓存会（通过序列化）返回缓存对象的拷贝。 速度上会慢一些，但是更安全，因此默认值是 false。
+
+>  二级缓存是事务性的。这意味着，当 SqlSession 完成并提交时，或是完成并回滚，但没有执行 flushCache=true 的 insert/delete/update 语句时，缓存会获得更新。 
+
+### 使用自定义缓存
+
+ 除了上述自定义缓存的方式，你也可以通过实现你自己的缓存，或为其他第三方缓存方案创建适配器，来完全覆盖缓存行为。 
+
+```xml
+<cache type="com.domain.something.MyCustomCache"/>
+```
+
+ 这个示例展示了如何使用一个自定义的缓存实现。type 属性指定的类必须实现 org.mybatis.cache.Cache 接口，且提供一个接受 String 参数作为 id 的构造器。 这个接口是 MyBatis 框架中许多复杂的接口之一，但是行为却非常简单。 
+
+```java
+public interface Cache {
+  String getId();
+  int getSize();
+  void putObject(Object key, Object value);
+  Object getObject(Object key);
+  boolean hasKey(Object key);
+  Object removeObject(Object key);
+  void clear();
+}
+```
+
+### cache-ref
+
+略
 
 # 动态sql
 
-# sql语句构建起
+ MyBatis 的强大特性之一便是它的动态 SQL ,  如果你有使用 JDBC 或其它类似框架的经验，你就能体会到根据不同条件拼接 SQL 语句的痛苦。例如拼接时要确保不能忘记添加必要的空格，还要注意去掉列表最后一个列名的逗号等。利用动态 SQL 这一特性可以彻底摆脱这种痛苦 
+
+ 动态 SQL 元素和 JSTL 或基于类似 XML 的文本处理器相似; MyBatis 3 大大精简了元素种类, 现在只需学习原来一半的元素便可。MyBatis 采用功能强大的基于 OGNL 的表达式来淘汰其它大部分元素。 
+
+现在只需掌握以下几种元素:
+
+- if
+- choose (when, otherwise)
+- trim (where, set)
+- foreach
+
+## if
+
+动态SQL通常要做的事情是根据条件拼接where子句的条件,比如:
+
+```xml
+<select id="findActiveBlogWithTitleLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  WHERE state = ‘ACTIVE’
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+</select>
+```
+
+> 这条sql语句提供了一种可选的查询文本功能; 如果没有传入"title"字段,那么所有处于"ACTIVE"状态的BLOG都会返回; 反之若传入"title"字段,那么就会对"title"进行模糊查询并返回BLOG结果
+
+## choose,when,otherwise
+
+有时我们不想应用到所有的条件语句,而只想从中选择一项; 针对这种情况,Mybatis提供了choose元素,它有点像Java中的switch语句
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+  <choose>
+    <when test="title != null">
+      AND title like #{title}
+    </when>
+    <when test="author != null and author.name != null">
+      AND author_name like #{author.name}
+    </when>
+    <otherwise>
+      AND featured = 1
+    </otherwise>
+  </choose>
+</select>
+```
+
+## trim
+
+在我们使用if标签时,我们有时会遇到这样的情况:
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  WHERE
+  <if test="state != null">
+    state = #{state}
+  </if>
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+</select>
+```
+
+当我们没有传入state和title字段时,最后的sql会变成这样:
+
+```sql
+SELECT * FROM BLOG
+WHERE
+```
+
+这样会导致查询失败; 如果传入第二个title字段,sql则会变成这样:
+
+```sql
+SELECT * FROM BLOG
+WHERE
+AND title like ‘someTitle’
+```
+
+这样也会导致查询失败
+
+因此这种问题不能简单的用条件语句来决解,但是我们可以通过Mybatis提供的`trim`标签来解决该问题
+
+我们可以通过自定义 trim 元素来定制 *where* 元素的功能。比如，和 *where* 元素等价的自定义 trim 元素为： 
+
+```xml
+<trim prefix="WHERE" prefixOverrides="AND">
+  <if test="state != null">
+    And state = #{state}
+  </if>
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+</trim>
+```
+
+> `prefix="where"`定义了在trim包裹的代码前面添加"where"
+>
+> `prefixOverrides="AND"`可以去除掉最前面多余的"AND"
+>
+> `suffix="where"`可以在trim包裹的代码后面添加"where"
+>
+> `suffixOverrides=","`可以去除掉最后面多余的","
+
+## where
+
+```xml
+<select id="selectTest" resultType="test2.User">
+    SELECT * from USER
+    <where>
+        <if test="id!=null">and id=#{id}</if>
+        <if test="age!=null">and age=#{age}</if>
+    </where>
+</select>
+```
+
+> 使用where标签后,Mybatis会把帮我们把多余的and自动去除掉
+
+这个也可以通过trim标签实现
+
+```xml
+<select id="selectTest" resultType="test2.User">
+    SELECT * from USER
+    <!-- prefixOverrides表示去除掉最前面多余的and -->
+    <trim prefix="where" prefixOverrides="and">
+        <if test="id!=null">and id=#{id}</if>
+        <if test="age!=null">and age=#{age}</if>
+    </trim>,
+</select>
+```
+
+## set
+
+```xml
+<update id="upateTest" parameterType="test2.User">
+     update USER
+     <set>
+         <if test="age!=null">age=#{age},</if>
+         <if test="name!=null">name=#{name},</if>
+     </set>
+     where id=#{id},
+</update>
+```
+
+> 使用set标签后,Mybatis会帮我们把多余的`,`自动去除掉
+
+这个也可以通过trim标签实现
+
+```xml
+<update id="upateTest" parameterType="test2.User">
+     update USER
+     <!-- suffixOverrides表示去除最后多余的逗号 -->
+     <trim prefix="set" suffixOverrides=",">
+         <if test="age!=null">age=#{age},</if>
+         <if test="name!=null">name=#{name},</if>
+     </trim>
+     where id=#{id}
+</update>
+```
+
+## foreach
+
+动态 SQL 的另外一个常用的操作需求是对一个集合进行遍历，通常是在构建 IN 条件语句的时候。比如： 
+
+```xml
+<select id="selectPostIn" resultType="domain.blog.Post">
+  SELECT *
+  FROM POST P
+  WHERE ID in
+  <foreach item="item" index="index" collection="list"
+      open="(" separator="," close=")">
+        #{item}
+  </foreach>
+</select>
+```
+
+foreach元素的功能非常强大,它允许你指定一个集合,声明可以在元素内使用的集合项(item)和索引(index)变量; 它也允许你指定开头与结尾的字符串以及在迭代结果之间放置分隔符; 这个元素很之恩那个,因此它不会附加多余的分隔符
+
+> `item="item"`指明了在foreach循环中取到的每个变量可以通过#{item}来获取到
+>
+> `index="index"`指明了指明了在foreach循环中取到的每个变量的索引
+>
+> `collection="list"`指明了去遍历哪个传入的参数,其变量名称为list
+>
+> `open="(" separator="," close=")"`表示了在遍历拼接时,最前面和最后面使用`(`和`)`包裹,中间的每个元素使用`,`来进行分隔
+
+## bind
+
+bind元素可以从OGNL表达式中创建一个变量并将其绑定到上下文中,比如:
+
+```xml
+<select id="selectBlogsLike" resultType="Blog">
+  <!-- 定义一个变量名称为patter,其值可以在bind元素中做一些修改,patter可以在这个select的上下文中使用 -->
+  <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
+  SELECT * FROM BLOG
+  WHERE title LIKE #{pattern}
+</select>
+```
+
+## 多数据库支持(例如没有自增主键的数据库)
+
+ 一个配置了“_databaseId”变量的 databaseIdProvider 可用于动态代码中，这样就可以根据不同的数据库厂商构建特定的语句。比如下面的例子： 
+
+```xml
+<insert id="insert">
+  <!-- 在执行insert之前先查出数据库中id的最大值,然后再将查询出的id做insert操作的id值 -->
+  <selectKey keyProperty="id" resultType="int" order="BEFORE">
+    <if test="_databaseId == 'oracle'">
+      select seq_users.nextval from dual
+    </if>
+    <if test="_databaseId == 'db2'">
+      select nextval for seq_users from sysibm.sysdummy1"
+    </if>
+  </selectKey>
+  insert into users values (#{id}, #{name})
+</insert>
+```
+
+# Mybatis Java API
+
+https://mybatis.org/mybatis-3/zh/java-api.html
+
+## 目录结构
+
+## SqlSession
+
+```java
+<T> T selectOne(String statement, Object parameter)
+<E> List<E> selectList(String statement, Object parameter)
+<T> Cursor<T> selectCursor(String statement, Object parameter)
+<K,V> Map<K,V> selectMap(String statement, Object parameter, String mapKey)
+int insert(String statement, Object parameter)
+int update(String statement, Object parameter)
+int delete(String statement, Object parameter)
+```
+
+### 事务控制方法
+
+ 控制事务作用域有四个方法。当然，如果你已经设置了自动提交或你正在使用外部事务管理器，这就没有任何效果了。然而，如果你正在使用 JDBC 事务管理器，由Connection 实例来控制，那么这四个方法就会派上用场： 
+
+```java
+void commit()
+void commit(boolean force)
+void rollback()
+void rollback(boolean force)
+```
+
+默认情况下 MyBatis 不会自动提交事务，除非它侦测到有插入、更新或删除操作改变了数据库。如果你已经做出了一些改变而没有使用这些方法，那么你可以传递 true 值到 commit 和 rollback 方法来保证事务被正常处理（注意，在自动提交模式或者使用了外部事务管理器的情况下设置 force 值对 session 无效）。很多时候你不用调用 rollback()，因为 MyBatis 会在你没有调用 commit 时替你完成回滚操作。然而，如果你需要在支持多提交和回滚的 session 中获得更多细粒度控制，你可以使用回滚操作来达到目的。 
+
+### 本地缓存
+
+Mybatis 使用到了两种缓存：本地缓存（local cache）和二级缓存（second level cache）
+
+每当一个新 session 被创建，MyBatis 就会创建一个与之相关联的本地缓存。任何在 session 执行过的查询语句本身都会被保存在本地缓存中，那么，相同的查询语句和相同的参数所产生的更改就不会再次影响数据库了 ; 本地缓存会被增删改、提交事务、关闭事务以及关闭 session 所清空。 
+
+默认情况下，本地缓存数据可在整个 session 的周期内使用，这一缓存需要被用来解决循环引用错误和加快重复嵌套查询的速度，所以它可以不被禁用掉，但是你可以设置 localCacheScope=STATEMENT 表示缓存仅在语句执行时有效 
+
+注意，如果 localCacheScope 被设置为 SESSION，那么 MyBatis 所返回的引用将传递给保存在本地缓存里的相同对象。对返回的对象（例如 list）做出任何更新将会影响本地缓存的内容，进而影响存活在 session 生命周期中的缓存所返回的值。因此，不要对 MyBatis 所返回的对象作出更改，以防后患。
+
+你可以随时调用以下方法来清空本地缓存：
+
+```java
+void clearCache()
+```
+
+### 确保 SqlSession 被关闭
+
+```java
+void close()
+```
+
+### 显示的获取映射器
+
+```java
+<T> T getMapper(Class<T> type)
+```
+
+### Mybatis注解API和示例
+
+[映射器注解的API](https://mybatis.org/mybatis-3/zh/java-api.html#a.E6.98.A0.E5.B0.84.E5.99.A8.E6.B3.A8.E8.A7.A3)
+
+# sql语句构建器
+
+略
 
 # 缓存
 
+## 一级缓存
+
+Mybatis的一级缓存的作用域是在一个session中,当openSession()后,如果执行相同的SQL(相同语句和参数),Mybaits不会执行sql,而是从缓存中命中并返回结果
+
+原理:
+
+Mybatis执行查询时首先去缓存区查询,如果命中直接返回缓存结果,没有命中才执行sql,从数据库中查询
+
+> 在Mybatis中,一级缓存默认时开启的,并且一直无法关闭
+
+使用一级缓存的条件:
+
+- 同一个session中
+- 相同的SQL和参数进行查询
+
+---
+
+示例:
+
+```java
+public class MybatisTest {
+    public static void main(String[] args) throws Exception {
+        // 指定全局配置文件
+        String resource = "test2/mybatis-config.xml";
+        // 读取配置文件
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        // 构建sqlSessionFactory
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        // 获取sqlSession
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        try {
+            //查询
+            User user = sqlSession.selectOne("MyMapper.selectUser", 1);
+            User user1 = sqlSession.selectOne("MyMapper.selectUser", 1);
+        } finally {
+            //关闭sqlSession
+            sqlSession.close();
+        }
+    }
+}
+```
+
+> 在同一个session中查询同一个sql和参数
+
+日志的打印结果:
+
+> DEBUG [main] - ==>  Preparing: select * from user where id = ? 
+> DEBUG [main] - ==> Parameters: 1(Integer)
+> DEBUG [main] - <==      Total: 0
+
+从日志来看,对应的查询sql只执行了一次,由此推断,在同一个session中,相同的sql和参数重复查询时会从一级缓存中获取了对应的结果
+
+## 二级缓存
+
+Mybatis的**二级缓存的作用域是一个mapper的namespace**,同一namespace中查询sql可以从缓存中命中
+
+开启二级缓存步骤:
+
+1. 在对应的mapper中开启二级缓存
+
+   ```xml
+   <mapper namespace="com.zpc.mybatis.dao.UserMapper">
+       <cache/> <!-- 开启二级缓存 -->
+       ...
+   </mapper>
+   ```
+
+2. 开启二级缓存时,使用的JavaBean必须要序列化(实现Serializable接口)
+
+   ```java
+   public class User implements Serializable{
+       private static final long serialVersionUID = -3330851033429007657L;
+   ```
+
+开启二级缓存后,使用同一个mapper查询数据,如果参数相同,则会返回二级缓存中缓存的结果
+
+> 此时,不在同一个session中也会有缓存
+
+---
+
+关闭二级缓存的两种方式:
+
+- 不开启(默认是不开启的)
+
+- 在全局的mybatis-config.xml 中去关闭二级缓存 
+
+  ```xml
+  <settings>
+      <!--开启二级缓存,全局总开关，这里关闭，mapper中开启了也没用-->
+      <setting name="cacheEnabled" value="false"/>
+  </settings>
+  ```
+
 # 日志
+
+Mybatis 的内置日志工厂提供日志功能，内置日志工厂将日志交给以下其中一种工具作代理： 
+
+- SLF4J
+- Apache Commons Logging
+- Log4j 2
+- Log4j
+- JDK logging
+
+MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具。它会使用第一个查找得到的工具（按上文列举的顺序查找）。如果一个都未找到，日志功能就会被禁用。 
+
+---
+
+以下是开启日志记录的步骤:
+
+1. 我们可以在` mybatis-config.xml `配置文件中开启日志功能:
+
+   ```xml
+   <configuration>
+       <!-- 开启日志功能 -->
+       <settings>
+           <setting name="logImpl" value="LOG4J"/>
+       </settings>
+   </configuration>
+   ```
+
+   > 注意: `settings`标签的位置在`configuration`标签中是有要求的,如果位置不正确会报排列顺序错误
+   >
+   > `settings`标签需要在`properties`标签和`environments`标签中间
+
+2. 在pom文件中引入log4j的依赖
+
+   ```xml
+   <dependency>
+       <groupId>log4j</groupId>
+       <artifactId>log4j</artifactId>
+       <version>1.2.17</version>
+   </dependency>
+   ```
+
+3. 在项目的静态资源根路径创建`log4j.properties`配置文件
+
+   ```properties
+   # Global logging configuration
+   log4j.rootLogger=ERROR, stdout
+   
+   # MyBatis logging configuration...
+   # 指定需要打印的映射文件的命令空间即可(仅针对于xml的映射文件)
+   log4j.logger.MyMapper=TRACE
+   # 如果需要指定接口注解的映射则指定该类的全限定类名即可(log4j.logger保持不变)
+   # log4j.logger.com.lyj.MyMapper=TRACE
+   
+   # Console output...
+   log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+   log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+   log4j.appender.stdout.layout.ConversionPattern=%5p [%t] - %m%n
+   ```
+
+---
+
+我们可以通过设定日志级别来记录应该输出的日志:
+
+- trace： 是追踪，就是程序推进以下，你就可以写个trace输出，所以trace应该会特别多，不过没关系，我们可以设置最低日志级别不让他输出。
+- debug： 调试么，我一般就只用这个作为最低级别，trace压根不用。是在没办法就用eclipse或者idea的debug功能就好了么。
+- info： 输出一下你感兴趣的或者重要的信息，这个用的最多了。
+- warn： 有些信息不是错误信息，但是也要给程序员的一些提示，类似于eclipse中代码的验证不是有error 和warn（不算错误但是也请注意，比如以下depressed的方法）。
+- error： 错误信息。用的也比较多。
+- fatal： 级别比较高了。重大错误，这种级别你可以直接停止程序了，是不应该出现的错误么！不用那么紧张，其实就是一个程度的问题
 
 # Spring集成Mybatis
 
@@ -1637,9 +2321,11 @@ Mybatis可以把查询后的结果集映射到指定的JavaBean中,就像映射�
 
 ## Mybatis Generator的使用
 
+略
+
 ## Mybatis整合分页插件pageHelper
 
-
+略
 
 # 参考文档
 
