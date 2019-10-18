@@ -94,7 +94,7 @@ public class TreeSetDemo {
 
 ### TreeMap
 
-本质上使用了红黑树的排序二叉树的数据结构,它会根据key来进行排序
+本质上使用了红黑树的排序二叉树的数据结构,它会根据key来进行排序(保证有序)
 
 ```java
 public class TreeSetDemo {
