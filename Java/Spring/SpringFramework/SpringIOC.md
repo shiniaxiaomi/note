@@ -12,11 +12,11 @@ spring提供了IOC容器接口的几种实现:
 - 我们也可以使用`AnnotationConfigApplicationContext`类去加载使用`@Configuration`注解标注的类来创建IOC容器
 - 可以使用[`AnnotationConfigWebApplicationContext`](https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/core.html#beans-java-instantiating-container-web)类来创建web应用相关的容器
 
-`org.springframework.context.ApplicationContext`接口代表Spring IoC容器
+`org.springframework.context.ApplicationContext`接口代表SpringIOC容器
 
 下图是IOC容器实例化和配置java bean的过程图:
 
-![容器魔术](.img/.Spring IOC/container-magic.png)
+![容器魔术](.img/.SpringIOC/container-magic.png)
 
 > Spring容器先去加载所有的元数据配置,然后通过读取我们的实例类,在初始化时将元数据配置好,再将java bean返回
 
@@ -30,7 +30,7 @@ spring提供了IOC容器接口的几种实现:
 
    它会将springFramework所用到的jar包引入,如下图所示
 
-   ![1570684755986](.img/.Spring IOC/1570684755986.png)
+   ![1570684755986](.img/.SpringIOC/1570684755986.png)
 
    ```xml
    <dependency>
@@ -385,7 +385,7 @@ public class ImportTest {
 
    它会将springFramework所用到的jar包引入,如下图所示
 
-   ![1570684755986](.img/.Spring IOC/1570684755986.png)
+   ![1570684755986](.img/.SpringIOC/1570684755986.png)
 
    ```xml
    <dependency>
@@ -577,7 +577,7 @@ public class EventTest{
 
 生命周期流程图:
 
-![](.img/.Spring IOC/20160802083636909)
+![](.img/.SpringIOC/20160802083636909)
 
 具体流程:
 
