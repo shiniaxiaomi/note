@@ -250,7 +250,7 @@ LinkedHashMap继承于HashMap,其底层实现使用的是HashMap,但是它有通
 
 LinkedHashMap使用与实现图:
 
-![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-7abca1abd714341d.webp)
+![img](D:\note\.img\4843132-7abca1abd714341d.webp)
 
 HashMap的元素是无序的,当我们希望有顺序的去存储元素时,就需要使用LinkedHashMap了
 
@@ -327,11 +327,11 @@ HashSet如何保证元素唯一:
 
 HashMap:
 
-![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-2e04e0f72a751a47.webp)
+![img](D:\note\.img\4843132-2e04e0f72a751a47.webp)
 
 LinkedHashMap:
 
-![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-23488d46581b87ea.webp)
+![img](D:\note\.img\4843132-23488d46581b87ea.webp)
 
 总结:
 
