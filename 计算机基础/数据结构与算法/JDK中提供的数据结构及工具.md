@@ -70,7 +70,19 @@ public class Main {
 
 ### TreeSet
 
-TreeSet本质上是使用TreeMap来存储数据的
+TreeSet底层是通过TreeMap实现的,TreeSet是根据元素进行排序的,支持自然排序和自定义排序
+
+如果试图把一个对象添加进TreeSet时,则该对象的类必须实现Comparable接口,因为只有告诉了TreeSet怎么排序,它才会根据规则去将元素排好顺序
+
+#### 原理
+
+TreeSet是通过TreeMap来实现存储,其将元素设置为TreeMap的key,而TreeMap的value则设置为Present
+
+TreeSet怎么保证元素唯一:
+
+- 如果要把元素添加到TreeSet中,那么该元素必须要实现Comparable接口,所以每次在添加元素时,都会使用comparetor()方法去比较元素,如果返回零,则表示两个元素相同;如果返回正数,则表示新来的元素大于已有的元素;返回负数,则表示新来的元素小于已有的元素;
+
+#### Demo
 
 ```java
 public class TreeSetDemo {
@@ -94,7 +106,17 @@ public class TreeSetDemo {
 
 ### TreeMap
 
-本质上使用了红黑树的排序二叉树的数据结构,它会根据key来进行排序(保证有序)
+TreeMap是基于红黑树实现的,它不想HashMap可以进行调优(设置初始容量和加载因子),因为该树总是处于平衡状态(自平衡的二叉树),它的元素都是有序的
+
+#### 原理
+
+TreeMap是基于红黑树的NavigableMap实现的; 该映射根据其键值的自然顺序进行排序,或者根据创建映射时提供的Comparetor进行排序,具体取决于使用的构造方法;
+
+TreeMap为containsKey,get,put和remove操作都提供了log(n)的时间复杂度;
+
+TreeMap是非线程安全的,如果在多线程环境下,可以使用 `Collections.synchronizedSortedMap()`方法来"包装"该映射(而且是在创建时就完成这一操作),例如: ` SortedMap m = Collections.synchronizedSortedMap(new TreeMap(…)); `
+
+#### demo
 
 ```java
 public class TreeSetDemo {
@@ -190,6 +212,22 @@ public class JDKQueueDemo {
 
 ### HashMap
 
+HashMap是基于hash表的Map接口的实现,它提供key-value形式的键值存储,并允许使用null值和null键(处理非同步和允许使用null之外,HashMap和Hashtable基本相同),它所存储的key是无序的
+
+#### 原理
+
+HashMap使用hash函数将元素适当的分布在数组中,可为基本操作(get和put)提供稳定的性能; 
+
+HashMap的有两个参数影响其性能: `初始容量`和`加载因子`;  容量是hash表中数组的大小,`初始容量`是hash表在创建时的容量; `加载因子`是hash表在其容量自动增加之前可以达到多满的一种尺度; 当hash表中的个数超出了加载因子和当前容量大小的乘积时,则要对hash表进行rehash操作(即重建内部数据结构),从而hash表将具有大约两倍的数组大小
+
+通常,默认加载因子为0.75,它在时间和空间成本上寻求了一种折中; 加载因子过高虽然减少了空间开销,但同时也增加了查询成本(在大多数HashMap操作中) ;在设置初始容量时应该考虑到映射中所需的总数量即其加载因子,以变最大限度的减少rehash操作次数; 如果初始容量大于最大条目数除以加载因子,则不会发生rehash操作
+
+如果有很多映射关系要存储在HashMap中,则我们需要将HashMap的初始容量设置得更大,以减少rehash操作的次数
+
+HashMap是非线程安全的,如果在多线程环境下,则应该使用 ConcurrentHashMap(其原理是CAS)
+
+#### demo
+
 ```java
 public class JDKHashTableDemo {
     public static void main(String[] args) {
@@ -205,6 +243,158 @@ public class JDKHashTableDemo {
     }
 }
 ```
+
+### LinkedHashMap
+
+LinkedHashMap继承于HashMap,其底层实现使用的是HashMap,但是它有通过了链表将所有的元素串联起来,实现了可以顺序的遍历他们
+
+LinkedHashMap使用与实现图:
+
+![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-7abca1abd714341d.webp)
+
+HashMap的元素是无序的,当我们希望有顺序的去存储元素时,就需要使用LinkedHashMap了
+
+示例代码:
+
+```java
+Map<String, String> linkedHashMap = new LinkedHashMap<>();
+linkedHashMap.put("name1", "josan1");
+linkedHashMap.put("name2", "josan2");
+linkedHashMap.put("name3", "josan3");
+Set<Entry<String, String>> set = linkedHashMap.entrySet();
+Iterator<Entry<String, String>> iterator = set.iterator();
+while(iterator.hasNext()) {
+    Entry entry = iterator.next();
+    String key = (String) entry.getKey();
+    String value = (String) entry.getValue();
+    System.out.println(key + "," + value);
+}
+```
+
+> 运行结果:
+>
+> name1,josan1
+>
+> name2,josan2
+>
+> name3,josan3
+
+所以.LinkedHashMap是有序的,且默认按照元素插入的顺序排序
+
+---
+
+当我们需要通过key来获取到value时,LinkedHashMap也可以做到,这就是它区别于ArrayList和LinkedList的重大原因
+
+```java
+LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+linkedHashMap.put("name", "josan");
+String name = linkedHashMap.get("name");
+```
+
+### HashSet
+
+HashSet的底层是通过HashMap来实现的,其值保存在HashMap的key中,而HashMap的value则存储为Present
+
+HashSet的元素是无序的
+
+HashSet如何保证元素唯一:
+
+- HashSet在添加元素时,先通过计算元素的hashcode值,通过hashcode找到对应元素存放的位置,如果该位置没有元素,那么直接保存该元素; 如果位置上已经存在元素,则会再次调用equals()方法用来判断两个元素是否相等(判断引用是否相等),如果true,则不做任何操作,如果false,那么执行添加操作
+
+# 面试题
+
+## HashMap和TreeMap的区别
+
+1. 底层实现
+
+   HashMap的底层实现是Hash表和链表/红黑树
+
+   TreeMap的底层实现是红黑树
+
+2. 性能
+
+   HashMap比TreeMap的性能要好
+
+3. 排序
+
+   HashMap的元素是无序的
+
+   TreeMap的元素是有序的
+
+## HashMap和LinkedHashMap区别
+
+放两张图,秒懂:
+
+HashMap:
+
+![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-2e04e0f72a751a47.webp)
+
+LinkedHashMap:
+
+![img](.img/.JDK%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E5%B7%A5%E5%85%B7/4843132-23488d46581b87ea.webp)
+
+总结:
+
+1. LinkedHashMap是继承于HashMap,是基于HashMap和双向链表来实现的
+2. HashMap是无序的,而LinkedHashMap是有序的,可分为插入顺序和访问顺序两种; 如果是访问顺序,那put和get操作已存在的Entry时,都会把Entry移动到双向链表的尾部(其实就是先删除再插入)
+3. LinkedHashMap存取数据,还是跟HashMap一样,使用Entry[]的方式,双向链表只是为了保证顺序
+4. 他们都是线程不安全的
+
+## LinkedHashMap和TreeMap的区别
+
+1. 底层实现不同
+
+   LinkedHashMap是基于HashMap和双向链表实现的
+
+   TreeMap是基于红黑树实现的
+
+2. 排序不同
+
+   LinkedHashMap是按照插入循序排序的
+
+   TreeMap是按照元素自然排序或者自定义排序的
+
+3. 时间复杂度不同
+
+   LinkedHashMap从宏观上看是O(1)的时间复杂度
+
+   TreeMap则是log(n)的时间复杂度
+
+## HashSet和TreeSet的区别
+
+1. 底层实现不同
+
+   HashSet底层是通过HashMap实现的,其将元素设置为HashMap的key,而HashMap的value则设置为Present
+
+   TreeSet底层是通过TreeMap实现的,其将元素设置为TreeMap的key,而TreeMap的value则设置为Present
+
+2. 排序不同
+
+   HashSet的元素是无序的
+
+   TreeSet的元素支持自然排序和自定义排序
+
+3. 时间复杂度不同
+
+   HashSet从宏观上看是O(1)的时间复杂度
+
+   TreeSet则是log(n)的时间复杂度
+
+## HashMap和HashSet的区别
+
+1. 保存的类型不同
+
+   HashMap保存的是一种映射关系
+
+   HashSet保存的仅仅是值
+
+2. 底层实现
+
+   HashSet就是通过HashMap来实现的
+
+3. 排序
+
+   他们的元素都是无序的
 
 # 工具
 
