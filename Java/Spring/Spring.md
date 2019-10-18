@@ -8,7 +8,7 @@
 
 ## Spring Framework
 
-[SpringFramework-index笔记](./SpringFramework/SpringFramework-index.md)
+[SpringFramework笔记](./SpringFramework/SpringFramework.md)
 
 ## Spring Cloud
 
