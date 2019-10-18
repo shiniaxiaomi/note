@@ -72,7 +72,7 @@
 ```
 ![image](https://note.youdao.com/favicon.ico)
 ```
-![image](.markdown/favicon.ico)
+![image](D:/note/.img/favicon.ico)
 
 # 超链接
 ```
