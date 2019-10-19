@@ -12,7 +12,7 @@ Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以�
 
 2. 引入mysql的maven依赖
 
-   ```maven
+   ```xml
    <dependency>
        <groupId>mysql</groupId>
        <artifactId>mysql-connector-java</artifactId>
