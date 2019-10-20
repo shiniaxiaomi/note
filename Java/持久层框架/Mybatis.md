@@ -2317,6 +2317,8 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 
 # Spring集成Mybatis
 
+[Mybatis-Spring整合笔记](D:\note\Java\持久层框架\Mybatis-Spring整合.md)
+
 # Mybatis插件
 
 ## Mybatis Generator的使用
@@ -2332,3 +2334,4 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 [Mybatis实战教程](https://blog.csdn.net/hellozpc/article/details/80878563)
 
 [Mybatis中文官网](https://mybatis.org/mybatis-3/zh/getting-started.html)
+
