@@ -258,6 +258,27 @@ SpringMVC的Controller默认使用单例的优点:
    private ThreadLocal<Integer> count = new ThreadLocal<Integer>();
    ```
 
+总结:
+
+1. 在`@Controller`/`@Service`注解的类中,scope值是默认是(singleton)单例的,是线程不安全的。
+2. 尽量不要在`@Controller`/`@Service`注解的类中定义静态变量，不论是单例(singleton)还是多实例(prototype),都是线程不安全的。
+3. 默认注入的Bean对象(如果该对象的状态是不确定的话,即会被修改和查询),在不设置scope为原型(prototype)的时候也是线程不安全的。
+4. 如果一定要定义变量的话，用ThreadLocal来封装，这个是线程安全的
+
+# SpringMVC对于高并发做了哪些处理
+
+ https://www.cnblogs.com/areyouready/p/7780893.html 
+
+
+
+在由spring管理的下,所有的servlet在IOC容器初始化的时候都已经加载完毕,包含这个最重要的DispatchServlet
+
+DispatchServlet在多个用户同时访问的情况下,每个用户的请求都会起一个线程来进行访问web服务,但是web服务中DispatchServlet是单例的,那么多个线程都会使用同一个DispatchSevlet进行请求的转发,但是在DispatchServlet转发的过程中,并没有涉及到修改数据的内容,而都是进行查询映射,查询handler,使用反射调用方法,new一个参数对象并设值,这些操作都不会导致多线程中的数据不一致(大部分是查询的,不会有线程不安全的问题;还有一个是new对象并设置,这个操作是每个线程都会new一个各自对应的对象并设置,所以也不会冲突),所以在用户并发访问导致多线程请求时,在DispatchServlet进行转发时,是不会造成线程不安全的问题的
+
+上述内容参考文档:  https://blog.csdn.net/Sugar_Rainbow/article/details/88663990 
+
+
+
 # ...(待完善)
 
  springmvc的入口是一个servlet即前端控制器（DispatchServlet），而struts2入口是一个filter过虑器（StrutsPrepareAndExecuteFilter）。 
