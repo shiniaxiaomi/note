@@ -260,7 +260,7 @@ SpringMVC的Controller默认使用单例的优点:
 
 # ...(待完善)
 
-
+ springmvc的入口是一个servlet即前端控制器（DispatchServlet），而struts2入口是一个filter过虑器（StrutsPrepareAndExecuteFilter）。 
 
 
 
