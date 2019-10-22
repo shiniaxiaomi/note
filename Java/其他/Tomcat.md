@@ -373,21 +373,111 @@ Tomcat各组件的关系图
 
 ## 日志概述
 
+日志分为两种,系统日志和控制台日志
+
+- 系统日志
+
+  主要包含运行中日志和访问日志,分为5类:  catalina、localhost、manager、localhost_access、host-manager。在logging.properties文件中进行配置。 
+
+- 控制台日志
+
+   包含了catalina日志，另外包含了程序输出的日志（System打印，Console），可以将其日志配置输出到文件catalina.out中。 
+
 ## 日志级别
+
+日志的级别分为如下 7 种：
+
+SEVERE (highestvalue) > WARNING > INFO > CONFIG > FINE > FINER > FINEST (lowest value)
 
 ##  系统日志 
 
+1. catalina日志
+
+   Catalina引擎的日志文件，文件名catalina.日期.log 
+
+2. localhost日志
+
+   Tomcat下内部代码抛出异常的日志，文件名localhost.日期.log 
+
+3. localhost_access
+
+   默认 tomcat 不记录访问日志，server.xml文件中配置**Valve**可以使 tomcat 记录访问日志 
+
+4. manager,host-manager
+
+   Tomcat下默认manager应用日志 
+
 ##  控制台日志 
+
+在Linux系统中，Tomcat 启动后默认将很多信息都写入到 catalina.out 文件中，我们可以通过tail -f catalina.out 来跟踪Tomcat 和相关应用运行的情况 
+
+在windows下，我们使用startup.bat启动Tomcat以后，会发现catalina日志与Linux记录的内容有很大区别，大多信息只输出到屏幕而没有记录到catalina.out里面 
+
+下面将要实现在Windows下,将相关的控制台输出记录到后台的catalina.out文件中以便将来查看:
+
+1. 打开bin下面的 startup.bat文件，把最下面一行的`call "%EXECUTABLE%" start %CMD_LINE_ARGS% `改为 `call "%EXECUTABLE%" run %CMD_LINE_ARGS%`
+
+   > 注：上面这样设置之后，运行tomcat后，日志就不会实时显示到tomcat运行窗口了。 
+
+2. 打开bin下面的 catalina.bat文件，会发现文件里共有4处  `%ACTION%` ，在后面分别加上 `\>> %CATALINA_HOME%\logs\catalina.out` 
+
+   > 注：windows中反斜杠和 linux是反的 
+
+   重启tomcat，就会发现在logs文件夹下出现了catalina.out文件，把原来控制台的信息全写进去了。
+
+   但输出的这个catalina.out文件，是一直增长的，也就是文件会越来越大。
+
+3. 按照上面的修改，tomcat所有的日志都会写入到logs/catalina.out文件内，如果想要按天来生成日志文件，可以在 `%ACTION%` 后添加  `>> %CATALINA_HOME%/logs/catalina.%date:~0,4%-%date:~5,2%-%date:~8,2%.out`
+
+   生成的格式为 catalina.yyyy-mm-dd.out（yyyy代表4位年份，mm代表为2位月份，dd代表两位日期） 
 
 # 发布和优化
 
-## 发布的三种方式
+## 发布的几种方式
 
-##  加载JVM配置 
+1. 在server.xml文件中找到`<Host>`标签元素，在其下使用`<Context>`标签配置，一个`<Context>`标签就代表一个web应用
 
+   - path属性：虚拟目录的名称，也就是对外访问路径。
 
+   - docBase属性：web应用所在硬盘中目录地址
 
+   - reloadable属性：是否自动重新部署Web项目（项目内容修改后），建议false 
 
+   示例:
+
+   ```xml
+   <Host appBase="webapps" autoDeploy="true" name="localhost" unpackWARs="true">
+       <Context path="/myWebApp" docBase="D:\myWebApp"  reloadable="false"/>
+   </Host>
+   ```
+
+   > 每次配置server.xml文件后，必须重启Tomcat服务器。
+
+2. 自动映射webapps目录 
+
+   tomcat服务器会自动管理webapps目录下的所有web应用，并把它映射成虚似目录。
+
+   所以我们只需要将我们要部署的项目文件复制到webapps目录下,重启tomcat即可完成部署
+
+##  JVM的配置
+
+1. windows环境
+
+   在tomcat 的bin下catalina.bat 里 ,在 `set CURRENT_DIR=%cd%`后面添加JVM参数 :
+
+   ```shell
+   set JAVA_OPTS=-Xms512m -Xmx512m -XX:ParallelGCThreads=8 -XX:PermSize=128m -XX:MaxPermSize=256m 
+   ```
+
+2. linux环境 
+
+   bin/catalina.sh 里，在`# OS specific support. $var _must_ be set to either true or false.`后，在`cygwin=false`位置前，其实就shell代码开头，添加参数 
+
+   ```shell
+   set JAVA_OPTS=-Xms512m -Xmx512m -XX:ParallelGCThreads=8 -XX:PermSize=128m -XX:MaxPermSize=256m 
+   ```
+
+   然后运行startup.sh即可启动
 
 # 参考文档
 
