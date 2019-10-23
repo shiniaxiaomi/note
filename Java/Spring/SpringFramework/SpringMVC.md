@@ -186,6 +186,60 @@ public class TestController {
 
 ![1571582370580](D:\note\.img\1571582370580.png)
 
+# SpringMVC的具体流程
+
+![2019-10-23_134114](D:\note\.img\2019-10-23_134114-1571809408167.jpg)
+
+> 流程是自己画的,可能还存在一些表达不清楚的地方,可以看下面的文字解释
+
+具体流程:
+
+当请求到达DispatchServlet后
+
+1. 步骤1和步骤2过程
+
+   根据request请求路径查询对应的处理器执行链
+
+   > 执行DispatchServlet的getHandler(HttpServletRequest)方法, 从HandlerMapping的子类集合中遍历,并根据请求路径路径匹配处对应的处理器执行链
+   >
+   > 处理器执行链包含了我们注册的拦截器和请求对应的handler方法(Controller中的方法)
+
+2. 步骤3过程
+
+   遍历处理执行链对象中的拦截器的集合,挨个执行每个拦截器的preHandler()方法
+
+3. 获取对应的HandlerAdapter对象
+
+   DispatchServlet会调用getHandlerAdapter(handler)方法获取对应的HandlerAdapter对象
+
+   > HandlerAdapter是一个接口,它由很多的具体实现,DispatchServlet会根据我们请求路径对应的handler方法的类型找到对应的具体是来处理请求
+
+4. 步骤4,5,6,7过程
+
+   由HandlerAdapter进行对请求的处理,并返回ModelAndView
+
+   > 具体的HandlerAdapter子类调用handler(request,response,handle)方法,传入request和handle对象
+   >
+   > 在handler中,会分别进行数据绑定,调用传入的实际的handle方法,生成并返回ModelAndView对象
+
+5. 步骤8过程
+
+   遍历处理执行链对象中的拦截器的集合,挨个执行每个拦截器的postHandler()方法
+
+6. 步骤9过程
+
+   DispatchServlet将ModelAndView交由视图解析器处理渲染,并返回渲染后的视图响应给用户
+
+> 重要: 在步骤6的过程中,如果我们的方法上标注了@RequestBody注解,那么DispatchServlet将不会调用视图解析器进行视图渲染,而是直接将返回的数据序列化并以json的格式返回给用户
+
+从宏观上来看整个流程:
+
+1. DispatchServlet根据请求找到对应要处理的HandlerAdapter对象
+2. 遍历拦截器链并执行每个拦截器的preHandler()方法
+3. HandlerAdapter对象调用我们的Controlelr中的业务逻辑方法,并生成ModelAndView对象
+4. 遍历拦截器链并执行每个拦截器的postHandler()方法
+5. 返回ModelAndView并进行视图渲染,再返回给用户
+
 # SpringMVC核心内容
 
 - DispatchServlet: 前置控制器,是整个流程控制的核心,控制其他组件的执行,进行统一调度,降低组件之间的耦合度,相当于总指挥
@@ -736,24 +790,6 @@ public class WebConfig implements WebMvcConfigurer {
     cache-period="31556926" />
 ```
 
-# SpringMVC的具体流程
-
-![在这里插入图片描述](D:\note\.img\20190630145911981.png)
-
-具体流程:
-
-1. 浏览器发送请求--->`DispatchServlet`(前端控制器),前端控制器收到请求后自己不进行处理,而是将请求交给`HandlerMapping`(映射处理器)进行处理,他作为统一的访问点,进行全局的流程控制
-2. `DispatchServlet`--->`HandlerMapping`,映射处理器会把请求映射为HandlerExecutionChain对象(包括了Handler处理器对象和多个HandlerInterceptor拦截器对象)
-3. `DispatchServlet`--->`HandlerAdapter`,适配处理器将会把处理器包装为适配器,从而支持多种类型的处理器,级适配器设计模式的应用,从而很容易支持很多类型的处理器
-4. `HandlerAdapter`--->调用`Handler`处理器,并返回一个`ModelAndView`对象(包含模型数据,逻辑视图)
-5. `ModelAndView`对象--->`ViewResolver`(视图解析器),视图解析器把逻辑视图名解析为具体的`View`对象
-6. `View`--->渲染,View会更具传进来的Model数据进行渲染,此处的Model实际是一个Map数据结构
-7. 返回控制权给DispatchServlet,由DispatchServlet返回响应给用户,到此一个流程结束
-
-更具体的流程图如下:
-
-![img](D:\note\.img\1251492-20180705094400040-827941963.png)
-
 # SpringMVC的线程安全
 
 SpringMVC和Servlet一样也是线程不安全的
@@ -814,7 +850,188 @@ DispatchServlet在多个用户同时访问的情况下,每个用户的请求都�
 
 # SpringMVC源码解析
 
-...
+最核心的类DispatchServlet
+
+```java
+public class DispatcherServlet extends FrameworkServlet {
+    //最核心的方法doDispatch
+    protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		HttpServletRequest processedRequest = request;
+		HandlerExecutionChain mappedHandler = null;
+		boolean multipartRequestParsed = false;
+
+		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+
+		try {
+			ModelAndView mv = null;
+			Exception dispatchException = null;
+
+			try {
+				processedRequest = checkMultipart(request);
+				multipartRequestParsed = (processedRequest != request);
+
+				//获取正真的mappedHandler(它包含了我们注册的拦截器和Controller中对应的方法)
+                //它的详细方法在下方,可以参考
+				mappedHandler = getHandler(processedRequest);
+				if (mappedHandler == null) {
+					noHandlerFound(processedRequest, response);
+					return;
+				}
+
+				//根据我们请求方法的类型找到对应HandlerAdapter,用于处理我们请求方法的一些操作
+                //HandlerAdapter会做以下操作:如绑定数据,调用执行方法,返回数据或视图等
+                //这里只是先找到对应处理我们请求的HandlerAdapter,正真的执行处理还在下面执行
+				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+
+				String method = request.getMethod();
+				boolean isGet = "GET".equals(method);
+				if (isGet || "HEAD".equals(method)) {
+					long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
+					if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) {
+						return;
+					}
+				}
+
+                //执行已经注册的拦截器的preHandler方法
+				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+					return;
+				}
+
+				//调用HandlerAdapter执行处理,在这里才是正真的执行我们Controller中定义的方法
+                //因为在这里会传入从mappedHandler中获取的对应实例的handler方法,并执行
+                //在执行的前后,会做绑定数据,返回数据或视图等操作
+				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+
+				if (asyncManager.isConcurrentHandlingStarted()) {
+					return;
+				}
+
+                //设置视图名称
+				applyDefaultViewName(processedRequest, mv);
+                //执行已经注册的拦截器的postHandler方法
+				mappedHandler.applyPostHandle(processedRequest, response, mv);
+			}
+			catch (Exception ex) {
+				dispatchException = ex;
+			}
+			catch (Throwable err) {
+				dispatchException = new NestedServletException("Handler dispatch failed", err);
+			}
+            //在这里对HandlerAdapter返回的视图结果进行处理(即渲染视图)
+			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
+		}
+		catch (Exception ex) {
+			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
+		}
+		catch (Throwable err) {
+			triggerAfterCompletion(processedRequest, response, mappedHandler,
+					new NestedServletException("Handler processing failed", err));
+		}
+		finally {
+			if (asyncManager.isConcurrentHandlingStarted()) {
+				if (mappedHandler != null) {
+                  mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+				}
+			}
+			else {
+				if (multipartRequestParsed) {
+					cleanupMultipart(processedRequest);
+				}
+			}
+		}
+	}
+    
+    //根据HttpServletRequest获取对应的处理器执行链
+    @Nullable
+	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		if (this.handlerMappings != null) {
+            //遍历所有的handlerMappings
+            //将request对象中的url请求路径当作一个key,去每个handlerMapping的urlMap中,
+            //查询对应的处理器执行链(它包括了我们的拦截器和handler方法),并返回
+			for (HandlerMapping mapping : this.handlerMappings) {
+				HandlerExecutionChain handler = mapping.getHandler(request);
+				if (handler != null) {
+					return handler;
+				}
+			}
+		}
+		return null;
+	}
+}
+```
+
+下面是要给具体的HandlerAdapter的一个具体实现,用来处理以下请求的一个适配器
+
+如果我们请求的url为`http://localhost:8080/test?name=1`,那么DispatchServlet就会为我们适配一个RequestMappingHandlerAdapter类来处理对应的请求
+
+```java
+public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
+		implements BeanFactoryAware, InitializingBean {
+    
+    //执行对应的Handler方法,并在其前后做一些处理,如绑定数据等
+    @Nullable
+	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
+			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
+
+		ServletWebRequest webRequest = new ServletWebRequest(request, response);
+		try {
+            //创建@InitBinder注解的方法的工厂类
+			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+			//创建@ModelAttribute@ControllerAdvice注解方法工厂
+            ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
+
+			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
+			if (this.argumentResolvers != null) {
+				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
+			}
+			if (this.returnValueHandlers != null) {
+				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
+			}
+			invocableMethod.setDataBinderFactory(binderFactory);
+			invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
+
+            //创建结果容器并初始化一些参数，
+			ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+			mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
+            //执行@ModelAttribute注解的方法，将结果放到结果容器中
+			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
+			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
+
+			AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
+			asyncWebRequest.setTimeout(this.asyncRequestTimeout);
+
+			WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+			asyncManager.setTaskExecutor(this.taskExecutor);
+			asyncManager.setAsyncWebRequest(asyncWebRequest);
+			asyncManager.registerCallableInterceptors(this.callableInterceptors);
+			asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);
+
+			if (asyncManager.hasConcurrentResult()) {
+				Object result = asyncManager.getConcurrentResult();
+				mavContainer = (ModelAndViewContainer) asyncManager.getConcurrentResultContext()[0];
+				asyncManager.clearConcurrentResult();
+				LogFormatUtils.traceDebug(logger, traceOn -> {
+					String formatted = LogFormatUtils.formatValue(result, !traceOn);
+					return "Resume with async result [" + formatted + "]";
+				});
+				invocableMethod = invocableMethod.wrapConcurrentResult(result);
+			}
+
+            //继续执行方法
+			invocableMethod.invokeAndHandle(webRequest, mavContainer);
+			if (asyncManager.isConcurrentHandlingStarted()) {
+				return null;
+			}
+
+			return getModelAndView(mavContainer, modelFactory, webRequest);
+		}
+		finally {
+			webRequest.requestCompleted();
+		}
+	}
+    
+}
+```
 
 # 参考手册
 
@@ -825,3 +1042,6 @@ DispatchServlet在多个用户同时访问的情况下,每个用户的请求都�
 [官网文档](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html)
 
 [csdn-博客](https://blog.csdn.net/litianxiang_kaola/article/details/79169148#commentsedit)
+
+
+
