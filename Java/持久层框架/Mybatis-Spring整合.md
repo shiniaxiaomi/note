@@ -12,25 +12,9 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
 
 最终,可以做到应用代码不依赖于Mybaits,Spring和Mybatis-Spring;
 
-# 入门
+# 快速入门
 
-本章将会以简略的步骤告诉你如何安装和配置Mybatis-Spring,并构建一个简单的具备事务管理功能的数据访问应用程序
-
-## 安装
-
-引入Mybatis-Spring的相关依赖即可进行安装
-
-```xml
-<dependency>
-  <groupId>org.mybatis</groupId>
-  <artifactId>mybatis-spring</artifactId>
-  <version>2.0.3</version>
-</dependency>
-```
-
-## 快速上手
-
-### 使用xml配置
+## 使用xml配置
 
 要和Spring一起使用Mybaits,需要在Spring上下文定义至少两个东西: 
 
@@ -204,7 +188,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    }
    ```
 
-### 使用注解配置
+## 使用注解配置
 
 要和Spring一起使用Mybaits,需要在Spring上下文定义至少两个东西: 
 
@@ -345,6 +329,120 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
        }
    }
    ```
+
+# 原理
+
+## SqlSessionFactoryBean
+
+我们使用`SqlSessionFactoryBean`来创建`sqlSessionFactory`注入到IOC容器中
+
+`SqlSessionFactoryBean`的属性:
+
+1. `DataSource` 
+
+   必须传入
+
+   在`sqlSessionFactory`中需要使用到该属性,配置如下:
+
+   ```xml
+   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+       <property name="dataSource" ref="dataSource" />
+   </bean>
+   ```
+
+2. `configLocation `
+
+   不是必须传入
+
+   该属性用来执行Mybatis的xml配置文件路径,它在需要修改Mybatis的基础配置时非常的有用,你可以执行你自定义的Mybatis配置文件来覆盖默认的配置,示例如下
+
+   ```xml
+   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+       <property name="configLocation" value="classpath:mybatis-config.xml"/>
+   </bean>
+   ```
+
+3.  `mapperLocations`  
+
+   不是必须传入
+
+   该属性可以指定映射器XML文件的位置,指定后加载指定目录的所有mapper.xml文件
+
+   Mybatis首先会在映射器接口类对应的路径下找映射器XML文件,如果没找到,则需要进行配置,有两种方式:
+
+   1. 手动在Mybatis的xml配置文件中的`<mappers>`中执行xml文件的路径
+
+   2. 使用该属性指定映射器xml文件的目录,它会加载指定目录下的所有mapper.xml文件,具体可以这样配置:
+
+      ```xml
+      <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="mapperLocations" value="classpath*:sample/config/mappers/**/*.xml" />
+      </bean>
+      ```
+
+      > 这会从类路径下加载所有在` sample.config.mappers ` 包和它的子包中的 MyBatis 映射器 XML 配置文件。 
+
+4. `transactionFactoryClass`
+
+   不是必须传入
+
+   当你需要事务时,可以对该属性进行设置,具体参考事务章节的内容
+
+## 事务
+
+Mybatis-Spring借助了Spring中的 `DataSourceTransactionManager`来实现事务管理
+
+一旦配置好了Spring的事务管理器,你就可以使用 @Transactional 注解或 AOP来实现事务 
+
+在事务期间,一个单独的`SqlSession`对象将会被创建和使用
+
+当事务完成时,这个`SqlSession`会以合适的方法提交或回滚
+
+### 配置
+
+1. 要开启Spring的事务,需要在Spring的配置文件中创建一个 `DataSourceTransactionManager`  对象:
+
+   ```xml
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     <constructor-arg ref="dataSource" />
+   </bean>
+   ```
+
+   > 这里传入的datasource必须和用来创建`SqlSessionFactoryBean`的是同一个数据源,否则事务管理器就无法生效
+
+2. 在Spring中指定一个 `JtaTransactionManager`对象或由容器指定的一个子类作为事务管理器
+
+   可以参考以下几种方式:
+
+   1. 使用Spring的事务命名空间(简单)
+
+   2. 使用  `JtaTransactionManagerFactoryBean`
+
+      ```xml
+      <tx:jta-transaction-manager />
+      ```
+
+   > 在这个配置中,Spring会自动使用任何一个存在的容器事务管理器,并注入一个SqlSession
+
+### 编程式事务管理
+
+ https://mybatis.org/spring/zh/transactions.html#programmatic 
+
+## SqlSession
+
+在Mybatis中,可以通过 `SqlSessionFactory` 来创建 `SqlSession` ,然后你可以通过`SqlSession` 来执行映射了的sql语句,提交或回滚,在关闭`SqlSession` 
+
+在使用 MyBatis-Spring 之后 ,我们不再需要直接使用`SqlSessionFactory` ,因为我们的JavaBean中可以被MyBatis-Spring注入一个线程安全的SqlSession,它能基于Spring的事务配置来自动提交,回滚和关闭SqlSession
+
+
+
+
+
+
+
+
+
+
 
 # SqlSessionFactoryBean
 
@@ -625,7 +723,7 @@ public class UserDaoImpl extends SqlSessionDaoSupport implements UserDao {
 </bean>
 ```
 
-如果映射器接口UserMapper在相同的类路径下由对应的Mybatis xml映射器配置文件,将会被 `MapperFactoryBean`  自动解析;不需要在Mybatis配置文件中显示配置映射器,除非映射器配置文件与接口类不在同一个类路径下;
+如果映射器接口UserMapper在相同的类路径下有对应的Mybatis xml映射器配置文件,将会被 `MapperFactoryBean`  自动解析;不需要在Mybatis配置文件中显示配置映射器,除非映射器配置文件与接口类不在同一个类路径下;
 
 > 注意 `MapperFactoryBean` 需要配置一个 `SqlSessionFactory` 或 `SqlSessionTemplate`。它们可以分别通过 `sqlSessionFactory` 和 `sqlSessionTemplate` 属性来进行设置。如果两者都被设置，`SqlSessionFactory` 将被忽略。由于 `SqlSessionTemplate` 已经设置了一个 session 工厂，`MapperFactoryBean` 将使用那个工厂。 
 
