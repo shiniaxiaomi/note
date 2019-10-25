@@ -90,6 +90,60 @@ SSM框架是由Spring,SpringMVC和Mybatis三大框架组合而成的,这也是�
 
 
 
+配置文件:
+
+spring.xml:
+
+> 公共共享的bean
+
+1. spring的内容
+
+   service层
+
+2. 两个mybaits-spring整合的内容
+
+   dao层(mapper),线程安全,因为SqlSessionTempalate
+
+springmvc.xml
+
+> 独有的bean
+
+1. controller层,会产生线程不安全
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 参考文档
