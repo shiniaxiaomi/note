@@ -27,6 +27,11 @@
 
 :gitpush
 @set /p message=输入提交信息: 
+
+@echo "%message%"
+
+pause
+exit
 git add .
 git commit -m '%message%'
 git push
