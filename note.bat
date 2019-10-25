@@ -28,12 +28,8 @@
 :gitpush
 @set /p message=输入提交信息: 
 
-@echo "%message%"
-
-pause
-exit
 git add .
-git commit -m '%message%'
+git commit -m "%message%"
 git push
 @set /p isMerge=如果没有报错直接回车即可退出,如果报错则输入pull来解决冲突: 
 @ if not '%isMerge%' == '' (
