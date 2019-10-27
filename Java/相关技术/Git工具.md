@@ -23,7 +23,7 @@ git config --global user.email "email@example.com"
 
 ## linux安装git
 
-`sudo apt-get install git`
+`sudo yum install git`
 
 # 创建版本库
 

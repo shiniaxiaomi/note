@@ -435,6 +435,26 @@ Linux 系统中，所有系统默认的软件都存储在 /usr 目录下, /usr �
   1.  `cat /etc/issue`，此命令也适用于所有的Linux发行版。 
   2. ` cat /etc/redhat-release `,  这种方法只适合Redhat系的Linux 
 
+# 环境变量
+
+- 编辑配置文件(永久修改)
+
+   `vim /etc/profile`
+
+-  在profile文件最下方中添加所需配置
+
+  ```shell
+  #set mysql environment
+  export MYSQL_HOME=/usr/local/mysql
+  export PATH=$PATH:${MYSQL_HOME}/bin
+  ```
+
+  > 需要添加什么就创建什么变量路径,然后添加到PATH中
+
+- 使用配置文件立即生效
+
+  `source /etc/profile`
+
 # 打包和压缩(tar|zip)
 
 打包是指将多个文件打包成一个文件,但是并不进行压缩
@@ -963,6 +983,10 @@ linux的安装包
 
 - 在卸载软件时,需要先卸载依赖的包,才能卸载该软件
 
+### 查看已经配置好的命令的安装路径
+
+`witch 命令`
+
 ### 查询软件信息
 
 - 查询是否安装
@@ -1157,6 +1181,22 @@ yum是一种可自动安装软件包（自动解决包之间依赖关系）的�
 - 查询软件包的详细信息
 
   `yum info 包名`
+
+### 软件安装常用命令
+
+查询软件
+
+- `yum search 关键字`
+
+安装软件
+
+- `yum install 软件名`
+
+常用软件安装:
+
+- 安装python: `yum install python36`
+- 安装gcc: `yum install gcc`
+- 安装git: `yum install git`
 
 # 用户和用户组管理
 

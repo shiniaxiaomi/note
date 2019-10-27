@@ -1,42 +1,45 @@
 [TOC]
 
-# 参考文档
-http://www.dakamao8.com/1045.html
-
 # 安装步骤
 ## 租赁国外的服务器
 租赁地址
 https://www.vultr.com/
 
-## 安装ssr
-登入xshell,输入命令 
-`wget --no-check-certificate https://freed.ga/github/shadowsocksR.sh; bash shadowsocksR.sh`
+> 选择 Ubuntu 19.10 x64或更高 的系统版本
 
-> 如果报错,则执行yum install wget -y,在重复上面的命令
+## 安装环境
 
-安装成功后保存截图
-![在这里插入图片描述](D:\note\.img\2019080620544085.png)
+根据需要去安装
 
-## 安装锐速脚本
-1. 更换内核
-`wget -N --no-check-certificate https://freed.ga/kernel/ruisu.sh && bash ruisu.sh`
-> 脚本安装需要1-3分钟，耐心等待服务器重启，服务器重启之后，重新连接继续安装就行了
-2. 锐速安装脚本
-`wget -N --no-check-certificate https://github.com/91yun/serverspeeder/raw/master/serverspeeder.sh && bash serverspeeder.sh`
-> 如果不成功可以使用备用脚本
-> `wget -N --no-check-certificate https://raw.githubusercontent.com/91yun/serverspeeder/master/serverspeeder-all.sh && bash serverspeeder-all.sh`
+1. 安装git
 
-出现下图就算成功了
-![在这里插入图片描述](D:\note\.img\20190806205726251.png)
+2. 安装python
 
 
-# 连接Shadowsocks
-![在这里插入图片描述](D:\note\.img\20190806210213250.png)
+在Ubuntu 中,git已经是默认安装好的,我们只需要安装pyhton即可
 
-# 其他操作
-## 查看80端口
-`netstat -lnp|grep 80`
-## 修改ssr服务信息
-`vi /etc/shadowsocks.json`
-## 重启ssr
-`service shadowsocks restart`
+`apt install python`
+
+> 因为脚本需要使用python来运行
+
+## 安装
+
+[访问github获取对应的脚本](https://github.com/cn2t/doubi-SSR)
+
+> 使用第一个即可(或者可以按照需要选择对应的脚本)
+
+或者直接复制下方链接,运行即可,也可直接安装
+
+```shell
+wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/ssr.sh && chmod +x ssr.sh && bash ssr.sh
+```
+
+安装成功之后
+
+![1572148180276](D:\note\.img\1572148180276.png)
+
+将ssr链接复制到软件上即可
+
+# 参考文档
+
+http://www.dakamao8.com/1045.html
