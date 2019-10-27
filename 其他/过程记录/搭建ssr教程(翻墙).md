@@ -16,11 +16,13 @@ https://www.vultr.com/
 2. 安装python
 
 
-在Ubuntu 中,git已经是默认安装好的,我们只需要安装pyhton即可
+在Ubuntu 中,git和python3已经是默认安装好的,我们可以不用安装
 
-`apt install python`
-
-> 因为脚本需要使用python来运行
+> 如果要安装,可以使用以下命令安装
+>
+> `apt install python`
+>
+> `apt install git`
 
 ## 安装
 

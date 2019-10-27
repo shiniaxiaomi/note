@@ -365,6 +365,17 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    </bean>
    ```
 
+   或者通过Java代码进行配置:
+
+   ```java
+   @Bean
+   public SqlSessionFactory sqlSessionFactory() {
+     SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+     factoryBean.setDataSource(dataSource());
+     return factoryBean.getObject();
+   }
+   ```
+
 3.  `mapperLocations`  
 
    不是必须传入

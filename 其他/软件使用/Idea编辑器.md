@@ -54,6 +54,8 @@
 
 隐藏/恢复所有窗口 Ctrl+Shift+F12
 
+查看类的说明文档 Ctrl+Q或者自定义的Ctrl+Shift+D
+
 ## 其他
 
 最近的文件 Ctrl+E
