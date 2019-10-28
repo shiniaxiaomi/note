@@ -74,7 +74,6 @@ exit
 
 ::-----------以下为延时子程序--------------------
 :delay
-@echo off
 if "%1"=="" goto :eof
 set DelayTime=%1
 set TotalTime=0
@@ -89,4 +88,3 @@ set /a second2=1%NowTime:~-5,2%%NowTime:~-2%0-100000
 set /a TotalTime+=(%minute2%-%minute1%+60)%%60*60000+%second2%-%second1%
 if %TotalTime% lss %DelayTime% goto delay_continue
 goto :eof
-@echo on
