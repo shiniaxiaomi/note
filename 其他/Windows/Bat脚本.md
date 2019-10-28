@@ -196,7 +196,7 @@ pause
   >
   > `copy %0 d:\wind.bat`
 
-## **>> (重定向符)**
+## >> (重定向符)
 
 `>>`是传递并在文件的末尾追加，而`>`是覆盖
 
@@ -212,7 +212,7 @@ pause
 > hello
 > world
 
-## **&(组合命令)**
+## &(组合命令)
 
 语法：第一条命令 & 第二条命令 [& 第三条命令...]
 
@@ -222,7 +222,7 @@ pause
 >
 > `dir z:\ & dir y:\ & dir c:\`
 
-## **&& (组合命令)**
+## && (组合命令)
 
 这个命令和上边`&`命令的类似，但区别是，第一个命令失败时，**后边的命令也不会执行**
 
@@ -230,13 +230,13 @@ pause
 >
 > `dir z:\ && dir y:\ && dir c:\`
 
-## **""  (字符串界定符)**
+## ""  (字符串界定符)
 
 双引号允许在字符串中包含空格，可以进入一个特殊目录
 
 `cd "program files"`
 
-## **() 括号**
+## () 括号
 
 小括号在批处理编程中有特殊的作用，左右括号必须成对使用，括号中可以包括多行命令，这些命令将被看成一个整体，视为一条命令行。
 
@@ -341,21 +341,20 @@ GEQ - 大于或等于
 ```bat
 ::-----------以下为延时子程序--------------------
 :delay
-@echo off
-if "%1"=="" goto :eof
-set DelayTime=%1
-set TotalTime=0
-set NowTime=%time%
+@if "%1"=="" goto :eof
+@set DelayTime=%1
+@set TotalTime=0
+@set NowTime=%time%
 ::读取起始时间，时间格式为：13:01:05.95
 :delay_continue
-set /a minute1=1%NowTime:~3,2%-100
-set /a second1=1%NowTime:~-5,2%%NowTime:~-2%0-100000
-set NowTime=%time%
-set /a minute2=1%NowTime:~3,2%-100
-set /a second2=1%NowTime:~-5,2%%NowTime:~-2%0-100000
-set /a TotalTime+=(%minute2%-%minute1%+60)%%60*60000+%second2%-%second1%
-if %TotalTime% lss %DelayTime% goto delay_continue
-goto :eof
+@set /a minute1=1%NowTime:~3,2%-100
+@set /a second1=1%NowTime:~-5,2%%NowTime:~-2%0-100000
+@set NowTime=%time%
+@set /a minute2=1%NowTime:~3,2%-100
+@set /a second2=1%NowTime:~-5,2%%NowTime:~-2%0-100000
+@set /a TotalTime+=(%minute2%-%minute1%+60)%%60*60000+%second2%-%second1%
+@if %TotalTime% lss %DelayTime% goto delay_continue
+@goto :eof
 ```
 
 调用延时子程序
