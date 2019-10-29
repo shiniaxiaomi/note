@@ -1,0 +1,89 @@
+
+
+[TOC]
+
+# 介绍
+
+
+
+# 安装
+
+[下载链接](https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe)
+
+打开下载的文件并安装,按照步骤点击
+
+![image-20191029121610623](D:\note\.img\image-20191029121610623.png)
+
+之后一路next即可
+
+![image-20191029121957803](D:\note\.img\image-20191029121957803.png)
+
+![image-20191029122024025](D:\note\.img\image-20191029122024025.png)
+
+安装成功后测试:
+
+- 打开cmd,输入python看能否进入python环境,输入exit()退出
+
+# ...
+
+# 总结
+
+## python获取外部传入的参数
+
+调用命令为`py note.py D:/note/README.md`
+
+```python
+import sys #导入sys包
+print(sys.argv) # 通过sys.argv可以获取到外部传入参数的一个数组
+notePath=sys.argv[1] # 通过取到参数数组的第一个值来获取对应的参数
+```
+
+## 通过python执行cmd命令或调用本地应用程序
+
+```python
+import subprocess #导入subprocess包
+cmd='"C:\Program Files\Typora\Typora.exe" "%s"' % (notePath) #定义cmd命令,通过''来包裹字符串可以使得字符串中可以存在一些特殊的字符,如空格等, notepath变量将会被替换到%s中
+ps = subprocess.Popen(cmd); # 执行cmd命令
+ps.wait();#让程序阻塞
+```
+
+## python转码
+
+```python
+from urllib.parse import unquote # 导入转码工具包
+# 将路径变量进行解码(从而可以使用中文)
+notePath=unquote(notePath[7:], 'utf-8') #将notePath变量先分割在进行转码
+```
+
+## 不让python的黑窗口出现
+
+1. 使用pythonw(pyw)命令执行py脚本
+
+## 将py文件转化为exe文件
+
+1. 首先下载pyinstaller
+
+   [下载对应的压缩包](https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz)并解压到指定目录(`D:\pyinstaller-develop`)
+
+2. 在下载对应你的python版本的pywin32
+
+   [pywin32网址](https://sourceforge.net/projects/pywin32/files/pywin32/Build 221/)
+
+   双击pywin32-221.win-amd64-py3.5.exe安装，注意安装的时候会自动检测之前安装的Python。下一步，下一步。  
+
+   > 最好在此过程中记录一下该文件的安装路径: `C:\Users\yingjie.lu\AppData\Local\Programs\Python\Python35\Lib\site-packages\`
+
+   在cmd命令行进入Python3.5目录下的Scripts目录(默认路径为`C:\Users\yingjie.lu\AppData\Local\Programs\Python\Python35\Scripts`)并执行：`python pywin32_postinstall.py -install`命令  
+
+   在cmd命令行中进入`D:\pyinstaller-develop`目录(之前解压的pyInstaller文件夹)，然后执行：`python setup.py install` 
+
+3. 制作exe文件
+
+   将.py文件放到`D:\pyinstaller-develop`目录下
+
+   在cmd命令行中进入该目录,并执行命令` python pyinstaller.py -F note.py`
+
+   生成了一个新目录`D:\pyinstaller-develop\hello`, 在该目录的dist文件夹下生成了一个hello.exe
+
+# 参考文档
+
