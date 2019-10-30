@@ -1,5 +1,4 @@
 #coding=utf-8
-
 import subprocess
 import sys
 from urllib.parse import unquote

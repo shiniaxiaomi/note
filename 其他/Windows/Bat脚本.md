@@ -388,26 +388,3 @@ pause
 
 https://www.cnblogs.com/iTlijun/p/6137027.html
 
-
-
-
-
-# dsfsdf
-
-.reg文件
-
-```java
-Windows Registry Editor Version 5.00
-[HKEY_CLASSES_ROOT\Typora]  
-@="URL:Typora Protocol"  
-"URL Protocol"="D:\\note\\Typora.py"
-[HKEY_CLASSES_ROOT\Typora\DefaultIcon]
-@="D:\\note\\Typora.py,1" 
-[HKEY_CLASSES_ROOT\Typora\shell]
-@=""
-[HKEY_CLASSES_ROOT\Typora\shell\open]
-@=""
-[HKEY_CLASSES_ROOT\Typora\shell\open\command] 
-@="py D:\\note\\Typora.py %1"
-```
-

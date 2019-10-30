@@ -617,7 +617,7 @@ Stream 是一个抽象接口，Node 中有很多对象实现了这个接口; 例
 
 # [fs模块](https://www.runoob.com/nodejs/nodejs-fs.html)
 
-标准的文件操作API,文件系统模块(fs)
+标准的文件操作API,文件系统模块(fs); 
 
 `var fs = require("fs")`
 
@@ -871,15 +871,14 @@ cd('/home/zhangzhi/logs');
   
      `forever list`
   
-  [forever参考文档](https://www.jianshu.com/p/b2a721f6ce75)
 
 # 参考文档
 
 [node.js教程](https://www.runoob.com/nodejs/nodejs-tutorial.html)
 
+[fs模块-官方API参考](https://nodejs.org/api/fs.html)
 
-
-
+[forever参考文档](https://www.jianshu.com/p/b2a721f6ce75)
 
 
 
