@@ -42,6 +42,10 @@ wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/dou
 
 将ssr链接复制到软件上即可
 
+# 遇到的问题
+
+如果在使用的过程中，不能科学上网了，但是你的ip有没有被封，那有可能就是你的服务器的端口被封了，所以我们需要重新换一个端口
+
 # 参考文档
 
 http://www.dakamao8.com/1045.html
