@@ -24,7 +24,7 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 
 翻译：[有道翻译](http://www.pc6.com/mac/110548.html)
 
-非常好用的程序员笔记软件：[Quiver](http://www.pc6.com/mac/130522.html)
+非常好用的程序员笔记软件：[Quiver](http://www.pc6.com/mac/130522.html)（有点慢，占用CPU）
 
 应用卸载软件：[App Uninstaller](http://www.pc6.com/mac/267539.html)
 
