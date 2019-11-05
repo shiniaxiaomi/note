@@ -218,6 +218,10 @@ Dell 7559的无限驱动是不能够使用的，但是连接网线是可以上�
 - 显卡: Radeon RXVegall Graphics
 - 电源: 酷鱼 DC 150W 电源适配器+模块
 
+# HP ProBook 440 G5 i5-7200U安装记录
+
+参考文档：https://www.jianshu.com/p/3d53cafb37da
+
 # 学习参考
 
 ## 教程参考

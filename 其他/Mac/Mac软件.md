@@ -28,7 +28,7 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 
 应用卸载软件：[App Uninstaller](http://www.pc6.com/mac/267539.html)
 
-
+压缩软件：[eZip](http://www.pc6.com/mac/629419.html)
 
 
 
