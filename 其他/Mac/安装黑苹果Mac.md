@@ -218,9 +218,62 @@ Dell 7559的无限驱动是不能够使用的，但是连接网线是可以上�
 - 显卡: Radeon RXVegall Graphics
 - 电源: 酷鱼 DC 150W 电源适配器+模块
 
-# HP ProBook 440 G5 i5-7200U安装记录
+# HP ProBook 440 G5 i5-7200U 安装记录
 
-参考文档：https://www.jianshu.com/p/3d53cafb37da
+可以直接使用的EFI兼教程：https://github.com/RichardAmare/HpProbook440G4-hackintosh
+
+# 驱动记录
+
+ACPIBatteryManager.kext 电池驱动
+
+AppleALC.kext 声卡驱动
+
+ApplePS2SmartTouchPad.kext 解决触摸板问题
+
+CodecCommander.kext 解决睡眠唤醒后声卡无音补丁
+
+CPUFriend.kext  调整 macOS CPU性能
+
+CPUFriendDataProvider.kext 调整 macOS CPU性能
+
+HibernationFixup.kext 睡眠驱动
+
+Lilu.kext 黑苹果内核扩展补丁，很多驱动都依赖于他
+
+网卡驱动：
+
+- NullEthernet.kext
+- RealtekRTL8100.kext
+- RealtekRTL8111.kext
+  网线的驱动
+
+SATA-unsupported.kext SATA磁盘阵列驱动
+
+VirtualSMC.kext 仿冒苹果SMC设备的驱动文件
+
+VoodooI2C.kext i2c 触控板驱动
+
+VoodooI2CHID.kext 触控版驱动
+
+WhateverGreen.kext 修复黑苹果AMD/NVIDIA显卡黑屏、花屏、睡眠黑评估等各种问题显卡驱动补丁
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+驱动安装参考：https://www.jianshu.com/p/81e329c50120
 
 # 学习参考
 
