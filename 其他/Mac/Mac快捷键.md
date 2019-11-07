@@ -20,6 +20,25 @@
 
 ![image-20191104164357200](/Users/yingjie.lu/Documents/note/.img/image-20191104164357200.png)
 
+# 自定义快捷键
+
+快速打开Finder
+
+- 在桌面时使用`Command+N`
+- 在桌面使用`Option+Command+空格`
+
+显示启动台：`Option+D`
+
+显示桌面：`Command+D`
+
+将焦点移动到程序坞：`Option+Q`
+
+将焦点移动到菜单栏：`Option+W`
+
+使用有道翻译选中查词：`Ctrl+Commamd+X`
+
+
+
 # 常用快捷键
 
 ## 基础的快捷键

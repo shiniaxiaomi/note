@@ -30,6 +30,10 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 
 压缩软件：[eZip](http://www.pc6.com/mac/629419.html)
 
+修改Mac上的键盘映射规则：[Karabiner](https://mac.softpedia.com/get/System-Utilities/?utm_source=spd&utm_campaign=postdl_redir)
+
+快速工具（效率，类似Listary）：[Alfred](https://www.alfredapp.com/)
+
 
 
 开发相关：
@@ -38,3 +42,5 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 2. [Java-jdk8环境](https://download.csdn.net/download/lc19850921/10957187)：直接安装即可，不需要配置环境变量
 3. [Nodejs环境](http://nodejs.cn/download/)
 4. [git](https://git-scm.com/)
+5. maven
+6. tomcat
