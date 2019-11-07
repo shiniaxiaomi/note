@@ -34,6 +34,10 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 
 快速工具（效率，类似Listary）：[Alfred](https://www.alfredapp.com/)
 
+文件搜索工具：EasyFind（AppStore）
+
+
+
 
 
 开发相关：

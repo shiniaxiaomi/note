@@ -2,18 +2,28 @@
 
 # 配置环境变量
 
-1. 编辑配置文件：`sudo vi /etc/profile`
+1. 在用户目录下创建.bash_profile文件
 
-2. 添加环境变量：
+   `touch ~/.bash_profile`
+
+2. 编辑.bash_profile文件
+
+   `vim ~/.bash_profile`
+
+3. 添加环境变量
 
    ```shell
-   export MAVEN_HOME=/usr/local/apache-maven-3.6.0
-   export PATH=$PATH:$MAVEN_HOME
+   export vscode=/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin
+   export PATH=$vscode:$PATH
    ```
 
-3. 使配置文件立即生效
+4. 让该配置文件立即生效
 
-   `source /etc/profile`
+   `source  ~/.bash_profile`
+
+5. 退出终端重新打开即可使用code命令来打开vscode
+
+[参考链接](https://www.jianshu.com/p/f63611e8e821)
 
 # 终端使用
 
@@ -23,6 +33,8 @@
 
    假清屏：`Ctrl+L`
 
-2. 搜索历史命令
+2. 搜索历史命令：`Ctrl+R`
+
+3. 在Finder中打开当前目录：`open .`
 
    
