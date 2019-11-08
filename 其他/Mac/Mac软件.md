@@ -32,9 +32,11 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 
 修改Mac上的键盘映射规则：[Karabiner](https://mac.softpedia.com/get/System-Utilities/?utm_source=spd&utm_campaign=postdl_redir)
 
-快速工具（效率，类似Listary）：[Alfred](https://www.alfredapp.com/)
+快速工具（效率，类似Listary）：[Alfred](https://download.csdn.net/download/sinat_29970905/11634147)
 
 文件搜索工具：EasyFind（AppStore）
+
+谷歌浏览器代理插件：
 
 
 
