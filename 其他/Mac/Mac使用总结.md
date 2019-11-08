@@ -2,6 +2,14 @@
 
 # 配置环境变量
 
+
+
+
+
+
+
+
+
 1. 在用户目录下创建.bash_profile文件
 
    `touch ~/.bash_profile`
@@ -37,4 +45,11 @@
 
 3. 在Finder中打开当前目录：`open .`
 
-   
+# 快速搜索
+
+1. 使用Finder新建智能文件夹进行准确的搜索（名称+内容）
+
+2. 使用终端进行快速的搜索
+
+   `find Documents/note -name Java*`
+

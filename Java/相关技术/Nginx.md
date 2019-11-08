@@ -859,6 +859,53 @@ location / {
 }
 ```
 
+## 自己服务器上的配置
+
+```nginx
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server{
+        listen  80;
+        server_name luyingjie.cn;
+        location / {
+            proxy_pass   http://xxx.xxx.xxx.xxx:7999;
+        }
+    }
+
+    server{
+        listen  80;
+        server_name mytodo.cn;
+        location / {
+            proxy_pass   http://xxx.xxx.xxx.xxx:8000;
+        }
+    }
+
+    server{
+        listen  80;
+        server_name fileserver.top;
+        location / {
+            proxy_pass   http://xxx.xxx.xxx.xxx:8001;
+        }
+    }
+
+    include servers/*;
+}
+
+```
+
+
+
 
 
 # 参考文档

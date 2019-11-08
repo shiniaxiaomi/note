@@ -843,34 +843,33 @@ cd('/home/zhangzhi/logs');
 
 # 遇到的问题
 
-- 在linux中如何后台运行nodejs程序
+## 在linux中如何后台运行nodejs程序(安装forever)
 
-  1. 安装forever进行管理
+1. 安装forever进行管理
 
-     `npm install -g forever`
+   `npm install -g forever`
 
-  2. 运行
+2. 运行
 
-     `forever start index.js`
+   `forever start index.js`
 
-  3. 日志文件位置
+3. 日志文件位置
 
-     默认会放在`~/.forever/forever.log`中
+   默认会放在`~/.forever/forever.log`中
 
-  4. 关闭应用
+4. 关闭应用
 
-     - 关闭一个应用
+   - 关闭一个应用
 
-       `forever stop index.js`
+     `forever stop index.js`
 
-     - 关闭所有应用
+   - 关闭所有应用
 
-       `forever stopall`
-     
-  5. 查看所有应用
-  
-     `forever list`
-  
+     `forever stopall`
+   
+5. 查看所有应用
+
+   `forever list`
 
 # 参考文档
 
