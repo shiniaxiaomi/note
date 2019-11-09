@@ -14,6 +14,12 @@
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
+# 包管理工具的原理
+
+使用包管理工具brew进行安装，它会将软件都安装在`/usr/local/Cellar`目录下
+
+并且它会将软件的命令通过软连接的方式放到`/usr/local/bin`目录下，这样就直接配置了环境变量，就不需要我们手动的再去配置了
+
 # 常用命令
 
 - brew help [COMMAND]

@@ -886,6 +886,10 @@ yum -y install vim
 
 # rpm和yum
 
+像CenterOS就是用yum当作包管理工具的，而Ubuntu是使用apt当作包管理工具的。
+
+
+
 linux的安装包
 
 - 源码包

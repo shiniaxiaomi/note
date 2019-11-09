@@ -15,7 +15,18 @@ Maven是一个跨平台的项目的项目管理工具。隶属于Apache下的一
 - mac、linux：需要下载Binary tar.gz archive
 - windows：需要下载Binary zip archive
 
+---
 
+使用包管理工具安装：
+
+- Mac下使用brew进行快速的安装
+
+  ```shell
+  brew search maven
+  brew install maven
+  ```
+
+  
 
 # 配置文件
 
