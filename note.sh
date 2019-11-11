@@ -29,7 +29,8 @@ do
 
     if test ${command}null == "null" 
     then 
-        continue
+        NotePush
+        break
     elif test $command == 'push' 
     then 
         NotePush
