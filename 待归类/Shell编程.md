@@ -131,6 +131,18 @@ echo `expr index "${string}" io`  # 输出 4
 
 **注意：** 以上脚本中 **`** 是反引号，而不是单引号 **'**，不要看错了。
 
+### 字符串判断空或判断回车
+
+```shell
+read command
+if test ${command}null == "null"
+then  
+		echo "回车"
+fi
+```
+
+
+
 ## shell数组
 
 bash支持一维数组（不支持多维数组），并且没有限定数组的大小
