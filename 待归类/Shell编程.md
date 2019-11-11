@@ -807,7 +807,25 @@ echo $a
 
 > 运行结果：1
 
+# 其他
 
+## 获取用户输入
+
+### 提示用户并获取输入：
+
+```shell
+read -p "提示: " number 
+echo number
+```
+
+> 提示用户输入数字
+
+### 不提示直接获取用户输入：
+
+```shell
+read number 
+echo number
+```
 
 
 
