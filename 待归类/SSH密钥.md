@@ -113,7 +113,7 @@
    - 在本地电脑中编辑ssh_config文件
 
      ```shell
-     sudo vim /etc/ssh/ssh_config
+     sudo vim ~/ssh/ssh_config
      ```
 
    - 添加一下代码
@@ -131,7 +131,7 @@
    - 在服务器端编辑ssh_config文件
 
      ```shell
-     sudo vim/etc/ssh/sshd_config
+     sudo vim ~/ssh/sshd_config
      ```
 
    - 添加一下代码
