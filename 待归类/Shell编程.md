@@ -90,7 +90,7 @@ unset a #变量被删除后不能再次使用，unset命令不能删除只读变
 ### 拼接字符串
 
 ```shell
-your_name="runoob" 
+your_name="runoob"  
 # 使用双引号拼接
 greeting="hello, "$your_name" !"
 greeting_1="hello, ${your_name} !"
