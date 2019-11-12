@@ -118,6 +118,20 @@ setting.xml是maven的管理配置文件，包含了系统级别的配置和当�
 
 > **mirrorOf**，这个参数有多种配置，而且是针对仓库ID过滤的。更多细节可看官方文档[Guide to Mirror Settings](https://link.jianshu.com/?t=http://maven.apache.org/guides/mini/guide-mirror-settings.html)
 
+国内镜像配置：
+
+```shell
+<!-- 阿里云仓库 -->
+<mirror>
+<id>alimaven</id>
+<mirrorOf>central</mirrorOf>
+<name>aliyun maven</name>
+<url>http://maven.aliyun.com/nexus/content/repositories/central/</url>
+</mirror>
+```
+
+
+
 ## proxies
 
 代理，主要是为了便于在各自网络环境下使用
