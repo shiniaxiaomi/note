@@ -42,6 +42,23 @@
 
   列出软件
 
+  示例：
+
+  当要修改已经安装的maven的配置文件时，输入以下命令进行查找
+
+  ```shell
+  $ brew list maven
+  /usr/local/Cellar/maven/3.6.2/bin/mvn
+  /usr/local/Cellar/maven/3.6.2/bin/mvnDebug
+  /usr/local/Cellar/maven/3.6.2/bin/mvnyjp
+  /usr/local/Cellar/maven/3.6.2/libexec/bin/ (4 files)
+  /usr/local/Cellar/maven/3.6.2/libexec/boot/plexus-classworlds-2.6.0.jar
+  /usr/local/Cellar/maven/3.6.2/libexec/conf/ (3 files)
+  /usr/local/Cellar/maven/3.6.2/libexec/lib/ (55 files)
+  ```
+
+  从上面可以看到，maven的配置文件就位于`/usr/local/Cellar/maven/3.6.2/libexec/conf/`目录下，非常的方便
+
 - brew update
 
   更新Homebrew源
