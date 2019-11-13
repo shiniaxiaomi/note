@@ -16,9 +16,11 @@ SSH连接工具：[FinalShell](http://www.hostbuf.com/)
 
 代码编辑器：[VS Code](https://code.visualstudio.com/)
 
-Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
+Java开发编辑器：[Idea2019](https://blog.csdn.net/qq_29483485/article/details/89885652)
 
 > [永久激活注册码](https://blog.csdn.net/qq_34801169/article/details/95059368)
+>
+> [激活码2](https://blog.csdn.net/m0_37862829/article/details/93920188)
 
 截图软件：[Snipaste](http://www.pc6.com/mac/542001.html)
 
@@ -45,8 +47,15 @@ Java开发编辑器：[Idea2018](http://www.pc6.com/mac/152843.html)
 开发相关：
 
 1. mysql环境
+
+   > `brew install mysql`
+
 2. [Java-jdk8环境](https://download.csdn.net/download/lc19850921/10957187)：直接安装即可，不需要配置环境变量
+
 3. [Nodejs环境](http://nodejs.cn/download/)
+
 4. [git](https://git-scm.com/)
+
 5. maven(`brew install maven`)
+
 6. tomcat(`brew install tomcat`)

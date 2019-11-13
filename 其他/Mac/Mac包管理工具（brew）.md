@@ -14,6 +14,40 @@
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
+# 修改国内源(阿里云)
+
+1. 替换brew.git
+
+   进入到仓库的指定目录
+
+   ```shell
+   cd "$(brew --repo)"
+   ```
+
+   替换brew.git
+
+   ```shell
+   git remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git
+   ```
+
+   进入到仓库的指定目录
+
+   ```shell
+   cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"
+   ```
+
+   替换homebrew-core.git
+
+   ```shell
+   git remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git
+   ```
+
+   刷新源
+
+   ```shell
+   brew update
+   ```
+
 # 包管理工具的原理
 
 使用包管理工具brew进行安装，它会将软件都安装在`/usr/local/Cellar`目录下
