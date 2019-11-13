@@ -16,7 +16,7 @@ SSH连接工具：[FinalShell](http://www.hostbuf.com/)
 
 代码编辑器：[VS Code](https://code.visualstudio.com/)
 
-Java开发编辑器：[Idea2019](https://blog.csdn.net/qq_29483485/article/details/89885652)
+Java开发编辑器：[Idea2019](https://www.jetbrains.com/idea/download/)
 
 > [永久激活注册码](https://blog.csdn.net/qq_34801169/article/details/95059368)
 >
