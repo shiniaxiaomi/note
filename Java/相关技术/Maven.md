@@ -121,12 +121,12 @@ setting.xml是maven的管理配置文件，包含了系统级别的配置和当�
 国内镜像配置：
 
 ```shell
-<!-- 阿里云仓库 -->
+<!-- 阿里云中央仓库 -->
 <mirror>
-<id>alimaven</id>
+<id>nexus-aliyun</id>
 <mirrorOf>central</mirrorOf>
-<name>aliyun maven</name>
-<url>https://maven.aliyun.com/repository/public</url>
+<name>Nexus aliyun</name>
+<url>http://maven.aliyun.com/nexus/content/groups/public</url>
 </mirror>
 ```
 

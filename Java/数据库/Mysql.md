@@ -507,6 +507,20 @@ https://www.runoob.com/mysql/mysql-operator.html
 
 
 
+# 其他问题
+
+## mysql时区差8小时问题
+
+1. 修改my.cof文件
+
+   在`[mysqld]`后面添加`default-time_zone = '+8:00'`
+
+2. 修改数据库连接的url
+
+   在url后面添加`?serverTimezone=GMT%2B8`
+
+   
+
 
 
 
