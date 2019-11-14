@@ -2327,13 +2327,11 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 
 # Mybatis插件
 
-## Mybatis Generator的使用
+自动生成插件：[mybatis-generator-plus](https://github.com/leecho/mybatis-generator-plus)
 
-略
+mybatis日志插件：[mybatis-log-plugin](https://plugins.jetbrains.com/plugin/10065-mybatis-log-plugin/)
 
-## Mybatis整合分页插件pageHelper
-
-略
+mybatis接口和xml跳转插件：[free-mybatis-plugin](https://plugins.jetbrains.com/plugin/8321-free-mybatis-plugin/)
 
 # 参考文档
 
