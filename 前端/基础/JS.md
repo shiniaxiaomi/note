@@ -621,6 +621,41 @@ patt.exec("The best things in life are free!");
 
 - 获取毫秒: `getMilliseconds()`
 
+### 日期格式化（非常好用）
+
+```js
+//日期格式化
+//使用方式：new Date().Format("yyyy/MM/dd hh:mm:ss");
+//分隔符自行替换即可
+Date.prototype.Format = function(fmt) {
+  var o = {
+    "M+" : this.getMonth()+1,                 //月份
+    "d+" : this.getDate(),                    //日
+    "h+" : this.getHours(),                   //小时
+    "m+" : this.getMinutes(),                 //分
+    "s+" : this.getSeconds(),                 //秒
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+    "S"  : this.getMilliseconds()             //毫秒
+  };
+  //"y+" : 年份
+  if(/(y+)/.test(fmt))
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+  for(var k in o)
+    if(new RegExp("("+ k +")").test(fmt))
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+  return fmt;
+}
+```
+
+使用：
+
+```js
+new Date().Format("yyyy/MM/dd hh:mm:ss");
+new Date().Format("yyyy/MM/dd");
+new Date().Format("hh:mm:ss");
+new Date(1574054819458).Format("yyyy/MM/dd hh:mm:ss");
+```
+
 ## 随机数
 
 - 总是返回小于1的数
