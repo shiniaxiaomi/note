@@ -441,6 +441,40 @@ POM中的dependencyManagement元素即可以让子模块继承父模块的配置
 
 略
 
+# 其他问题
+
+## maven打包跳过test测试
+
+1. 方法一
+
+   通过idea工具实现，点击右上角的闪电图标，看到test被划掉，即可跳过
+
+   ![image-20191116211031939](/Users/yingjie.lu/Documents/note/.img/image-20191116211031939.png)
+
+2. 方法二
+
+   使用maven命令打包时跳过test测试
+
+   ```shell
+   mvn package -Dmaven.test.skip=true
+   ```
+
+## 使用maven命令进行打包
+
+1. 直接打包
+
+   ```shell
+   mvn package
+   ```
+
+2. 打包并跳过test测试
+
+   ```shell
+   mvn package -Dmaven.test.skip=true
+   ```
+
+   
+
 # 参考文档
 
 [setting.xml](http://maven.apache.org/settings.html)

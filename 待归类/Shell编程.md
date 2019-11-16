@@ -30,6 +30,8 @@ Linux的shell种类众多，常见的有：
 
 ## 定义变量
 
+> **注意：定义变量时，变量和等号时不能有空格的**
+
 ```shell
 a=1
 str=“hello world”
@@ -54,6 +56,12 @@ readonly a
 
 ```shell
 unset a #变量被删除后不能再次使用，unset命令不能删除只读变量
+```
+
+## 将命令结果赋值给变量
+
+```shell
+a=$(ls|grep jar$)
 ```
 
 ## 变量类型
@@ -140,8 +148,6 @@ then
 		echo "回车"
 fi
 ```
-
-
 
 ## shell数组
 
@@ -837,6 +843,46 @@ echo number
 ```shell
 read number 
 echo number
+```
+
+## 直接获取项目的pid
+
+```shell
+pgrep -f 项目相关名称或信息
+```
+
+示例：
+
+```shell
+pgrep -f plantip
+```
+
+## 获取应用的pid，如果存在，则关闭应用
+
+```shell
+app=$(pgrep -f plantip)
+  
+if test ${app}null != "null"
+then
+        kill -9 $app
+fi
+```
+
+## 常用的启动shell脚本
+
+```shell
+::关闭应用
+app=$(pgrep -f plantip)
+if test ${app}null != "null"
+then
+    kill -9 $app
+fi
+
+::启动应用
+projectPath=/root/code/plantip
+cd $projectPath/target
+name=$(ls |grep jar$)
+nohup java -jar $projectPath/target/$name --spring.profiles.active=prod >$projectPath/log &
 ```
 
 

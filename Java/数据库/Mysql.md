@@ -26,6 +26,48 @@
   mysql.server stop #手动停止
   ```
 
+- Ubuntu安装
+
+  最新的Ubuntu版本是安装好mysql的，但是mysql是无密码的，需要修改
+
+  1. 修改密码
+
+  2. 开启远程连接
+
+     ```shell
+     sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+     ```
+
+     将`bind-address = 127.0.0.1`改为`bind-address = 0.0.0.0`即可
+
+  3. 修改mysql数据库
+
+     登入mysql数据库：`mysql -u root -p`
+
+     ```mysql
+     use mysql; #使用mysql数据库
+     select User,authentication_string,Host from user; #查询用户表，可以看到权限都是只针对localhost的
+     
+     # 创建一个自己的mysql账号，最好不要使用root账号
+     GRANT ALL PRIVILEGES ON *.* TO '账号'@'%' IDENTIFIED BY '密码'; #只需要修改当中的账号和密码即可
+     
+     # 账号创建成功后，刷新权限
+     flush privileges;
+     ```
+
+     当上述步骤都成功后，退出mysql，并重启mysql服务
+
+     ```shell
+     service mysql restart
+     ```
+
+     重启成功后，这时你就可以使用你刚创建的账号登入了
+
+     ```shell
+     mysql -u lyj -p
+     # 输入你的密码即可
+     ```
+
 # 登入
 
 ```shell
@@ -519,7 +561,65 @@ https://www.runoob.com/mysql/mysql-operator.html
 
    在url后面添加`?serverTimezone=GMT%2B8`
 
-   
+## mysql中文乱码问题
+
+[参考文档](https://www.cnblogs.com/jasonzeng/p/8341445.html)
+
+从根本上解决问题，我们就需要修改mysql的`my.cnf`配置文件中编码格式，然后重启mysql即可，那么之后创建的表默认都会以utf8格式创建
+
+1. 修改`my.cnf`配置文件
+
+   该文件一般位于`/etc/mysql/my.cnf`路径
+
+   ```shell
+   sudo vim /etc/mysql/my.cnf
+   ```
+
+   然后将下述代码复制到配置文件中
+
+   ```shell
+   [mysqld]
+   character-set-server=utf8 
+   [client]
+   default-character-set=utf8 
+   [mysql]
+   default-character-set=utf8
+   ```
+
+   然后重启mysql
+
+   ```shell
+   service mysql restart
+   ```
+
+2. 经过上述步骤，乱码问题已经解决，接下来只是验证一下
+
+   登入mysql，输入一下命令查看编码格式
+
+   ```shell
+   mysql> show variables like '%char%';
+   +--------------------------+----------------------------+
+   | Variable_name            | Value                      |
+   +--------------------------+----------------------------+
+   | character_set_client     | utf8                       |
+   | character_set_connection | utf8                       |
+   | character_set_database   | utf8                       |
+   | character_set_filesystem | binary                     |
+   | character_set_results    | utf8                       |
+   | character_set_server     | utf8                       |
+   | character_set_system     | utf8                       |
+   | character_sets_dir       | /usr/share/mysql/charsets/ |
+   +--------------------------+----------------------------+
+   8 rows in set (0.00 sec)
+   ```
+
+   如果都是utf8那就说明已经将中文乱码问题解决，接下来只要将原来的表删除，在重新创建即可（如果有数据，记得先备份）
+
+
+
+
+
+
 
 
 
