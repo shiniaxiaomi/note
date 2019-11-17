@@ -78,24 +78,24 @@ a=$(ls|grep jar$)
 
    shell变量是由shell程序设置的特殊变量。shell变量中有一部分是环境变量，有一部分是局部变量，这些变量保证了shell的正常运行
 
-## shell字符串
+# shell字符串
 
 字符串是shell编程中最常用最有用的数据类型，字符串可以用单引号也可以用双引号，也可以不用引号
 
-### 单引号
+## 单引号
 
 单引号里的任何字符都会原样输出，单引号字符串中的变量是无效的
 
 单引号字符串中不能出现单独一个的单引号（对单引号使用转义符后也不行），但可成对出现，作为字符串拼接使用
 
-### 双引号
+## 双引号
 
 优点：
 
 - 双引号里可以使用变量
 - 双引号里可以出现转义字符
 
-### 拼接字符串
+## 拼接字符串
 
 ```shell
 your_name="runoob"  
@@ -112,14 +112,14 @@ echo $greeting_1
 >
 > hello, runoob !
 
-### 获取字符串长度
+## 获取字符串长度
 
 ```shell
 string="abcd"
 echo ${#string} #输出 4
 ```
 
-### 提取子字符串
+## 提取子字符串
 
 以下实例从字符串第 **2** 个字符开始截取 **4** 个字符：
 
@@ -128,7 +128,7 @@ string="runoob is a great site"
 echo ${string:1:4} # 输出 unoo
 ```
 
-### 查找子字符串
+## 查找子字符串
 
 查找字符 **i** 或 **o** 的位置(哪个字母先出现就计算哪个)：
 
@@ -139,7 +139,7 @@ echo `expr index "${string}" io`  # 输出 4
 
 **注意：** 以上脚本中 **`** 是反引号，而不是单引号 **'**，不要看错了。
 
-### 字符串判断空或判断回车
+## 字符串判断空或判断回车
 
 ```shell
 read command
@@ -149,13 +149,13 @@ then
 fi
 ```
 
-## shell数组
+# shell数组
 
 bash支持一维数组（不支持多维数组），并且没有限定数组的大小
 
 类似于C语言，数组元素的下标由0开始编号。获取数组中的元素要利用下标，下标可以是整数或算术表达式，其实应大于或等于0
 
-### 定义数组
+## 定义数组
 
 在shell中，用括号来表示数组，数组元素用`空格`分隔
 
@@ -171,7 +171,7 @@ strs[0]=1
 strs[1]=2
 ```
 
-### 读取数组
+## 读取数组
 
 ```shell
 echo ${strs[0]}
@@ -186,7 +186,7 @@ echo ${strs[@]}
 
 > 结果：1 2 3 4 5
 
-### 获取数组的长度
+## 获取数组的长度
 
 获取数组长度的方法与获取字符串长度的方法相同
 
@@ -197,13 +197,13 @@ length=${#strs[@]}
 lengthn=${#strs[1]}
 ```
 
-## shell注释
+# shell注释
 
-### 单行注释
+## 单行注释
 
 以 **#** 开头的行就是注释，会被解释器忽略
 
-### 多行注释
+## 多行注释
 
 ```shell
 :<<EOF
@@ -871,18 +871,29 @@ fi
 ## 常用的启动shell脚本
 
 ```shell
-::关闭应用
+# 关闭应用
 app=$(pgrep -f plantip)
 if test ${app}null != "null"
 then
     kill -9 $app
 fi
 
-::启动应用
+# 启动应用
 projectPath=/root/code/plantip
 cd $projectPath/target
 name=$(ls |grep jar$)
 nohup java -jar $projectPath/target/$name --spring.profiles.active=prod >$projectPath/log &
+# 因为指定了日志输出到文件之后，那么日志就不会在当前的窗口显示，我们可以在启动后监听日志文件即可查看到日志
+tail -f $projectPath/log
+```
+
+## 使用maven构建java项目
+
+```shell
+# 使用maven构建项目
+projectPath=/root/code/plantip
+cd $projectPath
+mvn package -Dmaven.test.skip=true
 ```
 
 
