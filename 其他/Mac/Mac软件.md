@@ -1,4 +1,4 @@
-# Mac的软件安装
+#  Mac的软件安装
 
 [主要软件来源](http://www.pc6.com/mac)
 
@@ -34,13 +34,19 @@ Java开发编辑器：[Idea2019](https://www.jetbrains.com/idea/download/)
 
 修改Mac上的键盘映射规则：[Karabiner](https://mac.softpedia.com/get/System-Utilities/?utm_source=spd&utm_campaign=postdl_redir)
 
-快速工具（效率，类似Listary）：[Alfred](https://download.csdn.net/download/sinat_29970905/11634147)
+文件搜索工具：EasyFind（AppStore） 
 
-文件搜索工具：EasyFind（AppStore）
-
-谷歌浏览器代理插件：
+谷歌浏览器代理插件：Proxy SwitchyOmega
 
 
+
+非常好用的软件：
+
+1. 快速工具（效率，类似Listary）：[Alfred](https://download.csdn.net/download/sinat_29970905/11634147)
+
+2. [SpaceLauncher](https://www.maczapp.com/download.php?id=69188&did=52828&action=1573999300&from=15045811251972)
+
+   通过`空格`加`其他按键`来对应快捷键，如打开文件夹，打开应用等
 
 
 
@@ -58,4 +64,5 @@ Java开发编辑器：[Idea2019](https://www.jetbrains.com/idea/download/)
 
 5. maven(`brew install maven`)
 
-6. tomcat(`brew install tomcat`)
+6. tomcat(`brew install tomcat`
+
