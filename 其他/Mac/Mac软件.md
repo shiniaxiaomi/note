@@ -48,7 +48,11 @@ Java开发编辑器：[Idea2019](https://www.jetbrains.com/idea/download/)
 
    通过`空格`加`其他按键`来对应快捷键，如打开文件夹，打开应用等
 
-3. betterTouchTool(闪退)待解决
+3. betterTouchTool
+
+   还是购买正版吧，这个是真的好用，两年需要59元
+
+4.  
 
 
 
