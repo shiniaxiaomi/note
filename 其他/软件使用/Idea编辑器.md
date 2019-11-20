@@ -1,8 +1,63 @@
 [TOC]
 
+
+
+# Scratch file（草稿箱）
+
+你可以创建草稿文件来记录公共的内容或者代码，但是该草稿文件不会属于特定的项目，它会被每个项目共享，但是文件并不存在与项目中
+
+使用快捷键`shift+command+N`可以快速的创建草稿文件，你可以创建有类型的文件（支持语法高亮），普通的文本文件或者是可以保存数据库连接信息等等，它可以保存任何项目共享的内容
+
+它会在idea中的project窗口中存在，你可以随时访问，像这样
+
+![image-20191120103801218](/Users/yingjie.lu/Documents/note/.img/image-20191120103801218.png)
+
 # 快捷键
 
-## 效率
+## Mac快捷键
+
+### 最常用的
+
+- search everywhere: double shift
+
+- go to file: shift +command + O
+- recent files : command+E
+- Navigation bar : command + 方向上键
+- find in path（全局搜索） : shift + command +F
+- replace in path （全局替换）：shift+command +R
+- scratch file（创建草稿）：shift + command +N
+
+### 效率
+
+- class... (搜索class文件，也可以通过doube shift调出): command +O 
+- file structure(文件结构)：command +F12
+- type hierarchy(类型层级)：ctrl+H
+- next method : ctrl+方向下
+- previous method：ctrl+方向上
+
+### code
+
+- Override Methods：ctrl+O
+
+- Implement Methods：ctrl+i 
+
+- 
+
+### 运行调试
+
+- run：ctrl+R
+- debug: ctrl+D
+- 
+
+
+
+
+
+
+
+## 快捷键
+
+### 效率
 
 查看当前文件结构(方法和参数) Ctrl+F12
 
@@ -32,7 +87,7 @@
 
 关闭打开的文件 Ctrl+F4
 
-## 常用
+### 常用
 
 格式化 Ctrl+Alt+L
 
@@ -56,7 +111,7 @@
 
 查看类的说明文档 Ctrl+Q或者自定义的Ctrl+Shift+D
 
-## 其他
+### 其他
 
 最近的文件 Ctrl+E
 
@@ -78,7 +133,7 @@ TODO Alt+6
 
 快速打开idea的option配置 Ctrl+Shift+A
 
-## 调试部分,编译
+### 调试部分,编译
 
 停止 Ctrl+F12
 
@@ -108,7 +163,7 @@ TODO Alt+6
 
 生成项目 Ctrl+F9
 
-## 重构
+### 重构
 
 弹出重构菜单 Ctrl+Alt+Shift+T
 
