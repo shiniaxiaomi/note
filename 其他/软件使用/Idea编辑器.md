@@ -41,21 +41,49 @@
 
 - Implement Methods：ctrl+i 
 
-- 
+- Generate...(生成代码)：command+N
+- Comment with Line Comment（行注释）：command+/
+- Comment with Block Comment（块注释）：option+command+/
+- Optimize import（优化包导入）：ctrl+command+O
+- Move Statement Down/Up（选中代码块上下移动）：shift+command+方向上/下
+- 折叠代码
+  - Expand：command+`+`
+  - Collapse： command+`-`
 
 ### 运行调试
 
-- run：ctrl+R
-- debug: ctrl+D
-- 
+运行
 
+- Build Project：command+F9
 
+- Run：ctrl+R
+- Debug: ctrl+D
 
+调试
 
+- Step Over（单步跳过）：F8
+- Force Step Over（强制单步跳过）：option+command+F8
+- Step Into（步入）：F7
+- Smart Step Into（只能步入）：shift+F7
+- Step Out（步出）：shift+F8
+- Run to Cursor（运行到光标处）：option+F9
+- Resume Program（恢复并继续执行程序）：option+commnd+R
+- Evaluate Expression（计算表达式）：option+F8
+- Quick Evaluate Expression（快速计算表达式）：option+command+F8
+- show Execution Point（现实当前断点）：option+F10
+- Toggle Line Breakpoint（添加或删除行断点）：command+F8
 
+### 版本管理
 
+- Commit：command+K
+- Push：shift+command+K
+- Update Project：Command+T
 
-## 快捷键
+### 其他
+
+- Preference（自定义设置）：command+`,`
+
+## Windows快捷键
 
 ### 效率
 
@@ -173,13 +201,33 @@ TODO Alt+6
 
 # 插件
 
-- MyBatis plugin
+- Free MyBatis plugin
 
   轻松通过快捷键找到MyBatis中对应的Mapper和XML，CTRL+ALT+B
+
+- JRebel for IntelliJ
+
+  热部署插件
+
+- Lombok
+
+  自动生成get和set方法等
+
+- Mybatis Generator Plus
+
+  视图化操作界面，根据数据库表自动生成Mybatis代码，包括model，xml，mapper等
 
 - CodeGlance
 
   在编辑代码最右侧，显示一块代码小地图 
+  
+- Mybatis Log Plugin
+
+  mybatis日志插件，可以将打印的日志生成sql放到数据库中直接执行
+
+- PackageJars
+
+  打成jar包的插件
 
 
 
