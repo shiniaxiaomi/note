@@ -8,7 +8,9 @@ npm是一个包管理工具(Package Manager)
 
 新版本的nodejs已经集成了npm,只需要安装nodejs即可(安装方法可见笔记[node.js.md](./node.js.md))
 
-# 更换npm镜像站点
+# 替换npm
+
+## 安装cnpm替换npm
 
 使用淘宝定制的cnpm命令行工具代替默认的npm
 
@@ -19,6 +21,35 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 # 之后即可使用cnpm来安装包即可
 cnpm install <包>
 ```
+
+## 直接将npm的源替换成taobao的源（推荐）
+
+1. 修改文件`/Users/yingjie.lu/.npmrc`
+
+   在文件中加入
+
+   ```shell
+   registry =https://registry.npm.taobao.org
+   ```
+
+   保存即可
+
+2. 直接输入命令：`npm config set registry https://registry.npm.taobao.org/`
+
+验证是否配置成功：
+
+在命令行中输入以下命令
+
+```shell
+$ npm config get registry
+https://registry.npm.taobao.org/
+```
+
+如果配置的源则说明配置成功
+
+
+
+如果想还原npm的镜像源，则直接删除`/Users/yingjie.lu/.npmrc`即可
 
 ## 安装其他模块
 

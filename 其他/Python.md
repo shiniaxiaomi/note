@@ -24,6 +24,62 @@
 
 - 打开cmd,输入python看能否进入python环境,输入exit()退出
 
+# 替换pip为国内源
+
+进入到当前用户目录下，创建`.pip`文件夹，然后在文件夹中创建`pip.conf`文件，再将源地址添加进去即可
+
+以下是命令：
+
+```shell
+$ cd
+$ mkdir .pip
+$ cd .pip
+$ vim pip.conf
+```
+
+将以下内容复制进入即可
+
+```shell
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple
+```
+
+# 使用pip安装第三方包
+
+## 查询：
+
+pip search 包名
+
+```shell
+pip search requests
+```
+
+## 安装
+
+pip install 包名
+
+```shell
+pip install requests
+```
+
+## 卸载
+
+pip uninstall 包名
+
+```shell
+pip uninstall requests
+```
+
+## 查看命令帮助
+
+```shell
+pip3 --help
+```
+
+
+
+
+
 # ...
 
 # 总结
