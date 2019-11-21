@@ -94,6 +94,7 @@ pip3 --help
    export PATH=$Python3:$PATH
    
    alias python=python3
+   alias pip=pip3
    ```
 
 3. 使得配置生效
@@ -106,9 +107,27 @@ pip3 --help
 
 - 在命令行输入`python --version`，如果出现了你想要的版本，那么就说明配置成功
 
-# ...
-
 # 总结
+
+## 发送一个http请求
+
+1. 安装第三方包`requests`
+
+   ```shell
+   pip3 install requests
+   ```
+
+2. 使用
+
+   ```python
+   # -*- coding: utf-8 -*-
+   import sys
+   import requests
+   
+   url="http://luyingjie.cn"
+   response = requests.get(url)
+   print(response.text)
+   ```
 
 ## python获取外部传入的参数
 
@@ -131,11 +150,19 @@ ps.wait();#让程序阻塞
 
 ## python转码
 
-```python
-from urllib.parse import unquote # 导入转码工具包
-# 将路径变量进行解码(从而可以使用中文)
-notePath=unquote(notePath[7:], 'utf-8') #将notePath变量先分割在进行转码
-```
+1. 安装第三方包`urlquote`
+
+   ```shell
+   pip3 install urlquote
+   ```
+
+2. 使用
+
+   ```python
+   from urllib.parse import unquote # 导入转码工具包
+   # 将路径变量进行解码(从而可以使用中文)
+   notePath=unquote(notePath[7:], 'utf-8') #将notePath变量先分割在进行转码
+   ```
 
 ## 不让python的黑窗口出现
 
