@@ -76,9 +76,35 @@ pip uninstall requests
 pip3 --help
 ```
 
+# 切换python版本
 
+如果你使用的是brew安装的python，那么直接将环境变量中的python指向到新安装的python的bin目录下即可
 
+1. 修改用户目录下的`.bash_profile`文件
 
+   ```shell
+   vim ~/.bash_profile
+   ```
+
+2. 将以下代码复制到文件中
+
+   ```shell
+   # 配置python3
+   export Python3=/usr/local/Cellar/python/3.7.5/bin
+   export PATH=$Python3:$PATH
+   
+   alias python=python3
+   ```
+
+3. 使得配置生效
+
+   ```shell
+   source ~/.bash_profile
+   ```
+
+验证是否配置成功：
+
+- 在命令行输入`python --version`，如果出现了你想要的版本，那么就说明配置成功
 
 # ...
 
