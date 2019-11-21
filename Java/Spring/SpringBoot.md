@@ -2,17 +2,21 @@
 
 # 介绍
 
-
-
-# 快速入门
-
-介绍SpringBoot，系统要求，Servlet容器，安装SpringBoot，开发第一个SpringBoot应用
-
-
-
 # 使用SpringBoot
 
-构建系统
+## 构建系统(Build Systems)
+
+### Dependency Management
+
+Spring Boot提供了版本管理工具`Dependency Management`来帮我们管理所有依赖的版本，SpringBoot非常的不建议我们自己去指定依赖的版本
+
+### Maven
+
+
+
+### Starters
+
+
 
 结构化代码
 
