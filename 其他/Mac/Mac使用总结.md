@@ -53,7 +53,9 @@ $ echo $PATH
 
 [参考链接](https://www.jianshu.com/p/f63611e8e821)
 
-# 终端使用
+# 终端
+
+## 使用
 
 1. 终端清屏
 
@@ -64,6 +66,65 @@ $ echo $PATH
 2. 搜索历史命令：`Ctrl+R`
 
 3. 在Finder中打开当前目录：`open .`
+
+## 在终端中使用代理
+
+1. 使用shadowsocks代理
+
+   右键`shadowsocks`，点击复制终端代理命令
+
+   ![image-20191122232912045](/Users/yingjie.lu/Documents/note/.img/image-20191122232912045.png)
+
+   默认的命令如下：
+
+   ```shell
+   export http_proxy=http://127.0.0.1:1087;export https_proxy=http://127.0.0.1:1087;
+   ```
+
+   复制到终端中回车即可
+
+   注意：
+
+   这种方式是能在当前的命令行窗口中开启了代理，如果换一个窗口，则不会使用代理（即在哪个窗口输入代理命令，即代理哪个窗口，只是临时生效）
+
+2. 使用命令方式开启代理
+
+   在终端中开启ssh连接，并监听本地的特定端口
+
+   例如：
+
+   ```shell
+   ssh -D 20000 root@xxx.xxx.xxx.xxx
+   ```
+
+   > 这样，你的电脑就会监听本地的20000端口，当你把请求发送到20000端口时，就会通过这个端口往外转发（即代理），然后获取数据后并返回
+
+   在开启ssh连接之后，还需要和第一种方法一样，在特定的窗口设置代理（推荐使用临时代理）
+
+   ```shell
+   # 配置http，https访问的
+   export http_proxy=socks5://127.0.0.1:20000;export https_proxy=socks5://127.0.0.1:20000
+   ```
+
+   如果要永久性的修改代理配置，可以参考[链接](http://www.imooc.com/article/285912)，不过不推荐修改
+
+## 解决ssh空闲时间自动断连的问题
+
+修改`/etc/ssh/ssh_config`文件
+
+```shell
+sudo vim /etc/ssh/ssh_config
+```
+
+![image-20191122234252037](/Users/yingjie.lu/Documents/note/.img/image-20191122234252037.png)
+
+在最下面一行添加以下内容即可：
+
+```shell
+ServerAliveInterval 60
+```
+
+具体的参考[链接](https://blog.csdn.net/SandyLoo/article/details/74979817)
 
 # 快速搜索
 
