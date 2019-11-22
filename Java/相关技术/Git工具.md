@@ -294,9 +294,7 @@ $ git commit -m "remove test.txt"
 
 现在有了分支，就不用怕了。你创建了一个属于你自己的分支，别人看不到，还继续在原来的分支上正常工作，而你在自己的分支上干活，想提交就提交，直到开发完毕后，再一次性合并到原来的分支上，这样，既安全，又不影响别人工作。
 
-## 创建与合并分支
-
-### 分支原理
+## 分支原理
 
 每次提交,`git`都会把它们串成一条时间线,这条时间线就是一个分支
 
@@ -330,27 +328,81 @@ $ git commit -m "remove test.txt"
 
 ![git-br-rm](D:\note\.img\0-1565409790707.png)
 
+## 分支操作
 
+### 创建分支
 
-### 代码实战
+`git branch dev`
 
-#### 创建并切换分支(dev)
+### 切换分支
+
+- 切换本地分支
+
+  查看本地分支有哪些
+
+  ```cmd
+  $ git branch
+  * develop_luyingjie
+    master
+  ```
+
+  现在本地分支指向的是develop_luyingjie分支，现在需要切换到master分支
+
+  ```shell
+  git checkout master
+  ```
+
+- 切换远程分支
+
+  查看远程分支有哪些
+
+  ```cmd
+  $ git branch -r
+    origin/master <- origin/HEAD 
+    origin/develop
+  ```
+
+  现在远程分支指向的是master分支，现在需要切换到develop分支
+
+  ```shell
+  git checkout -b myDevelop origin/develop
+  ```
+
+### 创建并切换本地分支
 
 `git checkout -b dev`
 
 > `-b`参数表示创建并切换分支
 
-#### 创建分支(dev)
+### 从远程拉取分支并在本地创建一个新分支
 
-`git branch dev`
+```shell
+git checkout -b myDev origin/dev 
+```
 
-#### 切换分支(dev)
+### 查看分支
 
-`git checkout dev`
+1. 查看本地分支
 
-#### 查看分支(当前分支)
+   ```shell
+   git branch
+   ```
 
-`git branch`
+2. 查看远程分支
+
+   ```shell
+   git branch -r
+   ```
+
+   > -remote
+
+3. 查看所有分支
+
+   ```shell
+   git branch -a
+   ```
+
+   > -all
 
 示例:
 
@@ -362,7 +414,13 @@ $ git branch
 
 > `git branch`命令会列出所有分支，当前分支前面会标一个`*`号。
 
-#### 合并分支
+### 拉取分支到本地
+
+```shell
+git pull origin dev
+```
+
+### 合并分支
 
 `git merge dev`
 
@@ -378,7 +436,7 @@ Fast-forward
  1 file changed, 1 insertion(+)
 ```
 
-#### 删除分支
+### 删除分支
 
 `git branch -d dev`
 

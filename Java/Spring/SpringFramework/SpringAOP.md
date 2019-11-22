@@ -269,6 +269,46 @@ public void afterLog(){
 }
 ```
 
+# 设置AOP的执行顺序
+
+当有多个AOP切面时，就需要指定他们的先后执行顺序
+
+设置AOP执行顺序的方法有两种：
+
+1. 使用注解方式
+
+   ```java
+   @Component  
+   @Aspect  
+   @Slf4j  
+   @Order(1)  //设置优先级
+   public class MessageQueueAopAspect1{  
+   
+   } 
+   ```
+
+2. 实现Ordered接口
+
+   ```java
+   @Component  
+   @Aspect  
+   @Slf4j  
+   public class MessageQueueAopAspect1 implements Ordered{
+     	@Override  
+       public int getOrder() {  
+           return 2;  
+       }  
+   }  
+   ```
+
+当order的值越小时，切面之前的会越先被执行，但是切面之后的就越后被执行
+
+可以通过一张图来理解：
+
+![image-20191122145353978](/Users/yingjie.lu/Documents/note/.img/image-20191122145353978.png)
+
+> 当order越小时，那么圆就越大
+
 # xml配置-AOP使用Demo
 
 1. 定义一个业务类

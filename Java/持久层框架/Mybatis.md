@@ -2327,11 +2327,15 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 
 # Mybatis插件
 
-自动生成插件：[mybatis-generator-plus](https://github.com/leecho/mybatis-generator-plus)
+- 自动生成插件：[mybatis-generator-plus](https://github.com/leecho/mybatis-generator-plus)
 
-mybatis日志插件：[mybatis-log-plugin](https://plugins.jetbrains.com/plugin/10065-mybatis-log-plugin/)
+- mybatis日志插件：[mybatis-log-plugin](https://plugins.jetbrains.com/plugin/10065-mybatis-log-plugin/)
 
-mybatis接口和xml跳转插件：[free-mybatis-plugin](https://plugins.jetbrains.com/plugin/8321-free-mybatis-plugin/)
+- mybatis接口和xml跳转插件：[free-mybatis-plugin](https://plugins.jetbrains.com/plugin/8321-free-mybatis-plugin/)
+
+  > 不好的是，插件更新后集成了自动生成xml的功能，会和`mybatis-generator-plus`插件冲突，所以换成了`Cofe-Mybatis`插件
+
+- CodeGlance: 代码全局可视化插件
 
 # 参考文档
 

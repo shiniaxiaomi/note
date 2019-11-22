@@ -12,6 +12,76 @@
 
 ![image-20191120103801218](/Users/yingjie.lu/Documents/note/.img/image-20191120103801218.png)
 
+#  设置注释生成模版
+
+1. 在创建类时生成的模版设置
+
+   在配置项中搜索template关键字即可
+
+   ![image-20191122110232677](/Users/yingjie.lu/Documents/note/.img/image-20191122110232677.png)
+
+   修改Class，Interface，Enum，AnnotationType的选项卡
+
+   将以下内容加入到模版中即可
+
+   ```java
+   /**
+    *@ClassName ${NAME}
+    *@Description 
+    *@Author ${USER}
+    *@Date ${DATE} ${TIME}
+    *@Version 1.0
+   */
+   ```
+
+2. 在方法上生成的模版设置
+
+   - 生成类上的注解模版
+
+     ![image-20191122110431224](/Users/yingjie.lu/Documents/note/.img/image-20191122110431224.png)
+
+     将以下内容放入模版中
+
+     ```java
+     /** 
+      * @ClassName $name$
+      * @Author $user$
+      * @Description $end$
+      * @Date $date$ $time$
+      * @Version 1.0
+      **/
+     ```
+
+     点击右边的`Edit variables`,配置对应的变量即可
+
+     ![image-20191122110529483](/Users/yingjie.lu/Documents/note/.img/image-20191122110529483.png)
+
+   - 配置生成方法上的模版
+
+     ![image-20191122110635328](/Users/yingjie.lu/Documents/note/.img/image-20191122110635328.png)
+
+     将以下内容放入模版中
+
+     ```java
+     * 
+      * @Author $user$
+      * @Description $end$
+      * @Date $date$ $time$
+      * @Param $param$
+      * @return $return$
+      **/
+     ```
+
+     点击右边的`Edit variables`,配置对应的变量即可
+
+     ![image-20191122110705555](/Users/yingjie.lu/Documents/note/.img/image-20191122110705555.png)
+
+     > 其中的param是使用脚本生成的，脚本内容如下：
+     >
+     > ```js
+     > groovyScript("def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList();result+='['; for(i = 0; i < params.size(); i++) {result+= params[i]+ ((i < params.size() - 1) ? ':null,':':null')};result+=']'; return result", methodParameters()) 
+     > ```
+
 # 快捷键
 
 ## Mac快捷键
