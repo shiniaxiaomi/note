@@ -316,8 +316,6 @@ channel.basicPublish("", "task_queue",
 
 
 
-
-
 # 其他命令
 
 ## 管理界面
