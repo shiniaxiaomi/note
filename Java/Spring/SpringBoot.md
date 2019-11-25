@@ -77,19 +77,148 @@ SpringBean
 
 
 
-# SpringBoot功能
+# SpringBoot功能总结
 
-配置文件
+## 13.Messaging
 
-日志记录
+### JMS
 
-安全性
+### AMQP
 
-缓存
+AMQP的全名为：Advanced Message Queuing Protocol（先进的消息队列协议）
 
-Spring集成
+AMQP时一个与平台无关的，面向消息的中间件
 
-测试
+SpringBoot提供了方便使用RabbitMQ的starter：`spring-boot-starter-amqp`
+
+
+
+#### RabbitMQ配置
+
+```java
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=admin
+spring.rabbitmq.password=secret
+```
+
+具体详细的使用可以参考[文档](https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/)
+
+#### 发送消息
+
+当我们在依赖中引入`spring-boot-starter-amqp`依赖时，Spring就为我们自动配置好了`AmqpTemplate` and `AmqpAdmin`
+
+具体使用如下：
+
+```java
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+  	@Autowired
+    private final AmqpAdmin amqpAdmin;
+  	@Autowired
+    private final AmqpTemplate amqpTemplate;
+
+  	//...
+}
+```
+
+如果需要设置重试可以配置以下代码：
+
+```java
+spring.rabbitmq.template.retry.enabled=true
+spring.rabbitmq.template.retry.initial-interval=2s
+```
+
+#### 接受消息
+
+当配置好RabbitMQ的配置后，任何的Bean都可以使用`@RabbitListener`注解来创建消息监听点，如果`RabbitListenerContainerFactory`实例没有注入，Spring会创建一个默认的bean（`SimpleRabbitListenerContainerFactory`）
+
+下面是一个简单的创建消息监听的代码：
+
+```java
+package com.lyj.springboot_rabbitmq.consumer;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping
+public class TestProducer {
+
+    @Autowired
+    RabbitTemplate rabbitTemplate; //注入rabbitmq模版
+
+    @RequestMapping("test")
+    public String test(){
+        rabbitTemplate.convertSendAndReceive("someQueue","111");
+        return "发送成功！";
+    }
+}
+
+```
+
+> 注意：
+>
+> 当使用`RabbitListener`注解时，需要使用`@EnableRabbit`注解开启RabbitMQ注解
+
+
+
+如果需要创建多个消息监听的`RabbitListenerContainerFactory`实例或者需要覆盖默认的bean，Spring提供了`SimpleRabbitListenerContainerFactoryConfigurer` 和 `DirectRabbitListenerContainerFactoryConfigurer`类，我们只需要在容器中初始化他们就可以了，自动配置还是会生效的
+
+
+
+如果需要进行消息的转化，可以参考以下配置：
+
+```java
+@Configuration(proxyBeanMethods = false)
+static class RabbitConfiguration {
+
+  @Bean
+  public SimpleRabbitListenerContainerFactory myFactory(
+    SimpleRabbitListenerContainerFactoryConfigurer configurer) {
+    SimpleRabbitListenerContainerFactory factory =
+      new SimpleRabbitListenerContainerFactory();
+    configurer.configure(factory, connectionFactory);
+    factory.setMessageConverter(myMessageConverter());
+    return factory;
+  }
+
+}
+```
+
+当配置好消息转换后，我们可以在消息监听的时候通过注解进行指定，将接受到的消息进行指定的转换，代码如下：
+
+```java
+package com.lyj.springboot_rabbitmq.producer;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TestConsumer {
+
+    //创建消息监听，并指定了监听队列的名称为someQueue
+    @RabbitListener(queues = "someQueue")
+    public void processMessage(String content) {
+        System.out.println(content);
+    }
+
+}
+```
+
+
+
+如果需要配置消息接受重试，可以配置`RetryTemplate`
+
+### Kafaka
 
 
 
