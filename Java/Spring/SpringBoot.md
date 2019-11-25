@@ -98,8 +98,8 @@ SpringBoot提供了方便使用RabbitMQ的starter：`spring-boot-starter-amqp`
 ```java
 spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
-spring.rabbitmq.username=admin
-spring.rabbitmq.password=secret
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
 ```
 
 具体详细的使用可以参考[文档](https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/)
@@ -217,6 +217,250 @@ public class TestConsumer {
 
 
 如果需要配置消息接受重试，可以配置`RetryTemplate`
+
+
+
+#### 创建多实例的RabbitMQ代码实例
+
+
+
+创建application.properties配置文件
+
+```properties
+spring.rabbitmq.first.host=localhost
+spring.rabbitmq.first.port=5672
+spring.rabbitmq.first.username=guest
+spring.rabbitmq.first.password=guest
+
+spring.rabbitmq.second.host=localhost
+spring.rabbitmq.second.port=5672
+spring.rabbitmq.second.username=guest
+spring.rabbitmq.second.password=guest
+```
+
+
+
+创建配置类
+
+1. FirstRabbitConfig
+
+   ```Java
+   package com.lyj.springboot_rabbitmq_demo.config;
+   
+   import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+   import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+   import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+   import org.springframework.amqp.rabbit.core.RabbitTemplate;
+   import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+   import org.springframework.beans.factory.annotation.Qualifier;
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   import org.springframework.context.annotation.Primary;
+   
+   @Configuration
+   public class FirstRabbitConfig {
+       //配置具有缓存的连接工厂
+       @Bean(name = "firstConnectionFactory")
+       @Primary
+       public CachingConnectionFactory firstConnectionFactory(
+               @Value("${spring.rabbitmq.first.host}") String host,
+               @Value("${spring.rabbitmq.first.port}") int port,
+               @Value("${spring.rabbitmq.first.username}") String username,
+               @Value("${spring.rabbitmq.first.password}") String password
+       )  {
+           CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+           connectionFactory.setHost(host);
+           connectionFactory.setPort(port);
+           connectionFactory.setUsername(username);
+           connectionFactory.setPassword(password);
+           return connectionFactory;
+       }
+   
+       //rabbitmq模版
+       @Bean(name = "firstTemplate")
+       @Primary
+       public RabbitTemplate firstTemplate(
+               @Qualifier("firstConnectionFactory") ConnectionFactory connectionFactory
+       ) {
+           RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+           rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+           return rabbitTemplate;
+       }
+   
+       //监听工厂
+       @Bean(name = "firstListenerFactory")
+       @Primary
+       public SimpleRabbitListenerContainerFactory firstListenerFactory(
+               SimpleRabbitListenerContainerFactoryConfigurer configurer,
+               @Qualifier("firstConnectionFactory") ConnectionFactory connectionFactory
+       ) {
+           SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+           configurer.configure(factory, connectionFactory);
+   
+           return factory;
+       }
+   }
+   ```
+
+2. SecondRabbitConfig
+
+   ```java
+   package com.lyj.springboot_rabbitmq_demo.config;
+   
+   import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+   import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+   import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+   import org.springframework.amqp.rabbit.core.RabbitTemplate;
+   import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+   import org.springframework.beans.factory.annotation.Qualifier;
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   
+   @Configuration
+   public class SecondRabbitConfig {
+       //配置具有缓存的连接工厂
+       @Bean(name = "secondConnectionFactory")
+       public CachingConnectionFactory SecondConnectionFactory(
+               @Value("${spring.rabbitmq.second.host}") String host,
+               @Value("${spring.rabbitmq.second.port}") int port,
+               @Value("${spring.rabbitmq.second.username}") String username,
+               @Value("${spring.rabbitmq.second.password}") String password
+       )  {
+           CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+           connectionFactory.setHost(host);
+           connectionFactory.setPort(port);
+           connectionFactory.setUsername(username);
+           connectionFactory.setPassword(password);
+           return connectionFactory;
+       }
+   
+       //rabbitmq模版
+       @Bean(name = "secondTemplate")
+       public RabbitTemplate SecondTemplate(
+               @Qualifier("secondConnectionFactory") ConnectionFactory connectionFactory
+       ) {
+           RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+           rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+           return rabbitTemplate;
+       }
+   
+       //监听工厂
+       @Bean(name = "secondListenerFactory")
+       public SimpleRabbitListenerContainerFactory SecondListenerFactory(
+               SimpleRabbitListenerContainerFactoryConfigurer configurer,
+               @Qualifier("secondConnectionFactory") ConnectionFactory connectionFactory
+       ) {
+           SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+           configurer.configure(factory, connectionFactory);
+   
+           return factory;
+       }
+   
+   }
+   ```
+
+> 注意：
+>
+> 两份配置代码几乎一样，但是必须其中一个配置文件的bean要打上`@Primary`注解，不然会报找到两个类型相同的错误
+>
+> 两份配置代码的bean必须要标明bean的名称，注入时也需要使用`@Qualifier`注解指定注入哪个名称的bean
+
+
+
+创建生产者
+
+```java
+package com.lyj.springboot_rabbitmq_demo.controller;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+@RestController
+@RequestMapping
+public class TestController {
+    @Resource(name = "firstTemplate")
+    RabbitTemplate firstTemplate;
+    @Resource(name = "secondTemplate")
+    RabbitTemplate secondTemplate;
+
+    @RequestMapping("test1")
+    public String test1(String str){
+        firstTemplate.convertAndSend("test1",str);
+        return "success";
+    }
+
+    @RequestMapping("test2")
+    public String test2(String str){
+        secondTemplate.convertAndSend("test2",str);
+        return "success";
+    }
+
+}
+```
+
+
+
+创建消费者
+
+```java
+package com.lyj.springboot_rabbitmq_demo.consumer;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TestConsumer {
+    //消息监听firstRabbit
+    @RabbitListener(queues ="test1",containerFactory = "firstListenerFactory")
+    public void process1(byte[] message) {
+        System.out.println("test1:"+new String(message));
+    }
+
+    //消息监听secondRabbit
+    @RabbitListener(queues ="test2",containerFactory = "secondListenerFactory")
+    public void process2(byte[] message) {
+        System.out.println("test2:"+new String(message));
+    }
+}
+```
+
+
+
+主入口
+
+```java
+package com.lyj.springboot_rabbitmq_demo;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+@SpringBootApplication
+public class SpringbootRabbitmqDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringbootRabbitmqDemoApplication.class, args);
+    }
+}
+```
+
+
+
+运行代码后，在浏览器端进行生产数据，查看控制台的数据消费情况
+
+测试连接1：http://localhost:8080/test1?str=test
+
+测试连接1：http://localhost:8080/test2?str=test
+
+本地输出情况：
+
+```java
+test1:"test"
+test2:"test"
+```
 
 ### Kafaka
 
