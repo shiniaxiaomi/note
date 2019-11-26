@@ -286,7 +286,9 @@ $ git commit -m "remove test.txt"
 
 > 直接从拉取远程仓库到本地,并直接做好关联,就可以直接使用了
 
+## 克隆远程仓库时指定生成的文件夹名称
 
+`git clone https://github.com/shiniaxiaomi/note.Git customName`
 
 # 分支管理
 
