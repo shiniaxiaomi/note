@@ -376,6 +376,15 @@ $ git commit -m "remove test.txt"
 
 > `-b`参数表示创建并切换分支
 
+### 将本地分支推送到远程分支
+
+```shell
+# 切换分支
+git checkout dev
+# 将分支推送到远程,并将远程分支命令为dev
+git push origin dev
+```
+
 ### 从远程拉取分支并在本地创建一个新分支
 
 ```shell
