@@ -2,6 +2,98 @@
 
 # 介绍
 
+# Files
+
+## 创建文件
+
+### 简单的创建文件
+
+```java
+Files.write("abc".getBytes(),new File("/Users/yingjie.lu/abc"));
+```
+
+### 使用writer创建文件
+
+```java
+BufferedWriter writer = Files.newWriter(new File("/Users/yingjie.lu/abc"),Charsets.UTF_8);
+writer.write("hfsdfdhsjfsd\n");
+writer.write("23423423\n");
+writer.close();
+```
+
+### 创建嵌套目录的文件
+
+```java
+File file = new File("/Users/yingjie.lu/Desktop/test/dsfds/xcjds/dsfs");
+file.getParentFile().mkdirs();
+file.createNewFile();
+```
+
+## 读取文件
+
+### 简单的读取文件所有内容
+
+```java
+List<String> context = Files.readLines(new File("/Users/yingjie.lu/abc"), Charsets.UTF_8);
+Iterator<String> iterator = context.iterator();
+while(iterator.hasNext()){
+  System.out.println(iterator.next());
+}
+```
+
+### 使用reader一行一行的读取文件
+
+```java
+BufferedReader reader = Files.newReader(new File("/Users/yingjie.lu/abc"), Charsets.UTF_8);
+String str=null;
+while((str=reader.readLine())!=null){
+  System.out.println(str);
+}
+reader.close();
+```
+
+## 复制文件
+
+```java
+Files.copy(new File("/Users/yingjie.lu/abc"),new File("/Users/yingjie.lu/Desktop/abc"));
+```
+
+## 移动文件
+
+```java
+Files.move(new File("/Users/yingjie.lu/abc"),new File("/Users/yingjie.lu/Desktop/abcd"));
+```
+
+## 创建文件夹(嵌套也适用)
+
+> 这个不是使用的guava中的工具，而是jdk自带的
+
+```java
+File file=new File("/Users/yingjie.lu/Desktop/test2");
+file.mkdirs();
+```
+
+## 移动文件夹
+
+```java
+File file=new File("/Users/yingjie.lu/Desktop/test");//文件夹路径
+Files.move(file,new File("/Users/yingjie.lu/Desktop/test2"));
+```
+
+> 默认情况下是将指定文件夹内的所有内容移动到指定目录下，如果需要保留原指定文件夹，则需要在移动到的指定目录下添加文件夹的名称
+
+## 复制文件夹
+
+不支持复制文件夹，只支持复制一个文件，如果要复制文件夹，可以使用jdk自带的自己写一个递归，或者是使用apache的common-io工具类代理
+
+
+
+
+
+
+
+
+
 # EventBus
 
 使用了观察者模式,或者叫发布/订阅模式，即某事情被发布，订阅该事件的角色将收到通知
