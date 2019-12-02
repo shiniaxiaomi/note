@@ -1,5 +1,3 @@
-[TOC]
-
 # 整体概述
 
 > 注意事项：
@@ -804,11 +802,57 @@ Elasticsearch可以单独的运行在服务器上并且拥有使用服务器上�
 
 更多的发现和碎片分配可以参考文档[Discovery](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules-discovery.html) and [Cluster](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules-cluster.html)
 
+# 更新Elasticsearch
+
+Elasticsearch经常使用滚动更新进程来更新数据，所以在更新数据的时候并不会中断服务。然而，我们需要重建索引在更新数据之后。
+
+更多参考[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/setup-upgrade.html#setup-upgrade)
+
+# API约定
+
+Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
+
+本章列出的约定可以应用于整个REST API，除非另有指定
+
+## 多重索引
+
+大多数引用索引参数的api都支持跨多个索引执行，使用简单的`test1,test2,test3`符号（或者用`_all`来表示所有索引）。它也支持通配符，如`test*`或`tes*t`，并且可以使用`-`来排除一些选项，如`test*,-test3`（通配符匹配test*的索引，但是排除了test3的索引）
 
 
-## 配置X-Pack Java 客户端
 
-https://www.elastic.co/guide/en/elasticsearch/reference/6.8/setup-xpack-client.html
+所有的多重索引API支持以下String类型的url查询参数：
+
+- `ignore_unavailable`
+
+  控制是否忽略指定的不可用的索引，不可用包括不存在和已关闭的索引，可以指定true或false
+
+- `allow_no_indices`
+
+  控制是否失败如果通配符表达式没有对应的索引。可以指定true或false。如果为false，当没有找到索引时，则该请求失败
+
+- `expand_wildcards`
+
+  控制通配符索引可以扩展成哪种类型。如果值为`open`，则通配符表达式将扩展为仅还在使用的索引。如果值为`closed`，则通配符表示式将扩展为仅已经关闭的索引。如果值为`open,closed`，则通配符表达式将扩展为所有索引（开启和关闭的所有索引）。如果值为`null`，则关闭通配符表达式。如果值为`all`，则和值为`open,closed`是等价的
+
+上述参数的默认值取决于所使用的API
+
+
+
+> 单个索引的API不支持多种索引
+
+## 在索引名中提供日期数学支持
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
