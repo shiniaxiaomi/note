@@ -145,7 +145,7 @@ http://127.0.0.1:9200/
 
 #### 查看Elasticsearch健康的API
 
-http://127.0.0.1:9200//_cat/health?v
+http://127.0.0.1:9200/_cat/health?v
 
 ### 多实例运行
 
@@ -155,6 +155,15 @@ elasticsearch -Epath.data=data3 -Epath.logs=log3
 ```
 
 > 为每个elasticsearch指定数据和日志的路径即可
+
+## Elasticsearch的结构与传统数据库结构对比
+
+| Elasticsearch | 传统数据库 |
+| :-----------: | :--------: |
+|    indices    |   数据库   |
+|     type      |   数据库   |
+|   document    |     行     |
+|     field     |     列     |
 
 ## 索引文档
 
@@ -651,6 +660,121 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 '
 ```
 
+## 使用Java REST Client操作数据
+
+[参考文档](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high.html)
+
+### 添加文档并创建索引
+
+ ```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+  RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//创建index请求
+IndexRequest request = new IndexRequest("posts", "doc", "3");//指定对应的index，type和id
+
+//添加数据方式一
+//        String jsonString = "{" +
+//                "\"user\":\"kimchy\"," +
+//                "\"postDate\":\"2013-01-30\"," +
+//                "\"message\":\"trying out Elasticsearch\"" +
+//                "}";
+//        IndexRequest source = request.source(jsonString, XContentType.JSON);
+//添加数据方式二
+IndexRequest source = request.source("user", "aaa", "postDate", new Date(), "message", "hello");
+
+//通过client创建index并添加一个文档
+IndexResponse index = client.index(source, RequestOptions.DEFAULT);
+System.out.println(index);
+
+//关闭连接
+client.close();
+ ```
+
+### 通过id查询文档
+
+```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+  RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//创建get请求
+GetRequest request = new GetRequest("posts", "doc", "1");
+
+//通过client进行查询
+GetResponse getResponse = client.get(request, RequestOptions.DEFAULT);
+System.out.println(getResponse);
+
+//关闭连接
+client.close();
+```
+
+### 删除对应文档
+
+```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+  RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//创建delete请求
+DeleteRequest request = new DeleteRequest("posts", "doc", "1");
+
+//通过client进行删除
+DeleteResponse deleteResponse = client.delete(request, RequestOptions.DEFAULT);
+System.out.println(deleteResponse);
+
+//关闭连接
+client.close();
+```
+
+### 更新文档
+
+```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+  RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//创建update请求
+UpdateRequest request = new UpdateRequest("posts", "doc", "2");
+
+//在请求中添加要修改的内容
+request.doc("updated", new Date(),"reason","i don't know");
+
+//通过client进行更改
+UpdateResponse update = client.update(request, RequestOptions.DEFAULT);
+System.out.println(update);
+
+//关闭连接
+client.close();
+```
+
+### 多条件查询
+
+```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+  RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//构造查询条件
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.fuzzyQuery("user", "sdsds"));//使用模糊查询
+sourceBuilder.from(0);
+sourceBuilder.size(5);
+
+//指定查询文档
+SearchRequest searchRequest = new SearchRequest();
+searchRequest.indices("posts");
+searchRequest.source(sourceBuilder);
+
+//通过client进行查询
+SearchResponse search = client.search(searchRequest, RequestOptions.DEFAULT);
+System.out.println(search);
+
+//关闭连接
+client.close();
+```
+
 
 
 # 设置Elasticsearch
@@ -802,19 +926,281 @@ Elasticsearch可以单独的运行在服务器上并且拥有使用服务器上�
 
 更多的发现和碎片分配可以参考文档[Discovery](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules-discovery.html) and [Cluster](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules-cluster.html)
 
-# 更新Elasticsearch
+# 更新Elasticsearch数据
 
 Elasticsearch经常使用滚动更新进程来更新数据，所以在更新数据的时候并不会中断服务。然而，我们需要重建索引在更新数据之后。
 
 更多参考[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/setup-upgrade.html#setup-upgrade)
 
-# API约定
+## 滚动更新
+
+## 所有集群重启更新
+
+## 重建索引前更新
+
+# 聚合
+
+[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/search-aggregations.html)
+
+# Query DSL
+
+[文档](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/query-dsl.html)
+
+共有两类查询子句：
+
+- 叶查询子句
+
+  叶查询子句寻找特定的值在特定的字段中，例如使用`match`，`term`或`range`查询。这些查询可以被他们自生使用。
+
+- 复合查询子句
+
+  复合查询包裹了叶查询或者复合查询，一般用来封装多重查询的逻辑（例如`bool`或者`dis_max`查询），或者用于改变他们的行为（例如`constant_score`查询）
+
+## 查询和过滤上下文
+
+### 匹配程度得分
+
+Elasticsearch根据查询结果的匹配程度得分进行排序
+
+
+
+匹配程度得分是一个正浮点数，它在调用[search](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html) API会在结果中返回。匹配程度越高，说明查询关键字和文档越匹配。虽然每个查询类型都可以以不同的方式计算匹配程度，但分数计算也取决于该查询请求使用的是查询上下文还是过滤上下文（过滤是不计入匹配程度的）
+
+### Query context
+
+在查询上下文中，查询子句除了决定文档是否匹配之外，还会计算匹配的文件的匹配程度，并将其在`_score`字段中返回
+
+
+
+查询上下文在查询子句传入一个查询参数的时候生效，查询参数可以参考[search](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html) API
+
+### Filter context
+
+在过滤上下文中，只是简单的筛选文档是否匹配，而不会去计算匹配程度。过滤上下文适用于过滤结构化的日期等，例如：
+
+- 过滤出时间范围在2015-2016区间的文档
+- state字段的值为“published”的文档
+
+经常使用的过滤器将会自动的被Elasticsearch缓存，用来加快查询
+
+
+
+过滤上下文在查询子句传入`filter`参数时生效，例如[bool](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/query-dsl-bool-query.html)查询中的`filter`或`must_not`参数，`constant_score`查询中`fitler`参数，或者[filter](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-aggregations-bucket-filter-aggregation.html)聚合
+
+### 示例
+
+该查询将匹配以下条件：
+
+- `title`字段包含search关键字
+- `content`字段包含elasticsearch关键字
+- `status`字段包含确定的published单词
+- `publish_date`字段的时间大于2015-01-01
+
+查询语句如下：
+
+```shell
+curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d '
+{
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "title":   "Search"        }},
+        { "match": { "content": "Elasticsearch" }}
+      ],
+      "filter": [ 
+        { "term":  { "status": "published" }},
+        { "range": { "publish_date": { "gte": "2015-01-01" }}}
+      ]
+    }
+  }
+}
+'
+```
+
+> `"query"`参数表明了是查询上下文
+>
+> `bool`和两个`match`子句被用在了查询上下文中，表示他们会被统计到文档的匹配程度得分中
+>
+> `fitler`参数表明了过滤上下文。`trem`和`range`子句被用在了过滤上下文中。他们会过滤掉不匹配的文档，并且不会讲过滤的参数统计到文档的匹配程度得分中。
+
+## 复合查询
+
+复合查询可以包裹复合查询或者叶查询，要么将他们的结果和分数结合起来，要么改变他们的行为，要么从查询上下文切换到过滤上下文
+
+
+
+包括以下查询：
+
+- bool_query
+
+  默认查询，组合多个叶查询或复合查询子句，例如`must`，`should`，`must_not`或`filter`子句。`must`和`should`子句的匹配得分会结合（匹配的越多，分数越高），而`must_not`和`filter`子句只会在filter上下文中执行
+
+- boosting query（主推查询）
+
+  返回匹配了正查询的文档，但是减少负查询的文档得分
+
+- constant_score query（得分不变的查询）
+
+  一个查询包括另一个查询，但是在fitler上下文中执行它。所有匹配的文档将得到同样不变的得分。
+
+- dis_max query
+
+  一个查询接受多个查询，并且返回任何一个查询子句匹配的所有文档。当`bool`查询返回所有匹配的文档的得分，而`dis_max`查询将返回得分最高的一个文档
+
+- function_score query
+
+  使用函数修改主查询返回的分数
+
+### Bool query
+
+事件类型：
+
+- must
+
+  指定必须出现在文档中的关键字，并计入匹配程度得分
+
+- filter
+
+  指定必须出现在文档中的关键字，但是不计入匹配程度得分
+
+- should
+
+  指定应该出现在文档中的关键字，并计入匹配程度得分
+
+- must_not
+
+  指定必须不存在文档中的关键字。子句在filter上下文中执行表示将不计入匹配程度得分且子句结果将用于缓存。
+
+
+
+`bool`查询采用越多匹配得分越高的方式，所以得分会从`must`和`should`子句中累加得出。
+
+
+
+## 全文本查询
+
+
+
+
+
+
+
+
+
+
+
+# 跨集群查询
+
+# 类型映射
+
+# 分析
+
+# Modules
+
+具体参考[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules.html)
+
+## 集群 模块
+
+设置集群如何控制在哪里、什么时候和怎样将碎片派发到多节点
+
+## 节点发现 模块
+
+节点如何发现彼此以形成集群
+
+## 网关 模块
+
+在恢复并启动之前，控制多少节点可以加入集群
+
+## HTTP 模块
+
+设置HTTP REST API
+
+## 索引 模块
+
+全局索引相关配置
+
+## 网络 模块
+
+设置默认网络设置
+
+## 节点客户端 模块
+
+
+
+## 插件 模块
+
+使用插件扩展Elasticsearch
+
+## 快照和恢复 模块
+
+## 线程池 模块
+
+## 数据传输 模块
+
+配置传输网络层，在Elasticsearch内部用于节点之间的通信。
+
+## 远程集群 模块
+
+远程集群用于通过在传输层上跨集群连接而工作的功能。
+
+## 跨集群搜索 模块
+
+跨集群搜索支持跨多个集群执行搜索请求，而无需将它们连接起来，并充当跨集群的联合客户机。
+
+# 索引模块
+
+配置与索引相关的设置
+
+[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/index-modules.html)
+
+# 管理索引的生命周期
+
+我们可以通过碎片的大小和性能需求来控制索引的生命周期，而不是简单的通过时间来控制。
+
+
+
+你可以将生命周期策略附加到索引模版来控制如何处理老化的索引。你可以更新策略来修改新索引和现有索引的生命周期。
+
+
+
+对于时间序列索引，有以下四个阶段：
+
+1. Hot：索引正在积极的被更新和查询
+2. Warm：索引长时间没有被更新，但是任然在被查询
+3. Cold：索引长时间没有被更新，并且很少被查询
+4. Delete：索引长时间没有被使用并且可以被安全的删除
+
+
+
+生命周期策略可以设置，即可以规定当时是什么状态时可以被认定为生命周期的哪种状态
+
+
+
+[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/index-lifecycle-management.html)
+
+
+
+# 监控集群（X-Pack）
+
+[文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/monitor-elasticsearch-cluster.html)
+
+
+
+# REST APIs
+
+Elasticsearch暴露的REST API可以直接配置和访问Elasticsearch的功能
+
+
+
+具体详细参考[7.5版本的文档](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/rest-apis.html)
+
+## API约定
 
 Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
 
 本章列出的约定可以应用于整个REST API，除非另有指定
 
-## 多重索引
+### 多重索引
 
 大多数引用索引参数的api都支持跨多个索引执行，使用简单的`test1,test2,test3`符号（或者用`_all`来表示所有索引）。它也支持通配符，如`test*`或`tes*t`，并且可以使用`-`来排除一些选项，如`test*,-test3`（通配符匹配test*的索引，但是排除了test3的索引）
 
@@ -840,15 +1226,41 @@ Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
 
 > 单个索引的API不支持多种索引
 
-## 在索引名中提供日期数学支持
+### 在索引名中提供日期数学支持
 
+## [cat API](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/cat.html)
 
+查询目前所有的index
 
+```shell
+curl -X GET "localhost:9200/_cat/indices?pretty"
+```
 
+## 集群API
 
+## 跨集群复制API
 
+## Document API
 
+## Index API
 
+## Index lifecycle management API
+
+## Info API
+
+## 迁移API
+
+## 重新加载查询分析 API
+
+## 汇总API
+
+## Search API
+
+## Security API
+
+## 快照生命周期管理API
+
+## Watcher API
 
 
 
