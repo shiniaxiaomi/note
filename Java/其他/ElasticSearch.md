@@ -246,6 +246,16 @@ curl -X GET "localhost:9200/customer/_doc/1?pretty"
 }
 ```
 
+查询所有文档：
+
+```shell
+curl -X GET "localhost:9200/posts/_search?pretty" -H 'Content-Type: application/json' -d '
+{
+  "query": { "match_all": {} }
+}
+'
+```
+
 ### 批量添加文档
 
 批量添加要比一个一个添加的速度要快
@@ -660,11 +670,51 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 '
 ```
 
-## 使用Java REST Client操作数据
+## 使用Java REST Client操作数据（***）
 
-[参考文档](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high.html)
+[官方文档](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high.html)
 
-### 添加文档并创建索引
+[其他博客](https://my.oschina.net/u/3795437/blog/2253366)
+
+[其他博客](https://zyc88.blog.csdn.net/article/details/87099469)
+
+### Document API
+
+[Index API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-document-index.html)
+
+[Get API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-document-get.html)
+
+[Delete API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-document-delete.html)
+
+[Update API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-document-update.html)
+
+### Search API
+
+[Search API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-search.html)
+
+[Search Scroll API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-search-scroll.html)：分页查询
+
+[Multi-Search API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-multi-search.html)：多重查询
+
+### Indices API
+
+[Create Index API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-create-index.html)
+
+[Delete Index API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-delete-index.html)
+
+[Get Index API](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-get-index.html)
+
+### Using Java Builders
+
+参考文档来获取如何创建不同操作请求的Java对象
+
+[Building Queries](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-query-builders.html)：创建查询对象
+
+[Building Aggregations](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high-aggregation-builders.html)：创建聚合对象
+
+### 示例
+
+#### 添加文档并创建索引
 
  ```java
 //创建客户端请求
@@ -692,7 +742,32 @@ System.out.println(index);
 client.close();
  ```
 
-### 通过id查询文档
+#### 批量添加文档
+
+```java
+//创建客户端请求
+RestHighLevelClient client = new RestHighLevelClient(
+RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+//创建index请求
+BulkRequest request = new BulkRequest();
+//添加数据
+request.add(new IndexRequest("posts", "doc", String.valueOf(Randomness.get().nextInt()))
+.source(XContentType.JSON,"field", "foo"));
+request.add(new IndexRequest("posts", "doc", String.valueOf(Randomness.get().nextInt()))
+.source(XContentType.JSON,"field", "bar"));
+request.add(new IndexRequest("posts", "doc", String.valueOf(Randomness.get().nextInt()))
+.source(XContentType.JSON,"field", "baz"));
+
+//通过client创建批量添加索引
+BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
+System.out.println(bulkResponse);
+
+//关闭连接
+client.close();
+```
+
+#### 通过id查询文档
 
 ```java
 //创建客户端请求
@@ -710,7 +785,7 @@ System.out.println(getResponse);
 client.close();
 ```
 
-### 删除对应文档
+#### 删除对应文档
 
 ```java
 //创建客户端请求
@@ -728,7 +803,7 @@ System.out.println(deleteResponse);
 client.close();
 ```
 
-### 更新文档
+#### 更新文档
 
 ```java
 //创建客户端请求
@@ -749,7 +824,7 @@ System.out.println(update);
 client.close();
 ```
 
-### 多条件查询
+#### 多条件查询(正则匹配查询)
 
 ```java
 //创建客户端请求
@@ -758,14 +833,12 @@ RestHighLevelClient client = new RestHighLevelClient(
 
 //构造查询条件
 SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-sourceBuilder.query(QueryBuilders.fuzzyQuery("user", "sdsds"));//使用模糊查询
+sourceBuilder.query(QueryBuilders.regexpQuery("user",".*lu.*"));//使用正则匹配查询
 sourceBuilder.from(0);
 sourceBuilder.size(5);
 
 //指定查询文档
-SearchRequest searchRequest = new SearchRequest();
-searchRequest.indices("posts");
-searchRequest.source(sourceBuilder);
+SearchRequest searchRequest = new SearchRequest().indices("posts").source(sourceBuilder);
 
 //通过client进行查询
 SearchResponse search = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -1228,21 +1301,41 @@ Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
 
 ### 在索引名中提供日期数学支持
 
-## [cat API](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/cat.html)
+## cat API（***）
 
-查询目前所有的index
+[cat count](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/cat-count.html)：查询所有文档总数
 
-```shell
-curl -X GET "localhost:9200/_cat/indices?pretty"
-```
+[cat indices](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/cat-indices.html)：查询所有index信息
 
 ## 集群API
 
 ## 跨集群复制API
 
-## Document API
+## Document API（***）
 
-## Index API
+[Index](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-index_.html)：创建index，并添加一个文档
+
+[Get](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-get.html)：获取文档
+
+[Delete](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-delete.html)：删除文档
+
+[Update](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-update.html)：更新文档
+
+[Multi get](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-multi-get.html)（批量查询）
+
+[Bulk](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-bulk.html)（批量添加）
+
+[Reindex](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-reindex.html)：重新索引
+
+[`?refresh`](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docs-refresh.html)：刷新
+
+## Index API（***）
+
+[Create index](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-create-index.html)：创建索引
+
+[Delete index](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-delete-index.html)：删除索引
+
+[Get index](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-get-index.html)：获取索引
 
 ## Index lifecycle management API
 
@@ -1254,7 +1347,41 @@ curl -X GET "localhost:9200/_cat/indices?pretty"
 
 ## 汇总API
 
-## Search API
+## [Search API（***）](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search.html)
+
+请求格式：
+
+1. `GET /<index>/_search`
+
+   在指定的索引中查询
+
+   示例：
+
+   - 在终端中查询(精确查询age=36的文档)
+
+     ```shell
+     curl -X GET "localhost:9200/posts/_search?pretty&q=age:36"
+     ```
+
+   - 使用url查询
+
+     http://localhost:9200/posts/_search?pretty&q=age:36
+
+2. `GET /_search`
+
+   在所有索引中查询（即查询搜索数据）
+
+   示例：
+
+   - 在终端中查询（精确查询age=36的文档）
+
+     ```shell
+     curl -X GET "localhost:9200/_search?pretty&q=age:36"
+     ```
+
+   - 使用url查询
+
+     http://localhost:9200/_search?pretty&q=age:36
 
 ## Security API
 
