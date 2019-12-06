@@ -1363,17 +1363,17 @@ document.onkeydown=function (event) {
 //全局快捷键
 var q_key=81;
 var Q_key=113;
-var a_key=65;
-var A_key=97;
+var w_key=87;
+var W_key=119;
 document.onkeypress=function (event) {
   var key = event.keyCode;
-  console.log(key)
   if(event.shiftKey && (key==q_key || key==Q_key)){
-    vue.dir_drawer=!vue.dir_drawer;
-  }else if(event.shiftKey && (key==a_key || key==A_key)){
     vue.outline_drawer=!vue.outline_drawer;
+    event.preventDefault();//阻止默认事件
+  }else if(event.shiftKey && (key==w_key || key==W_key)){
+    vue.dir_drawer=!vue.dir_drawer;
+    event.preventDefault();//阻止默认事件
   }
-  event.preventDefault();//阻止默认事件
 }
 ```
 
