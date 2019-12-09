@@ -196,8 +196,8 @@ css伪类用于向某些选择器添加特殊的效果
 - `:first-child`: 向元素的第一个子元素添加样式
 
 ```css
-a:hover {
-    color: #FF00FF
+a:hover { 
+background-color:yellow;
 }
 p > i:first-child {
   font-weight:bold;
