@@ -670,6 +670,20 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 '
 ```
 
+## url使用记录
+
+### 查询指定index信息
+
+```shell
+curl -X GET "localhost:9200/blog?pretty"
+```
+
+
+
+
+
+
+
 ## 使用Java REST Client操作数据（***）
 
 [官方文档](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.8/java-rest-high.html)
