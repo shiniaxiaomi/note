@@ -1321,6 +1321,12 @@ Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
 
 [cat indices](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/cat-indices.html)：查询所有index信息
 
+```shell
+curl -X GET "localhost:9200/_cat/indices?v&s=index&pretty"
+```
+
+
+
 ## 集群API
 
 ## 跨集群复制API
@@ -1410,6 +1416,26 @@ Elasticsearch的REST API是通过json格式的HTTP请求暴露的。
 
 
 
+
+# 常用命令
+
+查看所有index
+
+```shell
+curl -X GET "localhost:9200/_cat/indices?v&s=index&pretty"
+```
+
+删除index
+
+```shell
+curl -X DELETE "localhost:9200/header?pretty"
+```
+
+参看对应的index信息
+
+```shell
+curl -X GET "localhost:9200/header?pretty"
+```
 
 
 
