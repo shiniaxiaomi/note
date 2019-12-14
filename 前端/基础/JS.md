@@ -1357,6 +1357,28 @@ document.onkeydown=function (event) {
 }
 ```
 
+## 全局多个按键事件
+
+```js
+//全局快捷键
+var q_key=81;
+var Q_key=113;
+var w_key=87;
+var W_key=119;
+document.onkeypress=function (event) {
+  var key = event.keyCode;
+  if(event.shiftKey && (key==q_key || key==Q_key)){
+    vue.outline_drawer=!vue.outline_drawer;
+    event.preventDefault();//阻止默认事件
+  }else if(event.shiftKey && (key==w_key || key==W_key)){
+    vue.dir_drawer=!vue.dir_drawer;
+    event.preventDefault();//阻止默认事件
+  }
+}
+```
+
+
+
 ## 复制对象而不是引用
 
 复制对象
