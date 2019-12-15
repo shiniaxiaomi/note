@@ -570,6 +570,85 @@ pgrep -f plantip
 
 
 
+# 其他
+
+## 静态资源
+
+配置多个静态资源路径
+
+```properties
+spring.resources.static-locations=classpath:/static/,file:/Users/yingjie.lu/Documents/note/.img
+```
+
+> 使用`,`分隔多个静态资源路径即可
+>
+> 如果配置外部的静态资源，需要在路径前面加上`file:`关键字
+
+## 配置文件
+
+多配置文件
+
+- application.properties
+- application-dev.properties
+- application-prod.properties
+
+在application.properties中使用`spring.profiles.active=dev`可以配置激活哪个配置文件
+
+## 定时任务
+
+开启定时任务注解
+
+> 注意：
+>
+> 在定时任务中，需要捕获异常后自行处理，而不能直接抛出，不然会导致定时任务异常，最终会终止项目
+
+## 配置文件
+
+### 单个变量
+
+在配置文件中配置变量
+
+```properties
+isDev=true
+```
+
+直接获取配置文件中的变量
+
+```java
+@Value("${isDev}")
+boolean isDev;
+```
+
+### 前缀变量
+
+配置有前缀的变量
+
+```properties
+person.age=1
+person.name=a
+```
+
+获取前缀变量
+
+```properties
+@Component
+@ConfigurationProperties(prefix=“person”) 
+public class Test(){
+		int age;
+		String name;
+}
+```
+
+> 这样就可以将配置文件的前缀为person的变量的值注入到Test类的两个成员变量中
+
+### 读取指定配置文件
+
+```java
+@PropertySource(value="classpath:conf/url.properties")
+```
+
+
+
 
 
 

@@ -4,6 +4,48 @@
 
 
 
+# 执行shell命令
+
+[参考文档](http://commons.apache.org/proper/commons-exec/tutorial.html)
+
+引入pom依赖
+
+```xml
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-exec</artifactId>
+  <version>1.3</version>
+</dependency>
+```
+
+执行命令
+
+```java
+public class GitUtil {
+  private static DefaultExecutor executor = new DefaultExecutor();
+  static {
+    executor.setWorkingDirectory(new File(FileUtils.getUserDirectory() + "/Documents/note"));//将用户目录设置为工作目录
+  }
+
+  //拉取笔记
+  public static void gitPull() {
+    try {
+      executor.execute(CommandLine.parse("git pull"));
+    } catch (IOException e) {
+      log.error("笔记拉取失败",e);
+    }
+    log.debug("笔记拉取成功");
+  }
+
+}
+```
+
+
+
+
+
+
+
 
 
 # commons-exec工具类
