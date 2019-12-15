@@ -1,7 +1,5 @@
 
 
-[TOC]
-
 # 介绍
 
 
@@ -12,13 +10,13 @@
 
 打开下载的文件并安装,按照步骤点击
 
-![image-20191029121610623](D:\note\.img\image-20191029121610623.png)
+![image-20191029121610623](/Users/yingjie.lu/Documents/note/.img/image-20191029121610623.png)
 
 之后一路next即可
 
-![image-20191029121957803](D:\note\.img\image-20191029121957803.png)
+![image-20191029121957803](/Users/yingjie.lu/Documents/note/.img/image-20191029121957803.png)
 
-![image-20191029122024025](D:\note\.img\image-20191029122024025.png)
+![image-20191029122024025](/Users/yingjie.lu/Documents/note/.img/image-20191029122024025.png)
 
 安装成功后测试:
 

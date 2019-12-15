@@ -1,5 +1,3 @@
-[TOC]
-
 # 简介
 
 Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以及高级映射; Mybatis避免了几乎所有的JDBC代码和手动设置参数已经获取结果集; Mybatis可以使用简单的XML或注解来配置和映射原生类型,接口和Java中的POJO(Plain Old Java Object,普通老式Java对象)为数据库中的记录
@@ -186,9 +184,9 @@ JDBC与数据库交互有7个步骤,哪些步骤是可以进一步封装的?这�
 
 ## 原理图
 
-![img](D:\note\.img\20180624002302854.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180624002302854.png)
 
-![img](D:\note\.img\20141028140852531.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20141028140852531.png)
 
 ## 工作原理解析
 
@@ -210,7 +208,7 @@ JDBC与数据库交互有7个步骤,哪些步骤是可以进一步封装的?这�
 
 以下是Mybatis的层次图:
 
-![这里写图片描述](D:\note\.img\20171202184841388.png)
+![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20171202184841388.png)
 
 # 快速入门
 
@@ -880,7 +878,7 @@ MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用
 现在一些MyBatis 插件比如PageHelper都是基于这个原理，有时为了监控sql执行效率，也可以使用插件机制
 原理： 
 
-![这里写图片描述](D:\note\.img\20180701222734152.png)
+![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20180701222734152.png)
 
 通过 MyBatis 提供的强大机制，使用插件是非常简单的，只需实现 Interceptor 接口，并指定想要拦截的方法签名即可 
 

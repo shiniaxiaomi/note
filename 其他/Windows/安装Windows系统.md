@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 记录一下Windows安装的过程
@@ -12,7 +10,7 @@
 
    [下载地址](https://www.microsoft.com/zh-cn/software-download/windows10ISO/)
 
-   ![image-20191031160102047](D:\note\.img\image-20191031160102047.png)
+   ![image-20191031160102047](/Users/yingjie.lu/Documents/note/.img/image-20191031160102047.png)
 
 2. 下载完工具之后,双击运行安装工具,等待工具下载完镜像,然后选择保存镜像到桌面即可(即不要选择让工具帮你制作U盘启动工具)
 
@@ -22,15 +20,15 @@
 
 2. 打开UltraISO软件,选择打开之前保存到桌面的window镜像文件
 
-   ![image-20191031165413553](D:\note\.img\image-20191031165413553.png)
+   ![image-20191031165413553](/Users/yingjie.lu/Documents/note/.img/image-20191031165413553.png)
 
    打开进行后镜像后,选择`启动`选项卡的写入`写入硬盘映像`
 
-   ![image-20191031165413553](D:\note\.img\image-20191031165413553.png)
+   ![image-20191031165413553](/Users/yingjie.lu/Documents/note/.img/image-20191031165413553.png)
 
    之后会弹出写入映像操作界面,确认一下要写入的硬盘(U盘),然后点击写入按钮即可
 
-   ![image-20191031165413553](D:\note\.img\image-20191031165413553.png)
+   ![image-20191031165413553](/Users/yingjie.lu/Documents/note/.img/image-20191031165413553.png)
 
 ## 安装window
 

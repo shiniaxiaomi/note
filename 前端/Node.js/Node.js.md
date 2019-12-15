@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍 
 
 node.js就是运行在服务端的javascript

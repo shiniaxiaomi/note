@@ -1,10 +1,8 @@
-[TOC]
-
 # 介绍
 
 JDBC(Java DataBase Connection) 是Java和数据库之间的一个桥梁,是一个规范而不是一个具体实现; 它是规定了与数据库操作的接口,每个不同类型的数据库都由其对应的实现,如下图所示:
 
-![img](D:\note\.img\20180729201036257-1571496804890.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180729201036257-1571496804890.png)
 
 接下来使用mysql数据库的对JDBC接口的实现(`mysql-connector-java`)来进行演示JDBC编程
 

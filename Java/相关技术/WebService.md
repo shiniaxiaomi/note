@@ -1,5 +1,3 @@
-[TOC]
-
 # 简介
 
 webService是一种使用http传输SOAP协议数据的rpc远程调用技术
@@ -88,7 +86,7 @@ webService实现了跨应用程序通讯和跨平台通讯
 
      生成的文件概要
 
-     ![1568557272454](D:\note\.img\1568557272454.png)
+     ![1568557272454](/Users/yingjie.lu/Documents/note/.img/1568557272454.png)
 
   3. 将打好的jar提供给服务调用者
 
@@ -112,7 +110,7 @@ WSDL即web服务描述语言,它是服务接口的使用说明书,是xml格式�
 
 文档结构
 
-![1568557810396](D:\note\.img\1568557810396.png)
+![1568557810396](/Users/yingjie.lu/Documents/note/.img/1568557810396.png)
 
 - `<types>`: 定义webService使用的全部数据类型
 - `<message>`: 定义一个操作(方法)的数据参数(可有多个参数)
@@ -126,7 +124,7 @@ SOAP是一种基于xml和http的通讯协议
 
 ### 原理
 
-![img](D:\note\.img\20160819144713056)
+![img](/Users/yingjie.lu/Documents/note/.img/20160819144713056)
 
 ### 协议格式
 

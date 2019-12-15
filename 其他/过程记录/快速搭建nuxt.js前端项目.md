@@ -1,5 +1,3 @@
-[TOC]
-
 # 安装nuxt
 `vue init nuxt-community/starter-template  <project-name>`
 

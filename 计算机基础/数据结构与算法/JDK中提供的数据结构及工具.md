@@ -1,5 +1,3 @@
-[TOC]
-
 # 数据结构
 
 ## 线性表
@@ -250,7 +248,7 @@ LinkedHashMap继承于HashMap,其底层实现使用的是HashMap,但是它有通
 
 LinkedHashMap使用与实现图:
 
-![img](D:\note\.img\4843132-7abca1abd714341d.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/4843132-7abca1abd714341d.webp)
 
 HashMap的元素是无序的,当我们希望有顺序的去存储元素时,就需要使用LinkedHashMap了
 
@@ -327,11 +325,11 @@ HashSet如何保证元素唯一:
 
 HashMap:
 
-![img](D:\note\.img\4843132-2e04e0f72a751a47.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/4843132-2e04e0f72a751a47.webp)
 
 LinkedHashMap:
 
-![img](D:\note\.img\4843132-23488d46581b87ea.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/4843132-23488d46581b87ea.webp)
 
 总结:
 

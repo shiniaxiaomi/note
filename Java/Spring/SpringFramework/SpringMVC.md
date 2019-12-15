@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 SpringMVC是目前主流的实现MVC设计模式的企业级开发框架,Spring框架的一个子模块,无需整合,开发起来更加快捷(需要使用到spring,即依赖spring)
@@ -14,7 +12,7 @@ SpringMVC就是对这套流程的封装,屏蔽了很多底层代码,开放出接
 
 使用idea创建一个Java Web项目
 
-![1571579177965](D:\note\.img\1571579177965.png)
+![1571579177965](/Users/yingjie.lu/Documents/note/.img/1571579177965.png)
 
 创建完项目后,idea会默认给你配置好tomcat跟要部署的文件和创建好项目的结构
 
@@ -22,11 +20,11 @@ SpringMVC就是对这套流程的封装,屏蔽了很多底层代码,开放出接
 
 接下来将使用maven去管理项目,那么就需要创建pom.xml文件,如图所示:
 
-![1571580020454](D:\note\.img\1571580020454.png)
+![1571580020454](/Users/yingjie.lu/Documents/note/.img/1571580020454.png)
 
 然后在pom文件上点击右键,选择`Add as Maven Project`即可将项目转换成maven项目,便于依赖管理,操作如图所示:
 
-![1571580076853](D:\note\.img\1571580076853.png)
+![1571580076853](/Users/yingjie.lu/Documents/note/.img/1571580076853.png)
 
 编辑pom文件,引入依赖
 
@@ -172,7 +170,7 @@ public class TestController {
 
 > 这样的目的是: 在项目编译完成之后,我们使用maven依赖的jar包也能被放到编译后的`WEB-INF/lib`目录下,这样项目才可以正常的访问(如果使用maven进行依赖管理,这一步很重要)
 
-![1571582038423](D:\note\.img\1571582038423.png)
+![1571582038423](/Users/yingjie.lu/Documents/note/.img/1571582038423.png)
 
 如果上述步骤操作完毕后,直接点击运行tomcat即可
 
@@ -184,11 +182,11 @@ public class TestController {
 
 那么就会看到一个success页面返回
 
-![1571582370580](D:\note\.img\1571582370580.png)
+![1571582370580](/Users/yingjie.lu/Documents/note/.img/1571582370580.png)
 
 # SpringMVC的具体流程
 
-![2019-10-23_134114](D:\note\.img\2019-10-23_134114-1571809408167.jpg)
+![2019-10-23_134114](/Users/yingjie.lu/Documents/note/.img/2019-10-23_134114-1571809408167.jpg)
 
 > 流程是自己画的,可能还存在一些表达不清楚的地方,可以看下面的文字解释
 
@@ -310,7 +308,7 @@ public class TestController {
 
 上下文的层级关系图如下:
 
-![mvc context hierarchy](D:\note\.img\mvc-context-hierarchy.png)
+![mvc context hierarchy](/Users/yingjie.lu/Documents/note/.img/mvc-context-hierarchy.png)
 
 > 根容器保存一些公共的bean,这些bean可以共享使用,可以被子容器访问;
 >

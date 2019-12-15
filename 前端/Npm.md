@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 npm是一个包管理工具(Package Manager)

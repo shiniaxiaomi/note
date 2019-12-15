@@ -1,5 +1,3 @@
-[TOC]
-
 # java
 
 ## java基础
@@ -276,7 +274,7 @@ https://mp.weixin.qq.com/s/Yl9pTaQYKwf0rZ6InG9OZg
 
 常用容器:
 
-![img](D:\note\.img\640.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640.webp)
 
 ### Collection和Collections有什么区别
 
@@ -285,7 +283,7 @@ https://mp.weixin.qq.com/s/Yl9pTaQYKwf0rZ6InG9OZg
 
 ### List,Set,Map之间的区别是什么
 
-![img](D:\note\.img\640-1569827836419.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569827836419.webp)
 
 ### HashMap和Hashtable有什么区别
 
@@ -439,11 +437,11 @@ https://mp.weixin.qq.com/s/ywOwdXuMG5rhEXMH_OXKEQ
 
 **并行**: 指在同一时刻,有多条命令在多个处理器上同时执行, 所以无论从微观还是从宏观来看,二者都是一起执行的
 
-![img](D:\note\.img\7557373-72912ea8e89c4007.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/7557373-72912ea8e89c4007.webp)
 
 **并发**: 指在同一时刻只能有一条命令执行,但多个进程指令被快速的轮换执行,使得在宏观上具有多个进程同时执行的效果,但在微观上并不是同时执行的,只是把事件分成若干段,使得多个进程快速交替的执行
 
-![img](D:\note\.img\7557373-da64ffd6d1effaac.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/7557373-da64ffd6d1effaac.webp)
 
 并行在多处理器系统中存在,而并发可以在单处理器和多处理器系统中都存在,并发能够在单处理器系统中存在是因为并发是并行的假象,并行要求程序能够同时执行多个操作,而并发只是要求程序假装同时执行多个操作(每个小时间片执行一个操作,多个操作快速切换执行
 
@@ -532,7 +530,7 @@ run()方法是在本线程里的,只是线程里的一个函数,而不是多线�
 
 线程池各个状态切换框架图:
 
-![img](D:\note\.img\640-1569898172062.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569898172062.webp)
 
 
 
@@ -564,7 +562,7 @@ run()方法是在本线程里的,只是线程里的一个函数,而不是多线�
 
 锁升级的图示过程:
 
-![img](D:\note\.img\640-1569898822157.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569898822157.webp)
 
 ### 什么是死锁
 
@@ -969,13 +967,13 @@ Redirct:
 
    采用tcp协议传输数据的客户端与服务器经常时保持一个长连接的状态(一次连接发生一次数据不存在粘包),双方在连接不断开的情况下,可以一直传输数据,但当发生的数据包过于的小时,那么tcp协议默认的会启动Nagle算法,将这些较小的数据包继续合并发送(缓冲区数据发送是一个堆压的过程); 这个合并过程就是在发送缓冲区中进行的,也就是说数据发送出来它已经是粘包的状态了
 
-   ![img](D:\note\.img\640-1569930885829.webp)
+   ![img](/Users/yingjie.lu/Documents/note/.img/640-1569930885829.webp)
 
 2. 接收方产生粘包
 
    接收方采用tcp协议接收数据时的过程是这样的: 数据到达接收方,从网络模型的下方传递至传输层,传输层的tcp协议处理时将其放置接收缓冲区,然后由应用层来主动获取,这时会痴线一个问题,就是我们在程序中调用的读取数据函数不能及时的把缓冲区中的数据拿出来,而下一个数据又到来并有一部分放入到缓冲区末尾,等我们读取数据时就是一个粘包(放数据的速度>应用层拿数据的速度)
 
-   ![img](D:\note\.img\640-1569931090151.webp)
+   ![img](/Users/yingjie.lu/Documents/note/.img/640-1569931090151.webp)
 
 ### OSI的七层模型都有哪些?
 
@@ -1099,7 +1097,7 @@ public class Singleton {
 
 对象间一对多的依赖关系,当一个对象的状态发生变化时,所有依赖于它的对象都得到通知并被自动更新
 
-![img](D:\note\.img\640-1569937412136.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569937412136.webp)
 
 举个例子: 假设有三个人,小美(女,22),小王和小李,小美很漂亮,小王和小李是两个程序员,时刻关注着小美的一举一动; 有一天,小美说了一句:"谁来陪我打游戏啊?",这句话被小王和小李听到了,乐坏了,噌噌噌,没一会儿,小王就冲到小美家门口了,在这里,小美是被观察者,小王和小李是观察者,被观察者发出一条信息,然后观察者们进行相应的处理,接下来是代码:
 
@@ -1491,13 +1489,13 @@ public class Test {
 
 使用类图表示他们之间的关系
 
-![img](D:\note\.img\640-1569941533143.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569941533143.webp)
 
 #### 抽象工厂
 
 先来认识下什么是产品族： 位于不同产品等级结构中，功能相关联的产品组成的家族。
 
-![点击查看原始大小图片](D:\note\.img\640-1569941581367.webp)
+![点击查看原始大小图片](/Users/yingjie.lu/Documents/note/.img/640-1569941581367.webp)
 
 > 图中的BmwCar和BenzCar就是两个产品树（产品层次结构）；而如图所示的BenzSportsCar和BmwSportsCar就是一个产品族。他们都可以放到跑车家族中，因此功能有所关联。同理BmwBussinessCar和BenzBusinessCar也是一个产品族。
 
@@ -1567,13 +1565,13 @@ Inversion Of Control(控制反转或被称为自动注入)
 
 IOC理论提出的观点大体时这样的: 借助于"第三方"实现居于依赖关系的对象之间的解耦,如下图所示:
 
-![img](D:\note\.img\640-1569977433328.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569977433328.webp)
 
 由于引入了中间位置的"第三方",也就是IOC容器,使得A,B,C,D这4个对象没有了耦合关系,齿轮之间的传动全部依靠IOC容器了,全部对象的控制权全部上缴给IOC容器,所以,IOC容器称为了整个系统的关键核心,它起到了一种类似于"粘合剂"的作用,把系统中的所有对象粘合在一起发挥作用,如果没有这个"粘合剂",对象于对象之间会彼此失去联系
 
 我们再来做个实验: 就是把上图中的IOC容器拿掉,然后再来看看这套系统
 
-![img](D:\note\.img\640-1569977683740.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569977683740.webp)
 
 我们看到,这时A,B,C,D这4个对象之间已经没有了耦合关系,彼此毫无联系,这样的话,当你在实现A的时候,就根本无需再去考虑B,C,D了,对象之间的依赖关系已经降低到了最低程度; 
 
@@ -1585,7 +1583,7 @@ IOC理论提出的观点大体时这样的: 借助于"第三方"实现居于依�
 
 spring框架至今已集成20多个模块; 这些模块主要分为和核心容器,数据访问,web,aop,工具,消息和测试模块
 
-![img](D:\note\.img\640-1569979511894.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569979511894.webp)
 
 ### spring常用的注入方式有哪些?
 
@@ -1643,7 +1641,7 @@ https://mp.weixin.qq.com/s/eHK5wqAv5UgYoYUnpFCxzA
 
 运行流程图:
 
-![img](D:\note\.img\640-1569981153827.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1569981153827.webp)
 
 运行流程描述:
 
@@ -1749,11 +1747,11 @@ springboot是一个框架,一种全新的编程规范,它的产生简化了框�
 
    - 首先找到IDEA中的Edit configurations,在左上角点击加号,选择maven,输入项目名
 
-     ![img](D:\note\.img\640-1570002239005.webp)
+     ![img](/Users/yingjie.lu/Documents/note/.img/640-1570002239005.webp)
 
    - 点击保存将会在IDEA项目运行位置出现,点击绿色箭头运行即可
 
-     ![img](D:\note\.img\640-1570002287878.webp)
+     ![img](/Users/yingjie.lu/Documents/note/.img/640-1570002287878.webp)
 
 2. 使用spring-boot-devtools
 
@@ -2286,7 +2284,7 @@ https://mp.weixin.qq.com/s/OcJvAuRG_mG9S3EYPcItCg
 
 有的区域随着虚拟机进程的启动而存在,有的区域则依赖用户进程的启动和结束而创建和销毁
 
-![img](D:\note\.img\640-1570023684503.webp)
+![img](/Users/yingjie.lu/Documents/note/.img/640-1570023684503.webp)
 
 ## 说一下堆和栈的区别?
 

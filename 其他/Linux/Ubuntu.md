@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 Ubuntu是另一种linux的派系，和CenterOS是不同的派系

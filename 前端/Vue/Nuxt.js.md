@@ -1,5 +1,3 @@
-[TOC]
-
 # 快速安装nuxt.js
 - 使用vue脚手架进行初始化
     `vue init nuxt-community/starter-template  <project-name>`
@@ -14,7 +12,7 @@
 ## 安装node.js(自带npm包管理工具)
 - 下载node.js       
     https://nodejs.org/en/download/
-    ![](D:\note\.img\cms522565.png)
+    ![](/Users/yingjie.lu/Documents/note/.img/cms522565.png)
 - 将下载好的压缩包上传至服务器的中，进入压缩包所在的目录，然后运行解压命名      
     `tar -vxf node-v0.10.26-linux-x64.tar.gz`
 - 解压完成后进入解压后的`nodejs`中的`bin`目录，执行ls会看到两个文件`node`和`npm`，执行命令`./node -v`

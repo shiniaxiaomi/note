@@ -1,5 +1,3 @@
-[TOC]
-
 # 简介
 
 Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中; 
@@ -637,7 +635,7 @@ public class AppConfig {
 
 ## 项目结构图
 
-![image-20191025104243466](D:\note\.img\image-20191025104243466.png)
+![image-20191025104243466](/Users/yingjie.lu/Documents/note/.img/image-20191025104243466.png)
 
 总共分为以下几层:
 
