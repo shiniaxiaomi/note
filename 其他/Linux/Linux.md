@@ -3049,6 +3049,22 @@ restore
 
     `restore -r -f /root/boot.bak.bz2`
 
+# 其他
+
+测试接口联通性
+
+```shell
+wget ip:port
+```
+
+例如：
+
+```shell
+wget xxx.xxx.xxx.xxx:8000
+```
+
+
+
 # 参考文档
 
 - [linux入门教程](http://c.biancheng.net/linux_tutorial/)
@@ -3061,3 +3077,4 @@ restore
 
 
 
+-
