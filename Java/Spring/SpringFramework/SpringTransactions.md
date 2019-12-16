@@ -1,5 +1,3 @@
-[TOC]
-
 # 事务的基本原理
 
 Spring事务的本质其实就是数据库对事务的支持,使用[JDBC](D:\note\Java\数据库\JDBC.md)的事务管理机制,就是利用java.sql.Connection对象完成对事务的提交
@@ -91,7 +89,7 @@ Spring事务管理的核心接口:
 
 接口之间的联系如下图所示:
 
-![在这里插入图片描述](D:\note\.img\2019041016324335.png)
+![在这里插入图片描述](/Users/yingjie.lu/Documents/note/.img/2019041016324335.png)
 
 > 这张关系图非常的重要
 

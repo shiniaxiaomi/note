@@ -1,5 +1,3 @@
-[TOC]
-
 # 简介
 
 jQuery是一个JavaScript库,他极大的简化了JavaScript编程

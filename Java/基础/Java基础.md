@@ -1,5 +1,3 @@
-[TOC]
-
 # 安装java
 
 1. 下载jdk并安装,选择Window64位系统

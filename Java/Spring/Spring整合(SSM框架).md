@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 SSM框架是由Spring,SpringMVC和Mybatis三大框架组合而成的,这也是目前企业中比较流行的三个框架
@@ -52,9 +50,9 @@ SSM各自起到的作用:
 
 1. 创建一个maven项目
 
-   ![1572167797787](D:\note\.img\1572167797787.png)
+   ![1572167797787](/Users/yingjie.lu/Documents/note/.img/1572167797787.png)
 
-   ![1572167828392](D:\note\.img\1572167828392.png)
+   ![1572167828392](/Users/yingjie.lu/Documents/note/.img/1572167828392.png)
 
 2. 添加maven依赖(pom.xml文件)
 
@@ -133,27 +131,27 @@ SSM各自起到的作用:
 
 3. 配置tomcat
 
-   ![1572167924834](D:\note\.img\1572167924834.png)
+   ![1572167924834](/Users/yingjie.lu/Documents/note/.img/1572167924834.png)
 
-   ![1572167955842](D:\note\.img\1572167955842.png)
+   ![1572167955842](/Users/yingjie.lu/Documents/note/.img/1572167955842.png)
 
    点击Fix按钮,然后点击下方的选项
 
-   ![1572168052961](D:\note\.img\1572168052961.png)
+   ![1572168052961](/Users/yingjie.lu/Documents/note/.img/1572168052961.png)
 
    将右边的Maven依赖添加到Tomcat中
 
-   ![1572168140593](D:\note\.img\1572168140593.png)
+   ![1572168140593](/Users/yingjie.lu/Documents/note/.img/1572168140593.png)
 
    在项目中创建web目录以及WEB-INF和web.xml等重要的文件
 
    > 我们可以通过idea自带的功能来自动创建,参考下图
 
-   ![1572168890701](D:\note\.img\1572168890701.png)
+   ![1572168890701](/Users/yingjie.lu/Documents/note/.img/1572168890701.png)
 
    点击下方的按钮,然后点击OK即可自动创建web目录
 
-   ![1572169013573](D:\note\.img\1572169013573.png)
+   ![1572169013573](/Users/yingjie.lu/Documents/note/.img/1572169013573.png)
 
    然后一步finish或next即可
 
@@ -516,7 +514,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 对应的目录结构:
 
-![1572167190304](D:\note\.img\1572167190304.png)
+![1572167190304](/Users/yingjie.lu/Documents/note/.img/1572167190304.png)
 
 [参考本文的环境搭建内容](D:\note\Java\Spring\Spring整合(SSM框架).md#3.2.创建对应的每一层模型)
 
@@ -684,7 +682,7 @@ public class SpringMVCConfig {
 
 对应的目录结构:
 
-![1572187364808](D:\note\.img\1572187364808.png)
+![1572187364808](/Users/yingjie.lu/Documents/note/.img/1572187364808.png)
 
 [参考本文的环境搭建内容](D:\note\Java\Spring\Spring整合(SSM框架).md#3.2.创建对应的每一层模型)
 

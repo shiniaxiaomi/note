@@ -1,5 +1,3 @@
-[TOC]
-
 
 
 # js基本内容
@@ -772,7 +770,7 @@ try {
 
 Html Dom 模型会被结构化为对象树
 
-![DOM HTML 树](D:\note\.img\ct_htmltree.gif)
+![DOM HTML 树](/Users/yingjie.lu/Documents/note/.img/ct_htmltree.gif)
 
 通过这个对象模型,js就能够动态创建和修改html
 
@@ -898,7 +896,7 @@ Html Dom 模型会被结构化为对象树
 - 每个节点都可以有子节点
 - 兄弟节点指的时拥有相同父节点的节点
 
-![DOM HTML 树](D:\note\.img\dom_navigate.gif)
+![DOM HTML 树](/Users/yingjie.lu/Documents/note/.img/dom_navigate.gif)
 
 节点之间的导航
 
@@ -1138,7 +1136,7 @@ ajax可以不刷新页面更新页面数据
 
 ajax的工作原理
 
-![AJAX](D:\note\.img\ajax.gif)
+![AJAX](/Users/yingjie.lu/Documents/note/.img/ajax.gif)
 
 ## XMLHttpRequest对象
 

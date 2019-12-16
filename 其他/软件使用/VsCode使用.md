@@ -1,5 +1,3 @@
-[TOC]
-
 # 安装
 
 - [在官方下载,一路next即可](https://code.visualstudio.com/)

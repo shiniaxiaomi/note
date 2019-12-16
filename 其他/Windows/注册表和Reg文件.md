@@ -1,5 +1,3 @@
-[TOC]
-
 # 介绍
 
 ## Windows注册表
@@ -52,13 +50,13 @@ REG文件实际上是一种windows操作系统的注册表脚本文件，双击R
 
 - 打开注册表可以发现,在注册表的`HKEY_CLASSES_ROOT`根键下,存在`.md`的子项,这个是用来标识我们电脑上的`.md`文件(即markdown文件)的,如下图所示
 
-  ![image-20191030095610166](D:\note\.img\image-20191030095610166.png)
+  ![image-20191030095610166](/Users/yingjie.lu/Documents/note/.img/image-20191030095610166.png)
 
   我们可以看到`.md`子项对应的数据类型是`TyporaMarkdownFile`类型的,那么window是怎么知道该类型的呢?
 
 - 我们可以在`HKEY_CLASSES_ROOT`根键下查找`TyporaMarkdownFile`关键字,那么我们会发现,在注册表中还存在`TyporaMarkdownFile`子项,如图所示:
 
-  ![image-20191030100030109](D:\note\.img\image-20191030100030109.png)
+  ![image-20191030100030109](/Users/yingjie.lu/Documents/note/.img/image-20191030100030109.png)
 
   它的`command`子项中存在着打开对应应用程序的命令
 

@@ -1,5 +1,3 @@
-[TOC]
-
 # 简介
 
 css指层叠样式表(*C*ascading *S*tyle *S*heets)
@@ -62,7 +60,7 @@ selector {
 
 > 每个property:value以`;`分隔
 
-![CSS 语法](D:\note\.img\ct_css_selector.gif)
+![CSS 语法](/Users/yingjie.lu/Documents/note/.img/ct_css_selector.gif)
 
 ## 高级语法
 
@@ -464,7 +462,7 @@ table, th, td {
 
 css盒模型规定了元素的内容,内边距,边框和外边距
 
-![CSS 框模型](D:\note\.img\ct_boxmodel.gif)
+![CSS 框模型](/Users/yingjie.lu/Documents/note/.img/ct_boxmodel.gif)
 
 元素边框最内部分是实际的内容,直接包围内容的是内边距,内边距呈现了元素的背景,内边距的边缘时边框,边框以外时外边距,外边距默认是透明的,因此不会遮挡其后的任何元素
 
@@ -664,7 +662,7 @@ p.pos_fixed {
 }
 ```
 
-![CSS 相对定位实例](D:\note\.img\ct_css_positioning_relative_example.gif)
+![CSS 相对定位实例](/Users/yingjie.lu/Documents/note/.img/ct_css_positioning_relative_example.gif)
 
 > 使用相对定位时,无论是否进行移动,元素仍占据原来的空间,因此,移动元素会导致覆盖其他元素
 
@@ -684,7 +682,7 @@ p.pos_fixed {
 }
 ```
 
-![CSS 绝对定位实例](D:\note\.img\ct_css_positioning_absolute_example.gif)
+![CSS 绝对定位实例](/Users/yingjie.lu/Documents/note/.img/ct_css_positioning_absolute_example.gif)
 
 > 因为绝对定位的元素会脱离文档流,所以他们呢会覆盖页面上的其他元素; 可以通过设置`z-index`属性来控制这些元素的堆放次序
 
@@ -719,17 +717,17 @@ div.sticky {
 
 示例
 
-![CSS 浮动实例 - 向右浮动的元素](D:\note\.img\ct_css_positioning_floating_right_example.gif)
+![CSS 浮动实例 - 向右浮动的元素](/Users/yingjie.lu/Documents/note/.img/ct_css_positioning_floating_right_example.gif)
 
 > 当把框 1 向右浮动时，它脱离文档流并且向右移动，直到它的右边缘碰到包含框的右边缘
 
-![CSS 浮动实例 - 向左浮动的元素](D:\note\.img\ct_css_positioning_floating_left_example.gif)
+![CSS 浮动实例 - 向左浮动的元素](/Users/yingjie.lu/Documents/note/.img/ct_css_positioning_floating_left_example.gif)
 
 > 1. 当框 1 向左浮动时，它脱离文档流并且向左移动，直到它的左边缘碰到包含框的左边缘。因为它不再处于文档流中，所以它不占据空间，实际上覆盖住了框 2，使框 2 从视图中消失
 >
 > 2. 如果把所有三个框都向左移动，那么框 1 向左浮动直到碰到包含框，另外两个框向左浮动直到碰到前一个浮动框
 
-![CSS 浮动实例 2 - 向左浮动的元素 ](D:\note\.img\ct_css_positioning_floating_left_example_2.gif)
+![CSS 浮动实例 2 - 向左浮动的元素 ](/Users/yingjie.lu/Documents/note/.img/ct_css_positioning_floating_left_example_2.gif)
 
 > 如果包含框太窄，无法容纳水平排列的三个浮动元素，那么其它浮动块向下移动，直到有足够的空间。如果浮动元素的高度不同，那么当它们向下移动时可能被其它浮动元素“卡住”
 

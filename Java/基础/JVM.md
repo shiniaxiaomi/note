@@ -1,12 +1,10 @@
-[TOC]
-
 # JVM概述
 
 ## JVM原理
 
 下图就展示了java的一次编译,到处运行
 
-![img](D:\note\.img\352511-20170810232429980-107444580.png)
+![img](/Users/yingjie.lu/Documents/note/.img/352511-20170810232429980-107444580.png)
 
 Java程序经过一次编译之后,将java代码编译为字节码也就是class文件,然后在不同的操作系统上依靠不同的java虚拟机进行解释,最后在转换为不同平台的机器码,最终得到执行;
 
@@ -24,13 +22,13 @@ public class HelloWorld{
 
 下面是JVM将HelloWorld类加载并执行的过程,如图所示:
 
-![img](D:\note\.img\352511-20170810232431105-2080375000.png)
+![img](/Users/yingjie.lu/Documents/note/.img/352511-20170810232431105-2080375000.png)
 
 java代码通过编译之后生成字节码文件(class文件),通过:`java HelloWorld`命令执行后,此时java根据系统版本找到jvm.cfg
 
 > 该文件一般位于`C:\Program Files\Java\jdk1.8.0_101\jre\lib\amd64\jvm.cfg`路径下
 >
-> ![img](D:\note\.img\352511-20170810232432183-490667295.png)
+> ![img](/Users/yingjie.lu/Documents/note/.img/352511-20170810232432183-490667295.png)
 
 其中-server KNOWN就标识名称为server的jvm可用; 如果这时你搜索你电脑上的jvm.dll,你就会发现它一定在你的某个server目录下,比如我的`C:\Program Files\Java\jdk1.8.0_101\jre\bin\server\jvm.dll`; 简而言之就是通过jvm.cfg文件找到对应的jvm.dll(jvm.dll是java虚拟机的主要实现),然后进行初始化JVM,并获取JNI接口
 
@@ -90,7 +88,7 @@ java代码通过编译之后生成字节码文件(class文件),通过:`java Hell
 
 ## 结构图
 
-![img](D:\note\.img\352511-20170810232433277-922435213.png)
+![img](/Users/yingjie.lu/Documents/note/.img/352511-20170810232433277-922435213.png)
 
 主要分为三大类:
 
@@ -108,7 +106,7 @@ JVM把字节码.class文件加载到内存,并对数据进行校验,转换解析
 
 类从被加载到虚拟机内存中开始,到卸载出内存为止,它的生命周期包括了:加载(Loading),验证(Verification),准备(Preparation),解析(Resolution),初始化(Initialization),使用(Useing),卸载(Unloading)七个阶段,其中验证,准备,解析三个部分统称为链接
 
-![img](D:\note\.img\20180517171259199.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180517171259199.png)
 
 1. 加载(重点)
 
@@ -180,7 +178,7 @@ JVM把字节码.class文件加载到内存,并对数据进行校验,转换解析
 
 ### 双亲委派模型
 
-![img](D:\note\.img\2350cd2c7e48a6dc.png)
+![img](/Users/yingjie.lu/Documents/note/.img/2350cd2c7e48a6dc.png)
 
 双亲委派模型是一种组织类加载器之间关系的一种规范,它的工作原理是:
 
@@ -436,7 +434,7 @@ public class MemoryTest {
 
 标记-清除算法分为两个阶段: 标记阶段和清除阶段; 标记阶段的任务时标记出所有需要被回收的对象,清除阶段就是回收被标记的对象所占用的空间
 
-![img](D:\note\.img\20180526220654198.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180526220654198.png)
 
 主要缺点:
 
@@ -447,7 +445,7 @@ public class MemoryTest {
 
 为了解决标记-清除算法的缺陷,复制算法就被提出了;它将可用内存按容量划分为大小相等的两块,每次只是用其中的一块,当这一块的内存用完了,就将还存活着的对象复制到另外一块上面,然后再把已使用的内存空间一次性清理掉,这样就不容易出现内存碎片的问题
 
-![img](D:\note\.img\2018052622072333.png)
+![img](/Users/yingjie.lu/Documents/note/.img/2018052622072333.png)
 
 这种算法虽然实现简单,运行高效且不容易产生内存碎片,但是却对内存空间的使用做出了高昂的代码,因为能够使用的内存缩减到原来的一半
 
@@ -457,7 +455,7 @@ public class MemoryTest {
 
 为了解决复制算法的缺陷,充分利用内存空间,提出了标记-这个能力算法; 该算法标记阶段和标记-清除算法一样,但是在完成标记之后,它不是直接清理可回收对象,而是将存活对象都向一端移动,然后清除掉另一端边界意外的内存
 
-![img](D:\note\.img\20180526220855696.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180526220855696.png)
 
 ### 分代收集算法(Generational Collection)
 
@@ -471,7 +469,7 @@ java堆对象的收回
 
   采用复制算法,新生代对象一般存活率较低,一般的,使用两块10%的内存作为活动区间(from)和空闲区间(to),而另外80%的内存区间(Eden),则是用来给新建对象分配内存的,一旦发生GC(发生GC的情况在下方解释),将10%的活动区间与另外80%中存活的对象转移到10%的空闲区间,接下来,将之前90%的内存全部释放,一次类推,下面用一张图来说明:
 
-  ![img](D:\note\.img\20180518112244815.png)
+  ![img](/Users/yingjie.lu/Documents/note/.img/20180518112244815.png)
 
   > 堆大小=新生代+老年代,新生代与来年代的比例为1:2,新生代细分为一块比较大的Eden空间和两块比较小的Survivor空间,分别被命名为from和to;
 

@@ -1,5 +1,3 @@
-[TOC]
-
 
 
 # IOC容器
@@ -16,7 +14,7 @@ spring提供了IOC容器接口的几种实现:
 
 下图是IOC容器实例化和配置java bean的过程图:
 
-![容器魔术](D:\note\.img\container-magic.png)
+![容器魔术](/Users/yingjie.lu/Documents/note/.img/container-magic.png)
 
 > Spring容器先去加载所有的元数据配置,然后通过读取我们的实例类,在初始化时将元数据配置好,再将java bean返回
 
@@ -30,7 +28,7 @@ spring提供了IOC容器接口的几种实现:
 
    它会将springFramework所用到的jar包引入,如下图所示
 
-   ![1570684755986](D:\note\.img\1570684755986.png)
+   ![1570684755986](/Users/yingjie.lu/Documents/note/.img/1570684755986.png)
 
    ```xml
    <dependency>
@@ -385,7 +383,7 @@ public class ImportTest {
 
    它会将springFramework所用到的jar包引入,如下图所示
 
-   ![1570684755986](D:\note\.img\1570684755986.png)
+   ![1570684755986](/Users/yingjie.lu/Documents/note/.img/1570684755986.png)
 
    ```xml
    <dependency>
@@ -577,7 +575,7 @@ public class EventTest{
 
 生命周期流程图:
 
-![](D:\note\.img\20160802083636909)
+![](/Users/yingjie.lu/Documents/note/.img/20160802083636909)
 
 具体流程:
 

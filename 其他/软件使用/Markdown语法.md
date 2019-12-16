@@ -1,5 +1,3 @@
-[TOC]
-
 # 标题
 ```
 # 这是一级标题
@@ -72,7 +70,7 @@
 ```
 ![image](https://note.youdao.com/favicon.ico)
 ```
-![image](D:/note/.img/favicon.ico)
+![image](/Users/yingjie.lu/Documents/note/.img/favicon-20191215214430862.ico)
 
 # 超链接
 ```

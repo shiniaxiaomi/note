@@ -1,12 +1,10 @@
-[TOC]
-
 # 介绍
 
 Tomcat服务器是一个开源的轻量级Web应用服务器,在中小型系统和并发量肖的场合下被普遍使用; 它是一个Servlet容器; 
 
 Tomcat和Servlet的关系如图所示:
 
-![img](D:\note\.img\1251492-20180507132038095-966635725.jpg)
+![img](/Users/yingjie.lu/Documents/note/.img/1251492-20180507132038095-966635725.jpg)
 
 # 快速入门
 
@@ -28,7 +26,7 @@ Tomcat和Servlet的关系如图所示:
 
    看到一只三只脚的猫即成功
 
-   ![1571623061231](D:\note\.img\1571623061231.png)
+   ![1571623061231](/Users/yingjie.lu/Documents/note/.img/1571623061231.png)
 
 ## 快速配置
 
@@ -38,7 +36,7 @@ Tomcat和Servlet的关系如图所示:
 
 2. 找到8080端口,修改port的值,将port端口的值修改为80端口
 
-   ![1571624164175](D:\note\.img\1571624164175.png)
+   ![1571624164175](/Users/yingjie.lu/Documents/note/.img/1571624164175.png)
 
 3. 重启Tomcat
 
@@ -54,7 +52,7 @@ Tomcat和Servlet的关系如图所示:
 
    找到Host标签
 
-   ![1571624585757](D:\note\.img\1571624585757.png)
+   ![1571624585757](/Users/yingjie.lu/Documents/note/.img/1571624585757.png)
 
    在Host标签内添加一下内容
 
@@ -72,7 +70,7 @@ Tomcat和Servlet的关系如图所示:
    >
    > 如:
    >
-   > ![1571624918230](D:\note\.img\1571624918230.png)
+   > ![1571624918230](/Users/yingjie.lu/Documents/note/.img/1571624918230.png)
    >
    > 重启项目访问: http://localhost:8080/lyj/examples/即可
 
@@ -96,7 +94,7 @@ Tomcat和Servlet的关系如图所示:
 
 Tomcat结构图:
 
-![img](D:\note\.img\20180308114704839.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180308114704839.png)
 
 Tomcat主要组件：服务器Server，服务Service，连接器Connector、容器Container。连接器Connector和容器Container是Tomcat的核心。 
 
@@ -114,7 +112,7 @@ Tomcat中由两个经典的Connector,一个直接监听来自Browser的Http请�
 
 ### Container
 
-![img](D:\note\.img\2018030817251496.png)
+![img](/Users/yingjie.lu/Documents/note/.img/2018030817251496.png)
 
 Container是容器的父接口,该容器的设计用的是典型的责任链的设计模式,它由四个子容器组件构成,分别是Engine,Host,Context和Wrapper; 这四个组件存在包含关系,通常一个Servlet类对应一个Wrapper,如果由多个Servlet定义多个Wrapper,如果由多个Wrapper就要定义一个更高的Container,如Context
 
@@ -136,7 +134,7 @@ Tomcat 还有其它重要的组件，如安全组件 security、logger 日志组
 
 ###  HTTP请求过程 
 
-![img](D:\note\.img\20180308173032224.png)
+![img](/Users/yingjie.lu/Documents/note/.img/20180308173032224.png)
 
 Tomcat Server处理一个HTTP请求的过程:
 
@@ -170,7 +168,7 @@ Tomcat Server处理一个HTTP请求的过程:
 
 Tomcat各组件的关系图
 
-![img](D:\note\.img\2018031313095610.png)
+![img](/Users/yingjie.lu/Documents/note/.img/2018031313095610.png)
 
 1. Server
 

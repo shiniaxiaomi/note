@@ -1,5 +1,3 @@
-[TOC]
-
 # 安装步骤
 ## 租赁国外的服务器
 租赁地址
@@ -38,7 +36,7 @@ wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/dou
 
 安装成功之后
 
-![1572148180276](D:\note\.img\1572148180276.png)
+![1572148180276](/Users/yingjie.lu/Documents/note/.img/1572148180276.png)
 
 将ssr链接复制到软件上即可
 
