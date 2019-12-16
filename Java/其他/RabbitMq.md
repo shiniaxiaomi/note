@@ -1,10 +1,10 @@
 # 介绍
 
-消息队列主要使为了避免程序需要立刻处理集中的资源任务或等待资源任务完成，而是在此之后开启定时任务进行处理
+RabbitMq是一个高级消息队列协议（AMQP）的实现
 
 # 安装
 
-## 使用mac安装
+## mac安装
 
 ### 安装
 
@@ -14,48 +14,25 @@ brew install rabbitmq
 
 安装成功后，可以使用`brew info rabbitmq`来查看相关命令
 
-rabbitmq安装成功，命令位于`/usr/local/sbin`,但是path环境中并没有将该目录配置进入，所以，需要修改path环境变量：
+rabbitmq安装成功，命令位于`/usr/local/sbin`,但是path环境中并没有将该目录配置进入，需要进行以下配置：
 
-```shell
-sudo vim /etc/paths
-```
+- 使用`sudo vim /etc/paths`修改环境变量的配置文件
 
-然后将`/usr/local/sbin`另起一行复制进去
+- 然后另起一行，将`/usr/local/sbin`复制进去（它指向了rabbitmq的命令所在的路径）
 
-> 修改后的内容：
->
-> ```shell
-> /usr/local/sbin
-> /usr/local/bin
-> /usr/bin
-> /bin
-> /usr/sbin
-> /sbin
-> ```
-
-```shell
-source /etc/paths
-```
-
-使环境变量立即生效,接下来就可以使用rabbitmq的命令了，其命令都位于`/usr/local/sbin`路径下
+- 使用`source /etc/paths`来是环境变量立即生效
 
 ### 启动
 
-```shell
-rabbitmq-server
-```
+`rabbitmq-server`
 
 ### 停止
 
-```shell
-rabbitmqctl stop_app
-```
+`rabbitmqctl stop_app`
 
 ### 重置
 
-```shell
-rabbitmqctl reset
-```
+`rabbitmqctl reset`
 
 # 快速入门
 
@@ -181,9 +158,9 @@ public class NewTask {
 
             while (true) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                String s = reader.readLine();
+                String s = reader.readLine();//获取输入的消息
 
-                channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+                channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);//声明
 
                 String message = String.join(" ", s);
 

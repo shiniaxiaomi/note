@@ -269,6 +269,7 @@ this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
            :visible.sync="outline_drawer"
            direction="ltr"
            :modal="true"
+           @opened="outline_drawer_opened"
            :size="outline_size">
   	<h1>test</h1>
 </el-drawer>
@@ -277,6 +278,12 @@ this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
 data:{
 	outline_size:'20%', 
   outline_drawer: false,
+},
+methods:{
+  //抽屉打开动画结束后的回调（因为抽屉是懒加载的，在第一次打开时如果需要操作抽屉内的dom节点，是获取不到的，需要在该回调方法中操作才可以获取到）
+  outline_drawer_opened(){
+  	//...
+  }
 }
 </script>
 ```
@@ -291,10 +298,22 @@ data:{
 >
 > `title="导航"`：设置抽屉的标题
 
+> 设置抽屉的header间距设置
+>
+> ```css
+> /*设置抽屉的header的间距*/
+> .el-drawer__header {
+>     margin-bottom: 10px;
+>     padding: 10px 10px 0;
+> }
+> ```
+
+
+
 # 标签页
 
 ```html
-<el-tabs type="border-card" :stretch="true">
+<el-tabs type="border-card" :stretch="true" v-model="tab_active_value" @tab-click="focus_outline">
   <el-tab-pane label="大纲">
     <h1>test1</h1>
   </el-tab-pane>
@@ -302,6 +321,18 @@ data:{
     <h1>test2</h1>
   </el-tab-pane>
 </el-tabs>
+
+<script>
+data:{
+	tab_active_value:'',//当前激活的tab的名称
+},
+methods:{
+  //点击tab时的回调
+	focus_outline(tab){
+    //...
+  }
+}
+</script>
 ```
 
 > `type="border-card"`：将标签页设置为卡片风格
@@ -375,6 +406,51 @@ methods:{
 > `:filter-node-method="filterNode"`：设置过滤节点的回调
 >
 > `@node-click="handleNodeClick"`：设置节点点击的回调
+
+# 面包屑
+
+```html
+<el-breadcrumb separator="|">
+        <el-breadcrumb-item>
+            <el-link href="/">首页</el-link>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item>
+            <el-link>大纲</el-link>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item>
+            <el-link>搜索</el-link>
+        </el-breadcrumb-item>
+    </el-breadcrumb>
+</el-col>
+```
+
+> 面包屑最后一个元素的样式会有所不同，可以通过以下css来进行更改
+>
+> ```css
+> /*将最后的面包屑中的样式去除*/
+> .el-breadcrumb__item:last-child .el-breadcrumb__inner a{
+>     font-weight: 700;
+>     color: #606266;
+>     cursor: pointer;
+> }
+> ```
+
+# 级联选择器
+
+设置级联选择器的高度
+
+```css
+/*将级联选择器的高度变高*/
+.el-cascader-menu__wrap {
+    height: 325px;
+}
+```
+
+
+
+
+
+
 
 # 参考文档
 

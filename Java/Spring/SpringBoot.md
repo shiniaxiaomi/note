@@ -584,9 +584,7 @@ spring.resources.static-locations=classpath:/static/,file:/Users/yingjie.lu/Docu
 >
 > 如果配置外部的静态资源，需要在路径前面加上`file:`关键字
 
-## 配置文件
-
-多配置文件
+## 多配置文件
 
 - application.properties
 - application-dev.properties
@@ -602,7 +600,7 @@ spring.resources.static-locations=classpath:/static/,file:/Users/yingjie.lu/Docu
 >
 > 在定时任务中，需要捕获异常后自行处理，而不能直接抛出，不然会导致定时任务异常，最终会终止项目
 
-## 配置文件
+## 配置文件变量
 
 ### 单个变量
 
@@ -647,13 +645,72 @@ public class Test(){
 @PropertySource(value="classpath:conf/url.properties")
 ```
 
+## 重定向请求
 
+将需要重定向的链接先返回给客户端，让客户端重新发起请求访问指定的链接
 
+### 使用redirect进行重定向
 
+```java
+@RequestMapping("test")
+public String test(){
+  return "redirect:/";
+}
+```
 
+> 将`/test`请求重定向到`/`页面
 
+### 使用ModelAndView重定向
 
+```java
+@RequestMapping("test")
+public ModelAndView test(){
+  ModelAndView index = new ModelAndView("redirect:/");
+  return index;
+}
+```
 
+### 使用HttpServletResponse重定向
+
+```java
+protected void doGet(HttpServletRequest servletRequest, HttpServletResponse servletResponse){
+      servletResponse.sendRedirect("/");
+}
+```
+
+## 转发请求
+
+将请求转发给其他Controller处理
+
+### 使用forward进行转发
+
+```java
+@RequestMapping("/test")
+public String test(){
+  return "forward:/";
+}
+```
+
+> 将`/test`请求转交给`/`请求的Controller请求
+
+### 使用ModelAndView进行转发
+
+```java
+@RequestMapping("test")
+public ModelAndView test(){
+  ModelAndView index = new ModelAndView("forward:/");
+  return index;
+}
+```
+
+### 使用HttpServletRequest进行转发
+
+```java
+protected void doGet(HttpServletRequest servletRequest, HttpServletResponse servletResponse){
+  RequestDispatcher dispatcher = request.getRequestDispatcher("/");
+  dispatcher.forward(request, response);//执行转发
+}
+```
 
 # 参考文档
 

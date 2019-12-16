@@ -134,7 +134,20 @@ Java客户端工具，[参考文档](https://www.elastic.co/guide/en/elasticsear
 </dependency>
 ```
 
-## 创建Client客户端
+## 创建Client的Java bean
+
+```java
+//配置client客户端
+@Bean
+RestHighLevelClient client() {
+    ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+            .connectedTo(hostAndPort)
+            .build();
+    return RestClients.create(clientConfiguration).rest();
+}
+```
+
+## 显示的创建Client客户端
 
 ```java
 //创建客户端请求
