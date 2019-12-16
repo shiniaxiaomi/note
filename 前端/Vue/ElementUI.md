@@ -310,7 +310,7 @@ methods:{
 
 
 
-# 标签页
+# 标签页（tab）
 
 ```html
 <el-tabs type="border-card" :stretch="true" v-model="tab_active_value" @tab-click="focus_outline">
@@ -339,10 +339,11 @@ methods:{
 >
 > `:stretch="true"`：设置标签的宽度自动撑开
 
-# 输入框
+# 输入框（input）
 
 ```html
 <el-input
+        :autofocus="true"
         placeholder="输入关键字进行过滤"
         v-model="filterDirText">
 </el-input>
@@ -355,8 +356,10 @@ data:{
 ```
 
 > `v-model="filterDirText"`：设置保存输入框值的变量
+>
+> `:autofocus="true"`：自动获取焦点
 
-# 树
+# 树（tree）
 
 ```html
 <el-tree

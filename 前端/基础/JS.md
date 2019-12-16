@@ -1417,6 +1417,26 @@ async function test(filePath,targetPath){
 }
 ```
 
+## 将文本框中的内容复制到剪贴板
+
+```html
+<!-- 用于blogName的复制 -->
+<input id="blogName" style="display: none" value="111" />
+
+<script>
+  //将笔记的名称保存到剪贴板中
+  var blogName=document.getElementById("blogName");
+  blogName.style.display='block';//只有先显示出来，才能够复制内容
+  blogName.select();// 选择对象并选中
+  document.execCommand("copy");// 执行浏览器复制命令
+  blogName.style.display='none';//隐藏input输入框
+</script>
+```
+
+> 如果需要复制其他元素的内容，则先获取到元素的内容，在通过动态的创建input来复制到剪贴板
+
+
+
 # 参考文档
 
 [JavaScript教程](https://www.w3school.com.cn/js/index.asp)

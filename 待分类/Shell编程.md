@@ -62,6 +62,14 @@ unset a #变量被删除后不能再次使用，unset命令不能删除只读变
 a=$(ls|grep jar$)
 ```
 
+```shell
+status=$(curl http://localhost/writeBlogVisitTimes)
+```
+
+
+
+> 变量赋值时，等号两边不能有空格
+
 ## 变量类型
 
 1. 局部变量
@@ -443,7 +451,7 @@ shell中的echo命令的最主要最用是打印输出，命令格式为：`echo
 
 简单的条件判断则可以使用test命令就可以替换if判断中的`[]`
 
-示例：
+示例1：
 
 ```shell
 if test 1 == 1
@@ -455,6 +463,23 @@ fi
 ```
 
 > 使用test命令后，等号两边可以把`空格`省略掉
+
+示例2:
+
+```shell
+status=$(curl http://localhost/writeBlogVisitTimes)
+if test ${status} == 'success'
+then
+	# 如果保存成功，则停止应用
+	kill -9 $app
+else
+  # 如果保存失败，停止脚本
+  echo '接口调用失败'
+  exit 0
+fi
+```
+
+> 字符串判断
 
 # (( ... ))表达式
 
@@ -892,6 +917,12 @@ tail -f $projectPath/log
 projectPath=/root/code/plantip
 cd $projectPath
 mvn package -Dmaven.test.skip=true
+```
+
+## 直接退出shell脚本（停止运行）
+
+```shell
+exit 0
 ```
 
 
