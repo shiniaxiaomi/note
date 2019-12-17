@@ -1,536 +1,225 @@
-
-
 # 介绍
 
-Git是目前世界上最先进的分布式版本控制系统
+Git是目前使用最多的分布式版本控制工具
 
-# 安装git
+# 安装
 
-## windows安装git
+## linux
 
-从Git官网直接[下载安装程序](https://git-scm.com/downloads)
-
-安装完成后，在开始菜单里找到“Git”->“Git Bash”，蹦出一个类似命令行窗口的东西，就说明Git安装成功！
-
-安装完成后，还需要最后一步设置，在命令行输入：
-
-```cmd
-git config --global user.name "Your Name"
-git config --global user.email "email@example.com"
+```
+sudo yum install git
 ```
 
-## linux安装git
+## windows
 
-`sudo yum install git`
+[下载安装程序](https://git-scm.com/downloads)
 
-# 创建版本库
+# 基本命令
 
-版本库又名仓库，英文名**repository**，你可以简单理解成一个目录，这个目录里面的所有文件都可以被Git管理起来，每个文件的修改、删除，Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以“还原”。
+## 克隆仓库
 
-## 初始化目录使之称为可以管理的仓库
-
-`git init`
-
-> 初始化好git仓库之后,会在文件夹下多出一个`.Git`的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。
-
-## 把文件添加到版本库
-
-- 将改动或者新增的文件**添加到仓库**
-
-  > 添加单一文件
-  >
-  > `git add readme.md`
-  >
-  > 添加全部文件
-  >
-  > `git add .`
-
-- 将文件**提交到仓库**
-
-  `git commit -m 'init'`
-
-  > `-m`后面输入的时本次提交的说明
-
-# 版本管理
-
-## 版本的概念
-
-一次`git commit`提交就对应着一个版本
-
-## 查看当前仓库的状态
-
-`git status`
-
-示例:
-
-```cmd
-$ git status
-On branch master
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-	modified:   readme.txt
-
-no changes added to commit (use "git add" and/or "git commit -a")
+```
+git clone https://github.com/xxx/xxx.git
 ```
 
-## 查看文件的修改对比
-
-`git diff readme.md`
-
-示例:
-
-```cmd
-$ git diff readme.txt 
-diff --git a/readme.txt b/readme.txt
-index 46d49bf..9247db6 100644
---- a/readme.txt
-+++ b/readme.txt
-@@ -1,2 +1,2 @@
--Git is a version control system.
-+Git is a distributed version control system.
- Git is free software.
-```
-
-## 查看git提交日志
-
-`git log`
-
-> 命令显示从最近到最远的提交日志，我们可以看到3次提交
-
-示例:
-
-```cmd
-$ git log
-commit 1094adb7b9b3807259d8cb349e7df1d4d6477073 (HEAD -> master)
-Author: Michael Liao <askxuefeng@gmail.com>
-Date:   Fri May 18 21:06:15 2018 +0800
-
-    append GPL
-
-commit e475afc93c209a690c39c13a46716e8fa000c366
-Author: Michael Liao <askxuefeng@gmail.com>
-Date:   Fri May 18 21:03:36 2018 +0800
-
-    add distributed
-
-commit eaadf4e385e865d25c48e7ca9c8395c3f7dfaef0
-Author: Michael Liao <askxuefeng@gmail.com>
-Date:   Fri May 18 20:59:18 2018 +0800
-
-    wrote a readme file
-```
-
----
-
-提交日志的版本状态图
-
-
-
-![1565353821636](/Users/yingjie.lu/Documents/note/.img/1565353821636.png)
-
-> 目前的版本指针指向的是最顶上的最新节点
-
-## 未提交的代码进行回退(撤销)
-
-`git checkout -- file`
-
-## 版本回退
-
-`git reset --hard HEAD^`
-
-> 在Git中，用`HEAD`表示当前版本，上一个版本就是`HEAD^`，上上一个版本就是`HEAD^^`,往上100个版本就是`HEAD~100`
-
-版本状态图
-
-
-
----
-
-### 如果回退版本后又想恢复回退之前的版本怎么办?
-
-`git reflog`
-
-> Git提供了一个命令`git reflog`用来记录你的每一次命令：
-
-示例:
-
-```cmd
-$ git reflog
-e475afc HEAD@{1}: reset: moving to HEAD^
-1094adb (HEAD -> master) HEAD@{2}: commit: append GPL
-e475afc HEAD@{3}: commit: add distributed
-eaadf4e HEAD@{4}: commit (initial): wrote a readme file
-```
-
-可以通过`git reflog`命令获取到回退之前的版本的commit id(`1094adb`)
-
-然后可以通过回退命令进行回退
-
-`git reset --hard 1094adb`
-
-## 工作区和暂存区(重要)
-
-### 工作区（Working Directory）
-
-就是电脑上能够看到的目录,比如`learngit`文件夹就是一个工作区：
-
-![working-dir](/Users/yingjie.lu/Documents/note/.img/0.png)
-
-### 版本库（Repository）-包含了暂存区
-
-工作区有一个隐藏目录`.Git`，这个不算工作区，而是Git的版本库。**版本库中包含着暂存区**
-
-Git的版本库里存了很多东西，其中最重要的就是称为**stage（或者叫index）的暂存区**，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
-
-
-
-> 在`git add .`后,当前修改的文件都会加入到暂存区,在`git commit`后,会把暂存区添加当前分支(默认是master分支)的head节点
-
-### git提交的具体细节
-
-- 第一步: 添加文件 `git add`
-
-  > 实际上就是**把文件修改添加到暂存区**
-
-- 第二步:  提交更改 `git commit`
-
-  > 实际上就是**把暂存区的所有内容提交到当前分支**
-
-因为我们创建Git版本库时，Git自动为我们创建了唯一一个`master`分支，所以，现在，`git commit`就是往`master`分支上提交更改。
-
-你可以简单理解为，需要提交的文件修改通通放到暂存区，然后，一次性提交暂存区的所有修改。
-
-## 管理修改
-
-给`git`设计的最优秀的就是其**跟踪并管理的是修改,而非文件**
-
-> 如果没有将工作区的内容添加到暂存区,那么直接执行`git commit`之后,git只会将暂存区的内容提交到仓库(当前分支),而工作区的修改并不会提交,只有当执行`git add .`将工作区的修改提交到暂存区之后生效
-
-## 撤销修改
-
-`git checkout -- readme.md`
-
-> `--`参数很重要,如果没有`--`参数,就会变成了'切换到另一个分支'的命令
-
-执行命令后会有两种情况:
-
-- readme.md自修改后还没有被放到暂存区
-
-  > 那么,撤销修改就回到和版本库一模一样的状态
-
-- readme.md已经添加到暂存区,但是又做了修改
-
-  > 那么,撤销修改就回到添加到暂存区后的状态
-
-## 删除文件
-
-`git rm readme.md`
-
-> `git rm`命令只能删除暂存区和当前分支中的文件,**还在工作区但是没有添加到暂存区的文件是不能够被删除的**
+> 可在后面添加名称指定克隆后生成的文件夹名称
 >
-> 当要删除暂存区的文件时,需要加上参数`-f`,如`git rm -f readme.md`
->
-> 使用`git rm`删除后的文件,会直接消失在工作区中
+> 例如：`git clone https://github.com/xxx/xxx.git note`
 
-示例:
+## 初始化本地仓库
 
-```cmd
-$ git rm test.txt
-rm 'test.txt'
-
-$ git commit -m "remove test.txt"
-[master d46f35e] remove test.txt
- 1 file changed, 1 deletion(-)
- delete mode 100644 test.txt
 ```
-
-现在，文件就从版本库中被删除了。
-
----
-
-### 如果删错,怎么恢复
-
-`git checkout -- readme.md`
-
-> `git checkout`其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以“一键还原”
->
-> 注意：从来没有被添加到版本库就被删除的文件，是无法恢复的！
-
-
-
-# 远程仓库
-
-## 删除关联的远程分支
-
-`git remote remove origin`
+git init
+```
 
 ## 关联远程仓库
 
-`git remote add origin git@github.com:michaelliao/learngit.Git`
+```
+git remote add  
+```
 
-> 这样就直接让本地关联上了远程的仓库,但是本地的内容还没有同步到远程仓库,所以还需要将本地仓库推送到远程
+例如：`git remote add origin https://github.com/xxx/xxx.git`
+
+> 在首次push时需要关联远程仓库
 >
-> 使用以下命令进行提交即可
+> ```
+> git push --set-upstream origin master
+> ```
 >
-> `git push -u origin master`
->
-> > 加上了`-u`参数,Git不但会把本地的`master`分支内容推送的远程新的`master`分支，还会把本地的`master`分支和远程的`master`分支关联起来，在以后的推送或者拉取时就可以简化命令。
+> 可简化为`git push -u origin master`
 
-## 拉取远程仓库
+## 删除关联的远程分支
 
-`git clone https://github.com/shiniaxiaomi/note.Git`
-
-> 直接从拉取远程仓库到本地,并直接做好关联,就可以直接使用了
-
-## 克隆远程仓库时指定生成的文件夹名称
-
-`git clone https://github.com/shiniaxiaomi/note.Git customName`
-
-# 分支管理
-
-分支在实际中有什么用呢？假设你准备开发一个新功能，但是需要两周才能完成，第一周你写了50%的代码，如果立刻提交，由于代码还没写完，不完整的代码库会导致别人不能干活了。如果等代码全部写完再一次提交，又存在丢失每天进度的巨大风险。
-
-现在有了分支，就不用怕了。你创建了一个属于你自己的分支，别人看不到，还继续在原来的分支上正常工作，而你在自己的分支上干活，想提交就提交，直到开发完毕后，再一次性合并到原来的分支上，这样，既安全，又不影响别人工作。
-
-## 分支原理
-
-每次提交,`git`都会把它们串成一条时间线,这条时间线就是一个分支
-
-`HEAD`严格来说不是指向提交，而是指向`master`，`master`才是指向提交的，所以，`HEAD`指向的就是当前分支。如下图所示:
-
-
-
-每次提交，`master`分支都会向前移动一步，这样，随着你不断提交，`master`分支的线也越来越长。
-
-
-
-当我们创建新的分支，例如`dev`时，Git新建了一个指针叫`dev`，指向`master`相同的提交，再把`HEAD`指向`dev`，就表示当前分支在`dev`上：
-
-
-
-所以,Git创建一个分支很快，因为除了增加一个`dev`指针，改改`HEAD`的指向，工作区的文件都没有任何变化！
-
-
-
-从现在开始，对工作区的修改和提交就是针对`dev`分支了，比如新提交一次后，`dev`指针往前移动一步，而`master`指针不变：
-
-
-
-
-
-假如我们在`dev`上的工作完成了，就可以把`dev`合并到`master`上。Git怎么合并呢？最简单的方法，就是直接把`master`指向`dev`的当前提交，就完成了合并：
-
-
-
-合并完分支后，甚至可以删除`dev`分支。删除`dev`分支就是把`dev`指针给删掉，删掉后，我们就剩下了一条`master`分支：
-
-
-
-## 分支操作
-
-### 创建分支
-
-`git branch dev`
-
-### 切换分支
-
-- 切换本地分支
-
-  查看本地分支有哪些
-
-  ```cmd
-  $ git branch
-  * develop_luyingjie
-    master
-  ```
-
-  现在本地分支指向的是develop_luyingjie分支，现在需要切换到master分支
-
-  ```shell
-  git checkout master
-  ```
-
-- 切换远程分支
-
-  查看远程分支有哪些
-
-  ```cmd
-  $ git branch -r
-    origin/master <- origin/HEAD 
-    origin/develop
-  ```
-
-  现在远程分支指向的是master分支，现在需要切换到develop分支
-
-  ```shell
-  git checkout -b myDevelop origin/develop
-  ```
-
-### 创建并切换本地分支
-
-`git checkout -b dev`
-
-> `-b`参数表示创建并切换分支
-
-### 将本地分支推送到远程分支
-
-```shell
-# 切换分支
-git checkout dev
-# 将分支推送到远程,并将远程分支命令为dev
-git push origin dev
+```
+git remote remove 
 ```
 
-### 从远程拉取分支并在本地创建一个新分支
+示例：`git remote remove origin`
 
-```shell
-git checkout -b myDev origin/dev 
+> 删除本地关联的名为origin的远程分支
+
+## 查看本地仓库的状态
+
+```
+git status
 ```
 
-### 查看分支
+## 将文件添加到暂存区
 
-1. 查看本地分支
-
-   ```shell
-   git branch
-   ```
-
-2. 查看远程分支
-
-   ```shell
-   git branch -r
-   ```
-
-   > -remote
-
-3. 查看所有分支
-
-   ```shell
-   git branch -a
-   ```
-
-   > -all
-
-示例:
-
-```cmd
-$ git branch
-* dev
-  master
+```
+git add .
 ```
 
-> `git branch`命令会列出所有分支，当前分支前面会标一个`*`号。
+> 添加所有文件到暂存区
 
-### 拉取分支到本地
-
-```shell
-git pull origin dev
+```
+git add 文件名
 ```
 
-### 合并分支
+> 添加指定文件到暂存区
 
-`git merge dev`
+## 将文件从暂存区中删除
 
-> `git merge`命令用于合并**指定分支**到**当前分支**,上述命令中`dev`属于指定分支,而当前分支为`master`
-
-示例:
-
-```cmd
-$ git merge dev
-Updating d46f35e..b17d20e
-Fast-forward
- readme.txt | 1 +
- 1 file changed, 1 insertion(+)
+```
+git restore --stage 
 ```
 
-### 删除分支
+例如：`git restore --stage .`
 
-`git branch -d dev`
+## 将暂存区的内容提交到本地仓库
 
-合并完成后，就可以放心地删除`dev`分支了：
-
-```cmd
-$ git branch -d dev
-Deleted branch dev (was b17d20e).
+```
+git commit -m '备注'
 ```
 
-删除后，查看`branch`，就只剩下`master`分支了：
+## 回退提交
 
-```cmd
-$ git branch
-* master
+```
+git reset head^
 ```
 
-### 命令小结
+> 回退到上一次提交的版本
 
-- 查看分支：`git branch`
+> head表示当前版本，上一次提交为head^，上上次提交为head^^，上100次提交为head~100
 
-- 创建分支：`git branch <name>`
+版本状态图如下所示：
 
-- 切换分支：`git checkout <name>`
+![1565354190680](file:///Users/yingjie.lu/Documents/note/.img/1565354190680.png?lastModify=1576576006?lastModify=1576590920)
 
-- 创建+切换分支：`git checkout -b <name>`
+## 查看提交日志
 
-- 合并某分支到当前分支：`git merge <name>`
-- 删除分支：`git branch -d <name>`
-
-## 解决冲突
-
-### 手动解决冲突
-
-合并分支时产生冲突,需要手动解决
-
-示例:
-
-```cmd
-$ git merge feature1
-Auto-merging readme.txt
-CONFLICT (content): Merge conflict in readme.txt
-Automatic merge failed; fix conflicts and then commit the result.
+```
+git log
 ```
 
-> 当两个合并冲突时,git会默认的为我们进行`Auto-merging `自动合并,但是`Auto-merging`之后工作区的内容会被修改
->
-> `Auto-merging`会将两个分支冲突的部分都保留,然后我们可以去自行的选择需要保留哪些内容(也可以全部都保留),这个过程被称为手动的解决冲突;
->
-> **解决完冲突之后**,最新的内容是在工作区的,所以我们就需要**将修改冲突后的文件进行提交**
+## 回退提交到任意版本
 
+查看提交的所有记录
 
-
-查看冲突的文件
-
-```cmd
-$ git status
-On branch master
-Your branch is ahead of 'origin/master' by 2 commits.
-  (use "git push" to publish your local commits)
-
-You have unmerged paths.
-  (fix conflicts and run "git commit")
-  (use "git merge --abort" to abort the merge)
-
-Unmerged paths:
-  (use "git add <file>..." to mark resolution)
-
-	both modified:   readme.txt
-
-no changes added to commit (use "git add" and/or "git commit -a")
+```
+git reflog
+$ git reflog
+e93bc37 (HEAD -> master) HEAD@{0}: commit: ttt
+150337e HEAD@{1}: commit: c
+a709180 HEAD@{9}: commit: b
+b1416c1 (origin/master) HEAD@{10}: commit (initial): init
 ```
 
-> `both modified:   readme.txt`
->
-> 两个分支上都对readme.md做了修改,所以我们需要对冲突进行解决
+直接输入`git reset 提交记录id`，如`150337e`即可回退到指定提交版本
 
+## 将本地提交推送到远程
 
+```
+git push
+```
 
-直接查看有冲突的readme.md文件
+> 推送到已经关联的远程分支中
 
-```cmd
-Git is a distributed version control system.
-Git is free software distributed under the GPL.
-Git has a mutable index called stage.
+```
+git push -u origin master
+```
+
+> 将本地分支推送到远程的master分支中，如果远程没有master分支，则创建，并且创建关联关系，下次直接使用`git push`即可
+
+# 分支操作
+
+## 查看分支
+
+- 查看本地分支
+
+  `git branch`
+
+- 查看远程分支
+
+  `git branch -r`
+
+- 查看所有分支
+
+  `git branch -a`
+
+## 创建本地分支
+
+```
+git branch dev
+```
+
+> 在本地了创建了一个dev分支
+
+## 切换本地分支
+
+```
+git checkout <分支名>
+```
+
+例如：`git checkout dev`
+
+## 推送到指定的远程分支
+
+```
+git push origin 
+```
+
+示例：`git push origin dev`
+
+## 拉取指定远程分支到本地
+
+```
+git pull origin 
+```
+
+示例：`git pull origin dev`
+
+## 拉取远程分支到本地，并在新建本地仓库
+
+```
+git checkout -b <本地分支名> origin/<远程分支名>
+```
+
+示例：`git checkout -b dev origin/dev`
+
+## 删除本地分支
+
+```
+git branch -d <本地分支名>
+```
+
+示例：`git branch -d dev`
+
+## 合并本地分支
+
+```
+git merge dev
+```
+
+> 将dev分支合并到当前分支中
+
+# 解决冲突
+
+直接使用工具如idea，vscode等解决冲突即可
+
+Git用`<<<<<<<`，`=======`，`>>>>>>>`标记出不同分支的内容
+
+```
 Git tracks changes of files.
 <<<<<<< HEAD
 Creating a new branch is quick & simple.
@@ -539,716 +228,255 @@ Creating a new branch is quick AND simple.
 >>>>>>> feature1
 ```
 
-> Git用`<<<<<<<`，`=======`，`>>>>>>>`标记出不同分支的内容
-
-
-
-我们将冲突的内容修改为如下后保存：
-
-```cmd
-Creating a new branch is quick and simple.
-```
-
-**再提交：**
-
-```cmd
-$ git add readme.txt 
-$ git commit -m "conflict fixed"
-[master cf810e4] conflict fixed
-```
-
-现在，`master`分支和`feature1`分支变成了下图所示：
-
-
-
-
-
-### 查看分支合并情况
-
-`git log --graph --pretty=oneline --abbrev-commit `
-
-示例:
-
-```cmd
-$ git log --graph --pretty=oneline --abbrev-commit
-*   cf810e4 (HEAD -> master) conflict fixed
-|\  
-| * 14096d0 (feature1) AND simple
-* | 5dc6824 & simple
-|/  
-* b17d20e branch test
-* d46f35e (origin/master) remove test.txt
-* b84166e add test.txt
-* 519219b git tracks changes
-* e43a48b understand how stage works
-* 1094adb append GPL
-* e475afc add distributed
-* eaadf4e wrote a readme file
-```
-
-
-
-最后，删除`feature1`分支：
-
-```cmd
-$ git branch -d feature1
-Deleted branch feature1 (was 14096d0).
-```
-
-
-
-### 小结
-
-**当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。**
-
-解决冲突就是把Git合并失败的文件手动编辑为我们希望的内容，再提交。
-
-用`git log --graph`命令可以看到分支合并图。
-
-## 分支管理策略
-
-在实际开发中，我们应该按照几个基本原则进行分支管理：
-
-首先，`master`分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；
-
-那在哪干活呢？干活都在`dev`分支上，也就是说，`dev`分支是不稳定的，到某个时候，比如1.0版本发布时，再把`dev`分支合并到`master`上，在`master`分支发布1.0版本；
-
-你和你的小伙伴们每个人都在`dev`分支上干活，每个人都有自己的分支，时不时地往`dev`分支上合并就可以了。
-
-所以，团队合作的分支看起来就像这样：
-
-
-
-## Bug分支
-
-软件开发中，bug就像家常便饭一样。有了bug就需要修复，在Git中，由于分支是如此的强大，所以，每个bug都可以通过一个新的临时分支来修复，修复后，合并分支，然后将临时分支删除。
-
-当你接到一个修复一个代号101的bug的任务时，很自然地，你想创建一个分支`issue-101`来修复它，但是，等等，当前正在`dev`上进行的工作还没有提交：
-
-```cmd
-$ git status
-On branch dev
-Changes to be committed:
-  (use "git reset HEAD <file>..." to unstage)
-
-	new file:   hello.py
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-	modified:   readme.txt
-```
-
-并不是你不想提交，而是工作只进行到一半，还没法提交，预计完成还需1天时间。但是，必须在两个小时内修复该bug，怎么办？
-
-
-
-幸好，Git还提供了一个`stash`功能，可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作：
-
-```cmd
-$ git stash
-Saved working directory and index state WIP on dev: f52c633 add merge
-```
-
-现在，用`git status`查看工作区，就是干净的（除非有没有被Git管理的文件），因此可以放心地创建分支来修复bug。
-
-
-
-首先确定要在哪个分支上修复bug，假定需要在`master`分支上修复，就从`master`创建临时分支：
-
-```cmd
-$ git checkout master
-Switched to branch 'master'
-Your branch is ahead of 'origin/master' by 6 commits.
-  (use "git push" to publish your local commits)
-
-$ git checkout -b issue-101
-Switched to a new branch 'issue-101'
-```
-
-
-
-当bug修复完之后,切换到`master`分支，并完成合并，最后删除`issue-101`分支：
-
-```cmd
-$ git checkout master
-Switched to branch 'master'
-Your branch is ahead of 'origin/master' by 6 commits.
-  (use "git push" to publish your local commits)
-
-$ git merge --no-ff -m "merged bug fix 101" issue-101
-Merge made by the 'recursive' strategy.
- readme.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-```
-
-
-
-接着回到`dev`分支继续干活了！
-
-```cmd
-$ git checkout dev
-Switched to branch 'dev'
-
-$ git status
-On branch dev
-nothing to commit, working tree clean
-```
-
-工作区是干净的，刚才的工作现场存到哪去了？用`git stash list`命令看看：
-
-```cmd
-$ git stash list
-stash@{0}: WIP on dev: f52c633 add merge
-```
-
-工作现场还在，Git把stash内容存在某个地方了，但是需要恢复一下，有两个办法：
-
- - 一是用`git stash apply`恢复，但是恢复后，stash内容并不删除，你需要用`git stash drop`来删除；
-
-   ```cmd
-   $ git stash apply stash@{0}
-   ```
-
- - 另一种方式是用`git stash pop`，恢复的同时把stash内容也删了
-
-   ```cmd
-   $ git stash pop
-   On branch dev
-   Changes to be committed:
-     (use "git reset HEAD <file>..." to unstage)
-   
-   	new file:   hello.py
-   
-   Changes not staged for commit:
-     (use "git add <file>..." to update what will be committed)
-     (use "git checkout -- <file>..." to discard changes in working directory)
-   
-   	modified:   readme.txt
-   
-   Dropped refs/stash@{0} (5d677e2ee266f39ea296182fb2354265b91b3b2a)
-   ```
-
-### 小结
-
-修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；
-
-当手头工作没有完成时，先把工作现场`git stash`一下，然后去修复bug，修复后，再`git stash pop`，回到工作现场。
-
-## 强制删除没有合并的分支
-
-`git branch -d issue-101`
-
-> 可以使用`-d`参数强制删除分支,如果没有合并,将会丢失掉修改过的数据
-
-## 多人协作
-
-当你从远程仓库克隆时，实际上Git自动把本地的`master`分支和远程的`master`分支对应起来了，并且，远程仓库的默认名称是`origin`。
-
-### 查看远程库
-
-`git remote`
-
-> 用`git remote -v`显示更详细的信息：
+> `<<<<<<< HEAD`和`=======`之间的内容为最新分支的内容
 >
-> 示例:
->
-> ```cmd
-> $ git remote -v
-> origin  git@github.com:michaelliao/learngit.Git (fetch)
-> origin  git@github.com:michaelliao/learngit.Git (push)
-> ```
->
-> 上面显示了可以抓取(fetch)和推送(push)的`origin`的地址。如果没有推送权限，就看不到push的地址。
+> `=======`和`>>>>>>> feature1`之间的内容为feature1分支的内容
 
-### 推送分支
+解决完冲突后，需要将最终结果再次提交和推送到远程，具体如图所示：
 
-推送分支，就是把该分支上的所有本地提交推送到远程库。推送时，要指定本地分支，这样，Git就会把该分支推送到远程库对应的远程分支上：
+![git-br-conflict-merged](file:///Users/yingjie.lu/Documents/note/.img/0-1565415846652.png?lastModify=1576576006?lastModify=1576590920)
 
-```cmd
-$ git push origin master
-```
+# 分支管理策略
 
-如果要推送远程的其他分支，比如`dev`，就改成：
+## 简单分支管理
 
-```cmd
-$ git push origin dev
-```
+首先，默认master分支应该是稳定的，也就是仅用来发布新版本
 
-如果当前分支只有一个远程分支，那么主机名都可以省略
+成员都应该有一个对应的开发分支，每个人都在自己的dev分支中开发着相应的功能，当开发完成时，在把自己的dev分支合并到master分支上
 
-```cmd
-$ git push
-```
+当分配给每个人的重要的任务都开发完成并且都合并到master上后，就可以发布一个master的升级版本，具体如图所示：
 
-### 抓取分支
+![git-br-policy](file:///Users/yingjie.lu/Documents/note/.img/0-1565425746153.png?lastModify=1576576006?lastModify=1576590920)
 
-`git clone git@github.com:michaelliao/learngit.Git`
+一般来说，发布前需要经过很多的测试，如果测试出bug，那么就可以从master分支中新建一个bug分支，用来修复对应的bug，修复完成后，在把bug分支合并回master分支，然后可以删除掉bug，在测试master分支，如果没有bug，则可以按照流程进行发布了。
 
->  默认情况下只能拉取到mster分支上的内容
-
-
-
-现在，你的小伙伴要在`dev`分支上开发，就必须创建远程`origin`的`dev`分支到本地，于是他用这个命令创建本地`dev`分支：
-
-```cmd
-$ git checkout -b dev origin/dev
-```
-
-> `git checkout -b dev`表示创建并切换分支dev,`origin/dev`表示从远程的dev分支进行拉取
-
-
-
-### 多人协作的工作模式
-
-因此，多人协作的工作模式通常是这样：
-
-1. 首先，可以试图用`git push origin <branch-name>`推送自己的修改；
-2. 如果推送失败，则因为远程分支比你的本地更新，需要先用`git pull`试图合并；
-3. 如果合并有冲突，则解决冲突，并在本地提交；
-4. 没有冲突或者解决掉冲突后，再用`git push origin <branch-name>`推送就能成功！
-
-如果`git pull`提示`no tracking information`，则说明本地分支和远程分支的链接关系没有创建，用命令`git branch --set-upstream-to <branch-name> origin/<branch-name>`。
-
-### 小结
-
-- 查看远程库信息，使用`git remote -v`；
-- 本地新建的分支如果不推送到远程，对其他人就是不可见的；
-- 从本地推送分支，使用`git push origin branch-name`，如果推送失败，先用`git pull`抓取远程的新提交；
-- 在本地创建和远程分支对应的分支，使用`git checkout -b <branch-name> origin/<branch-name>`，本地和远程分支的名称最好一致；
-- 建立本地分支和远程分支的关联，使用`git branch --set-upstream <branch-name> origin/<branch-name>`；
-- 从远程抓取分支，使用`git pull`，如果有冲突，要先处理冲突。
-
-# 标签管理
-
-发布一个版本时，我们通常先在版本库中打一个标签（tag），这样，就唯一确定了打标签时刻的版本。将来无论什么时候，取某个标签的版本，就是把那个打标签的时刻的历史版本取出来。所以，标签也是版本库的一个快照。
-
-Git的标签虽然是版本库的快照，但其实它就是指向某个commit的指针（跟分支很像对不对？但是分支可以移动，标签不能移动），所以，创建和删除标签都是瞬间完成的。
-
-
-
-Git有commit，为什么还要引入tag？
-
-因为commit号是一串乱七八糟的数字不好找,所以引入了tag的概念,tag就是一个让人容易记住的有意义的名字，它跟某个commit绑在一起。
-
-## 创建标签
-
-`git tag <name>`
-
-> 还可以创建带有说明的标签，用`-a`指定标签名，`-m`指定说明文字：
->
-> ```cmd
-> $ git tag -a v0.1 -m "version 0.1 released" 
-> ```
-
-
-
-在Git中打标签非常简单，首先，切换到需要打标签的分支上：
-
-```cmd
-$ git branch
-* dev
-  master
-$ git checkout master
-Switched to branch 'master'
-```
-
-然后，敲命令`git tag <name>`就可以打一个新标签：
-
-```cmd
-$ git tag v1.0
-```
-
-可以用命令`git tag`查看所有标签：
-
-```cmd
-$ git tag
-v1.0
-```
-
-> 默认标签是打在最新提交的commit上的。有时候，如果忘了打标签,怎么办?
->
-> 方法是找到历史提交的commit id，然后打上就可以了：
->
-> ```cmd
-> $ git log --pretty=oneline --abbrev-commit
-> 12a631b (HEAD -> master, tag: v1.0, origin/master) merged bug fix 101
-> 4c805e2 fix bug 101
-> e1e9c68 merge with no-ff
-> f52c633 add merge
-> ```
->
-> 比方说要对`add merge`这次提交打标签，它对应的commit id是`f52c633`，敲入命令：
->
-> ```cmd
-> $ git tag v0.9 f52c633
-> ```
->
-> 再用命令`git tag`查看标签：
->
-> ```cmd
-> $ git tag
-> v0.9
-> v1.0
-> ```
-
-## 查看标签
-
-`git tag`
-
-示例:
-
-```cmd
-$ git tag
-v0.9
-v1.0
-```
-
-
-
-用命令`git show <tagname>`可以看到说明文字：
-
-```cmd
-$ git show v0.9
-commit f52c63349bc3c1593499807e5c8e972b82c8f286 (tag: v0.9)
-Author: Michael Liao <askxuefeng@gmail.com>
-Date:   Fri May 18 21:56:54 2018 +0800
-
-    add merge
-
-diff --git a/readme.txt b/readme.txt
-...
-```
-
-> 注意：标签总是和某个commit挂钩。如果这个commit既出现在master分支，又出现在dev分支，那么在这两个分支上都可以看到这个标签。
-
-## 操作标签
-
-### 删除本地标签
-
-```cmd
-$ git tag -d v0.1
-Deleted tag 'v0.1' (was f15b0dd)
-```
-
-###  删除远程标签:
-
- - 先从本地删除
-
-   ```cmd
-   $ git tag -d v0.9
-   Deleted tag 'v0.9' (was f52c633)
-   ```
-
- - 在从远程删除
-
-   ```cmd
-   $ git push origin :refs/tags/v0.9
-   To github.com:michaelliao/learngit.Git
-    - [deleted]         v0.9
-   ```
-
-### 将标签推送到远程:
-
-`git push origin <tagname>`
-
-> 一次性推送全部尚未推送到远程的本地标签：
->
-> ```cmd
-> $ git push origin --tags
-> Total 0 (delta 0), reused 0 (delta 0)
-> To github.com:michaelliao/learngit.Git
->  * [new tag]         v0.9 -> v0.9
-> ```
-
-## 创建一个基于tag的分支
-
-`tag `
-
-## 小结
-
-- 命令`git tag <tagname>`用于新建一个标签，默认为`HEAD`，也可以指定一个commit id；
-- 命令`git tag -a <tagname> -m "blablabla..."`可以指定标签信息；
-- 命令`git tag`可以查看所有标签。
-- 命令`git push origin <tagname>`可以推送一个本地标签；
-- 命令`git push origin --tags`可以推送全部未推送过的本地标签；
-- 命令`git tag -d <tagname>`可以删除一个本地标签；
-- 命令`git push origin :refs/tags/<tagname>`可以删除一个远程标签。
-
-# fork仓库
-
-在github中先选择要fork的仓库,比如人气极高的bootstrap项目,点`Fork`就在自己的账号下克隆了一个bootstrap仓库,然后，从自己的账号下clone
-
-> 一定要从自己的账号下clone仓库，这样你才能推送修改。如果从bootstrap的作者的仓库地址`git@github.com:twbs/bootstrap.Git`克隆，因为没有权限，你将不能推送修改。
-
-Bootstrap的官方仓库`twbs/bootstrap`、你在GitHub上克隆的仓库`my/bootstrap`，以及你自己克隆到本地电脑的仓库，他们的关系就像下图显示的那样：
-
-![1565444764864](/Users/yingjie.lu/Documents/note/.img/1565444764864.png)
-
-如果你想修复bootstrap的一个bug，或者新增一个功能，立刻就可以开始干活，干完后，往自己的仓库推送。
-
-如果你希望bootstrap的官方库能接受你的修改，你就可以在GitHub上发起一个pull request。当然，对方是否接受你的pull request就不一定了。
-
-## 小结
-
-- 在GitHub上，可以任意Fork开源仓库；
-- 自己拥有Fork后的仓库的读写权限；
-- 可以推送pull request给官方仓库来贡献代码。
-
-# 自定义git
-
-## 忽略文件
-
-在Git工作区的根目录下创建一个特殊的`.Gitignore`文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
-
-忽略文件的原则是：
-
-1. 忽略操作系统自动生成的文件，比如缩略图等；
-2. 忽略编译生成的中间文件、可执行文件等，也就是如果一个文件是通过另一个文件自动生成的，那自动生成的文件就没必要放进版本库，比如Java编译产生的`.class`文件；
-3. 忽略你自己的带有敏感信息的配置文件，比如存放口令的配置文件。
-
-
-
-示例:
-
-```cmd
-# Python:
-*.py[cod]
-*.so
-*.egg-info
-dist
-build
-
-# 过滤文件设置，表示过滤这个文件夹
-/target/
-
-# 表示指定过滤某个文件下具体文件
-/mtk/do.c
-
-# 通配符
-*.txt
-```
-
-> 配置语法:
->
-> - 以斜杠“/”开头表示目录；
-> - 以星号“*”通配多个字符；
-> - 以问号“?”通配单个字符
-> - 以方括号“[]”包含单个字符的匹配列表；
-> - 以叹号“!”表示不忽略(跟踪)匹配到的文件或目录。
->
-> 注意： git 对于 .Gitignore配置文件是按行从上到下进行规则匹配的
-
-最后一步就是把`.Gitignore`也提交到Git，就完成了
-
-### 小结
-
-- 忽略某些文件时，需要编写`.Gitignore`；
-- `.Gitignore`文件本身要放到版本库里，并且可以对`.Gitignore`做版本管理！
-
-## 配置别名
-
-`git config --global alias.st status`
-
-> `--global`参数是全局参数，也就是这些命令在这台电脑的所有Git仓库下都有用。
-
-
-
-有没有经常敲错命令？比如`git status`？`status`这个单词真心不好记。
-
-如果敲`git st`就表示`git status`那就简单多了，当然这种偷懒的办法我们是极力赞成的。
-
-我们只需要敲一行命令，告诉Git，以后`st`就表示`status`：
-
-```cmd
-$ git config --global alias.st status
-```
-
-现在就可以在命令行中执行`git st`,和执行`git status`的效果是一样的
-
-
-
-当然还有别的命令可以简写，很多人都用`co`表示`checkout`，`ci`表示`commit`，`br`表示`branch`：
-
-```cmd
-$ git config --global alias.co checkout
-$ git config --global alias.ci commit
-$ git config --global alias.br branch
-```
-
-
-
-### 配置文件
-
-配置Git的时候，加上`--global`是针对当前用户起作用的，如果不加，那只针对当前的仓库起作用。
-
-配置文件放哪了？每个仓库的Git配置文件都放在`.Git/config`文件中：
-
-```cmd
-$ cat .Git/config 
-[core]
-    repositoryformatversion = 0
-    filemode = true
-    bare = false
-    logallrefupdates = true
-    ignorecase = true
-    precomposeunicode = true
-[remote "origin"]
-    url = git@github.com:michaelliao/learngit.Git
-    fetch = +refs/heads/*:refs/remotes/origin/*
-[branch "master"]
-    remote = origin
-    merge = refs/heads/master
-[alias]
-    last = log -1
-```
-
-别名就在`[alias]`后面，要删除别名，直接把对应的行删掉即可。
-
-而当前用户的Git配置文件放在用户主目录下的一个隐藏文件`.Gitconfig`中：
-
-```cmd
-$ cat .Gitconfig
-[alias]
-    co = checkout
-    ci = commit
-    br = branch
-    st = status
-[user]
-    name = Your Name
-    email = your@email.com
-```
-
-# [实际项目中的分支管理](https://blog.csdn.net/shusheng0007/article/details/80791849)
+## 复杂分支管理
 
 在互联网公司,产品的更新迭代很快,所以对应的git分支也有多个
 
-## 主分支
+### 主分支
 
-在实际开发中,一个仓库(通常只放一个项目)主要存放在两条主分支: master和develop分支; 这个两个分支的生命周期时整个项目周期; 就是说,自创建出来后就不会删除,会随着项目的不断开发不断添加新代码; master分支是在创建git仓库时自动生成的,随即我们就需要从master分支上创建develop分支; 过程如图所示
+主分支有两个：dev分支和master分支
 
-![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20180624162549140.png)
+这两个分支的生命周期贯穿整个项目。自项目成立就存在了这两个分支。
 
-- master
+master分支是稳定且可发布分支，而dev是开发分支。
 
-  > 这个分支最为稳定,这个分支代表项目处于可发布的状态
+- 对于dev分支来说
 
-  当向master合并代码时,那就意味着完成了此项目的一个待发布的版本,就可以准备发布新版本了; 所以master分支不是随便合并的,只有计划发布的版本功能在develop分支上全部完成,而且测试没有问题后,才会合并到master上
+  每个人的开发任务是不一样的，那么每个人都应该有一个自己的dev分支来开发自己的任务。而每个人的dev分支都应该是从dev分支上创建出来的。
 
-- develop
+- 对于master分支来说
 
-  > 作为开发分支,平行于master分支
+  当部分的功能都开发完了，并且各人的dev分支都合并到了主dev分支，那么就标志着这一版本的一个重大升级已经完成，然后就需要将合并完后的主dev分支进行测试，如果测试通过，则将主dev分支再合并到master上，需要保证master分支是稳定可使用的。
 
-  比如要开发一个注册功能,那么就需要从develop分支上创建一个feature分支,并取名为feature-register,在feature-register分支上将注册功能开发完成后,在将代码合并回develop分支上, 那么这个feature-register分支就完成了它的使命,可以删除掉该分支了;
+  > 如果简单一点，可以直接拿master分支的代码直接发布
 
-## 其他分支
+具体如图所示：
 
-这个分支都是为了程序员协同开发,以及应对项目的各种需求而存在的; 这个分支都是为了解决某个具体问题而设立的,当这个问题解决后,代码会合并到主分支上(develop和master上)后再将该分支删除, 一般我们会人为分出三种分支:
+![这里写图片描述](file:///Users/yingjie.lu/Documents/note/.img/20180624162549140.png?lastModify=1576590920)
 
-- feature分支
+### 其他分支
 
-  > 这种分支和我们程序员日常开发最为密切,一般称作功能分支
+主要是hotfix分支
 
-  必须从develop分支创建,完成功能编写后需要合并回develop分支,过程如图所示
+> 这个分支是上线后修复一些特别紧急或严重的bug，那么需要从master分支拉取，修复完后，将该分支合并回master分支和dev分支
 
-  ![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20180624170234573-1569341259011.png)
+如图所示：
 
-  
+![这里写图片描述](file:///Users/yingjie.lu/Documents/note/.img/20180624172850247.png?lastModify=1576590920)
 
-- release分支
+## 分支管理总结
 
-  > 这个分支用来发布新版本
+一般按照上述的分支管理即可应付多大多数场景，如果还需要再细分，可以参考以下图片：
 
-  该分支需等到要上线的功能点都开发完成后,从develop分支中创建(此时的develop分支已经包含了所有已经开发好,待发布并测试通过的功能点),创建之后该分支的代码会发布到预生产环境去测试,如果发现问题,则直接在该分支中修改,如果没有问题,则可以准备将该分支发布上线
+![这里写图片描述](file:///Users/yingjie.lu/Documents/note/.img/20180624174835949.png?lastModify=1576590920)
 
-  将该分支的代码打包,并发布到生产环境,然后将该分支合并到master分支上(此时master分支上的代码是发布的版本中最新的),再在master分支上打上tag标签,标记发布的版本; 再将该分支合并回develop分支中(因为在预生产测试时发现问题可能会在该release分支中修改部分代码)
+# 标签管理
 
-  > 注意: 该分支在发布上线后,需要将代码合并到主分支上(master和develop分支)
+在发布新版本时，通常需要将当前版本打一个标签（tag），标签只是记录当前一瞬间的版本的状态，即快照
 
-- hotfix分支
+标签的原理其实就是一个指向某个commit的指针
 
-  > 这个分支主要是为上线后修复一些特别紧急或严重的bug准备的
+为什么要引入标签？因为commit的id不好记忆，那么tag就可以将commit的id和一个容易记忆的名字联系在一起。
 
-  该分支必须从master分支创建(如原来master分支中的tag为v1.2.0,那么该分支名称则应创建为hotfix-v1.2.1),完成bug修复并上线后,要合并回主分支(master和develop分支),并将master分支打上一个tag标签,标记发布上线后的版本(修改bug一般会在原来版本号的基础的最后一位加上1,如原来版本是v1.2.0,那么修复完bug发布上线的版本为v1.2.1),过程如图所示:
+## 创建标签
 
-  ![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20180624172850247.png)
+```
+git tag <标签名> [-m <标签说明>]
+```
 
-## 总结图
+示例：
 
-![这里写图片描述](/Users/yingjie.lu/Documents/note/.img/20180624174835949.png)
+```
+git tag v1.0
+git tag v1.0 -m '1.0版本发布'
+```
 
-# 问题
+> 标签创建后只存在本地，需要显式的将标签推送到远程
 
-## 解决gitbash中文乱码的问题
+## 查看标签
 
-- 进入git安装目录，通常是C:\Program Files (x86)\Git\
+```
+git tag
+```
 
-  编辑etc\gitconfig文件，在文件末尾增加以下内容：
+> 使用`git show <标签名>`可以查看对应的标签说明
 
-  ```git
-  [gui]  
-      encoding = utf-8  #代码库统一使用utf-8  
-  [i18n]  
-      commitencoding = utf-8  #log编码  
-  [svn]  
-      pathnameencoding = utf-8  #支持中文路径 
-  ```
+## 删除本地标签
 
-- 编辑etc\git-completion.bash文件,在文件末尾增加以下内容：
+```
+git tag -d <标签名>
+```
 
-  ```git
-  alias ls='ls --show-control-chars --color=auto'  #ls能够正常显示中文  
-  ```
+## 将标签推送到远程
 
-- 编辑etc\inputrc文件，修改output-meta和convert-meta属性值
+```
+git push origin <标签名>
+```
 
-  ```git
-  set output-meta on  #bash可以正常输入中文  
-  set convert-meta off  
-  ```
+示例：`git push origin v1.0`
 
-- 编辑profile文件，在文件末尾添加如下内容：
+> 推送所有标签：`git push origin --tags`
 
-  ```git
-  export LESSHARESET=utf-8  
-  ```
+# git相关配置
 
+## 忽略指定文件
 
-## 解决git中账号更改导致不能push和pull的问题
+在git工作区的根目录下创建`.gitigonre`文件，git会自动忽略掉该文件中指定的内容
 
-当在`git clone`的时候,出现以下报错
+示例：
 
-```shell
+```
+# 忽略以.iml结尾的文件
+*.iml
+# 忽略target文件夹
+target
+# 忽略java文件夹下的a.txt文件
+java/a.txt
+```
+
+> `.gitigonre`文件也需要被git管控，所以需要提交到git仓库中
+
+## 配置别名（alias）
+
+### 配置当前项目下的别名
+
+```
+git config alias.别名 命令
+```
+
+示例：`git config alias.ci "commit"`
+
+使用：`git ci`就相当于`git commit`
+
+> 配置文件的路径为当前项目下的`.git/config`
+
+### 配置全局别名
+
+```
+git config --global alias.别名 命令
+```
+
+> 配置文件的路径为`~/.gitconfig`
+
+# 原理
+
+## 本地仓库的结构
+
+![1565355268609](file:///Users/yingjie.lu/Documents/note/.img/1565355268609.png?lastModify=1576576006?lastModify=1576590920)
+
+## 管理修改
+
+git跟踪并管理的是修改，而非文件
+
+如果没有将工作区中的内容添加到暂存区，那么执行`git commit`之后，git只会将暂存区的内容提交到仓库
+
+## 分支原理
+
+git每次提交串成一条时间线,这条时间线就是一个分支
+
+在master分支中，`master`指向最新的`commit`，`head`指向`master`，如图所示：
+
+![1565409404088](file:///Users/yingjie.lu/Documents/note/.img/1565409404088.png?lastModify=1576576006?lastModify=1576590920)
+
+每次提交，master分支会在右端串连上最新的提交，并且master指针会向右移动一格，执行最新的提交
+
+当我们创建了新分支dev，git就会创建一个dev指针也指向最新的提交，而head指针就指向了dev指针，如图所示：
+
+![1565409527909](file:///Users/yingjie.lu/Documents/note/.img/1565409527909.png?lastModify=1576576006?lastModify=1576590920)
+
+所以，git创建分支很快，因为只需要增加一个dev指针和修改head指针的指向即可
+
+在dev分支中进行了一次commit提交，那么最新的提交会继续添加到时间线的最右端，然后dev指针指向最新提交（即dev指针向右移动一格），而master指针不变，如图所示：
+
+![git-br-dev-fd](file:///Users/yingjie.lu/Documents/note/.img/0-1565409653004.png?lastModify=1576576006?lastModify=1576590920)
+
+假如dev分支的工作完成了，就可以把dev分支合并回master分支。因为没有冲突，所以git就直接把master分支指向dev指向的当前提交，那么就完成了合并，如图所示：
+
+![git-br-ff-merge](file:///Users/yingjie.lu/Documents/note/.img/0-1565409749594.png?lastModify=1576576006?lastModify=1576590920)
+
+合并完分支后，我们可以选择删除掉dev分支，即删除掉dev指针即可，那么就会只剩下master分支，如图所示：
+
+![git-br-rm](file:///Users/yingjie.lu/Documents/note/.img/0-1565409790707.png?lastModify=1576576006?lastModify=1576590920)
+
+# 问题汇总
+
+## 解决gitbash的中文乱码
+
+编辑`C:\Program Files (x86)\Git\etc\gitconfig`文件，在文件末尾增加以下内容：
+
+```
+[gui]  
+    encoding = utf-8  #代码库统一使用utf-8  
+[i18n]  
+    commitencoding = utf-8  #log编码  
+[svn]  
+    pathnameencoding = utf-8  #支持中文路径 
+```
+
+编辑`C:\Program Files (x86)\Git\etc\git-completion.bash`文件，在文件末尾增加以下内容：
+
+```
+alias ls='ls --show-control-chars --color=auto'  #ls能够正常显示中文 
+```
+
+编辑`C:\Program Files (x86)\Git\etc\inputrc`文件，修改output-meta和convert-meta属性值：
+
+```
+set output-meta on  #bash可以正常输入中文  
+set convert-meta off  
+```
+
+编辑`C:\Program Files (x86)\Git\etc\profile`文件，在文件末尾添加如下内容：
+
+```
+export LESSHARESET=utf-8  
+```
+
+## 解决git账号更改导致不能push和pull
+
+当出现以下报错时，则说明当前项目或系统中git的用户名有冲突：
+
+```
 remote: HTTP Basic: Access denied
 fatal: Authentication failed for 'http://******/java/gh-assemble.Git/'
 ```
 
-问题原因
+解决办法：
 
-- 远程服务端的用户名和密码与当前系统中git保存的用户名和密码有冲突
+执行命令`git config –-system –-unset credential.helper`,再重新输入账号和密码即可
 
-解决办法
+> 如果解决还解决不了,则执行`git config –-global http.emptyAuth true`
+>
+> 若出现`error: key does not contain a section: –-system`报错,则使用将cmd使用管理员身份运行,再执行命令即可
 
-- 执行命令`git config –-system –-unset credential.helper`,再重新输入账号和密码即可
+## 记住用户名和密码
 
-- 如果解决还解决不了,则执行`git config –-global http.emptyAuth true`
-
-  > 出现显示`error: key does not contain a section: –-system`,则使用将cmd使用管理员身份运行,再执行命令即可
-
-## git记住用户名和密码
-
-`git config --global credential.helper store`
+```
+git config --global credential.helper store
+```
 
 # 参考文档
 
 [廖雪峰的git教程](https://www.liaoxuefeng.com/wiki/896043488029600)
-
-
-
-
-
-
-
-
-
