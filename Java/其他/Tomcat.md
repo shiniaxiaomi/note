@@ -106,15 +106,15 @@ Tomcat主要组件：服务器Server，服务Service，连接器Connector、容�
 
 一个Connector将在某个指定的端口上监听客户端的请求,接收浏览器发过来的tcp连接请求,创建一个Request和Response对象分别用于和请求端交换数据吗,然后开一个线程来处理这个请求并把创建的Request和Response对象传给处理引擎Engine(Container中的一部分),从Engine处理后,获取响应并返回给客户端
 
-Tomcat中由两个经典的Connector,一个直接监听来自Browser的Http请求,另外一个监听来自其他的WebServer的请求; Http/1.1 Connector在端口8080处监听来自Browser的Http请求,AJP/1.3 Connector在端口8009监听其他WebServer的Servlet/JSP请求
+Tomcat中有两个经典的Connector,一个直接监听来自Browser的Http请求,另外一个监听来自其他的WebServer的请求; Http/1.1 Connector在端口8080处监听来自Browser的Http请求,AJP/1.3 Connector在端口8009监听其他WebServer的Servlet/JSP请求
 
-**Connector最重要的功能就是接收连接请求,然后分配线程让Container来处理这个请求**,所以这必然是多线程的,多线程的处理时Connector设计的核心
+**Connector最重要的功能就是接收连接请求,然后分配线程让Container来处理这个请求**,所以这必然是多线程的,多线程的处理是Connector设计的核心
 
 ### Container
 
 ![img](/Users/yingjie.lu/Documents/note/.img/2018030817251496.png)
 
-Container是容器的父接口,该容器的设计用的是典型的责任链的设计模式,它由四个子容器组件构成,分别是Engine,Host,Context和Wrapper; 这四个组件存在包含关系,通常一个Servlet类对应一个Wrapper,如果由多个Servlet定义多个Wrapper,如果由多个Wrapper就要定义一个更高的Container,如Context
+Container是容器的父接口,该容器的设计用的是典型的责任链的设计模式,它由四个子容器组件构成,分别是`Engine`,`Host`,`Context`和`Wrapper`; 这四个组件存在包含关系,通常一个Servlet类对应一个Wrapper,如果由多个Servlet定义多个Wrapper,如果有多个Wrapper就要定义一个更高的Container,如Context
 
 Context 还可以定义在父容器 Host 中，Host 不是必须的，但是要运行 war 程序，就必须要 Host，因为 war 中必有 web.xml 文件，这个文件的解析就需要 Host 了，如果要有多个 Host 就要定义一个 top 容器 Engine 了。而 Engine 没有父容器了，一个 Engine 代表一个完整的 Servlet 引擎
 

@@ -630,7 +630,7 @@ person.name=a
 
 ```properties
 @Component
-@ConfigurationProperties(prefix=“person”) 
+@ConfigurationProperties(prefix="person") 
 public class Test(){
 		int age;
 		String name;
