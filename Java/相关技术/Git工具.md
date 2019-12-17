@@ -6,9 +6,7 @@ Git是目前使用最多的分布式版本控制工具
 
 ## linux
 
-```
-sudo yum install git
-```
+`sudo yum install git`
 
 ## windows
 
@@ -18,9 +16,7 @@ sudo yum install git
 
 ## 克隆仓库
 
-```
-git clone https://github.com/xxx/xxx.git
-```
+`git clone https://github.com/xxx/xxx.git`
 
 > 可在后面添加名称指定克隆后生成的文件夹名称
 >
@@ -28,31 +24,23 @@ git clone https://github.com/xxx/xxx.git
 
 ## 初始化本地仓库
 
-```
-git init
-```
+`git init`
 
 ## 关联远程仓库
 
-```
-git remote add  
-```
+`git remote add  `
 
 例如：`git remote add origin https://github.com/xxx/xxx.git`
 
 > 在首次push时需要关联远程仓库
 >
-> ```
-> git push --set-upstream origin master
-> ```
+> `git push --set-upstream origin master`
 >
 > 可简化为`git push -u origin master`
 
 ## 删除关联的远程分支
 
-```
-git remote remove 
-```
+`git remote remove `
 
 示例：`git remote remove origin`
 
@@ -60,43 +48,31 @@ git remote remove
 
 ## 查看本地仓库的状态
 
-```
-git status
-```
+`git status`
 
 ## 将文件添加到暂存区
 
-```
-git add .
-```
+`git add .`
 
 > 添加所有文件到暂存区
 
-```
-git add 文件名
-```
+`git add 文件名`
 
 > 添加指定文件到暂存区
 
 ## 将文件从暂存区中删除
 
-```
-git restore --stage 
-```
+`git restore --stage <文件名>`
 
 例如：`git restore --stage .`
 
 ## 将暂存区的内容提交到本地仓库
 
-```
-git commit -m '备注'
-```
+`git commit -m '备注'`
 
 ## 回退提交
 
-```
-git reset head^
-```
+`git reset head^`
 
 > 回退到上一次提交的版本
 
@@ -108,16 +84,15 @@ git reset head^
 
 ## 查看提交日志
 
-```
-git log
-```
+`git log`
 
 ## 回退提交到任意版本
 
 查看提交的所有记录
 
-```
-git reflog
+`git reflog`
+
+```shell
 $ git reflog
 e93bc37 (HEAD -> master) HEAD@{0}: commit: ttt
 150337e HEAD@{1}: commit: c
@@ -129,15 +104,11 @@ b1416c1 (origin/master) HEAD@{10}: commit (initial): init
 
 ## 将本地提交推送到远程
 
-```
-git push
-```
+`git push`
 
 > 推送到已经关联的远程分支中
 
-```
-git push -u origin master
-```
+`git push -u origin master`
 
 > 将本地分支推送到远程的master分支中，如果远程没有master分支，则创建，并且创建关联关系，下次直接使用`git push`即可
 
@@ -159,57 +130,43 @@ git push -u origin master
 
 ## 创建本地分支
 
-```
-git branch dev
-```
+`git branch dev`
 
 > 在本地了创建了一个dev分支
 
 ## 切换本地分支
 
-```
-git checkout <分支名>
-```
+`git checkout <分支名>`
 
 例如：`git checkout dev`
 
 ## 推送到指定的远程分支
 
-```
-git push origin 
-```
+`git push origin `
 
 示例：`git push origin dev`
 
 ## 拉取指定远程分支到本地
 
-```
-git pull origin 
-```
+`git pull origin `
 
 示例：`git pull origin dev`
 
 ## 拉取远程分支到本地，并在新建本地仓库
 
-```
-git checkout -b <本地分支名> origin/<远程分支名>
-```
+`git checkout -b <本地分支名> origin/<远程分支名>`
 
 示例：`git checkout -b dev origin/dev`
 
 ## 删除本地分支
 
-```
-git branch -d <本地分支名>
-```
+`git branch -d <本地分支名>`
 
 示例：`git branch -d dev`
 
 ## 合并本地分支
 
-```
-git merge dev
-```
+`git merge dev`
 
 > 将dev分支合并到当前分支中
 
@@ -219,7 +176,7 @@ git merge dev
 
 Git用`<<<<<<<`，`=======`，`>>>>>>>`标记出不同分支的内容
 
-```
+```js
 Git tracks changes of files.
 <<<<<<< HEAD
 Creating a new branch is quick & simple.
@@ -302,38 +259,29 @@ master分支是稳定且可发布分支，而dev是开发分支。
 
 ## 创建标签
 
-```
-git tag <标签名> [-m <标签说明>]
-```
+`git tag <标签名> [-m <标签说明>]`
 
 示例：
 
-```
-git tag v1.0
-git tag v1.0 -m '1.0版本发布'
-```
+`git tag v1.0`
+
+`git tag v1.0 -m '1.0版本发布'`
 
 > 标签创建后只存在本地，需要显式的将标签推送到远程
 
 ## 查看标签
 
-```
-git tag
-```
+`git tag`
 
 > 使用`git show <标签名>`可以查看对应的标签说明
 
 ## 删除本地标签
 
-```
-git tag -d <标签名>
-```
+`git tag -d <标签名>`
 
 ## 将标签推送到远程
 
-```
-git push origin <标签名>
-```
+`git push origin <标签名>`
 
 示例：`git push origin v1.0`
 
@@ -347,7 +295,7 @@ git push origin <标签名>
 
 示例：
 
-```
+```properties
 # 忽略以.iml结尾的文件
 *.iml
 # 忽略target文件夹
@@ -362,9 +310,7 @@ java/a.txt
 
 ### 配置当前项目下的别名
 
-```
-git config alias.别名 命令
-```
+`git config alias.别名 命令`
 
 示例：`git config alias.ci "commit"`
 
@@ -374,9 +320,7 @@ git config alias.别名 命令
 
 ### 配置全局别名
 
-```
-git config --global alias.别名 命令
-```
+`git config --global alias.别名 命令`
 
 > 配置文件的路径为`~/.gitconfig`
 
@@ -426,7 +370,7 @@ git每次提交串成一条时间线,这条时间线就是一个分支
 
 编辑`C:\Program Files (x86)\Git\etc\gitconfig`文件，在文件末尾增加以下内容：
 
-```
+```properties
 [gui]  
     encoding = utf-8  #代码库统一使用utf-8  
 [i18n]  
@@ -437,20 +381,20 @@ git每次提交串成一条时间线,这条时间线就是一个分支
 
 编辑`C:\Program Files (x86)\Git\etc\git-completion.bash`文件，在文件末尾增加以下内容：
 
-```
+```properties
 alias ls='ls --show-control-chars --color=auto'  #ls能够正常显示中文 
 ```
 
 编辑`C:\Program Files (x86)\Git\etc\inputrc`文件，修改output-meta和convert-meta属性值：
 
-```
+```properties
 set output-meta on  #bash可以正常输入中文  
 set convert-meta off  
 ```
 
 编辑`C:\Program Files (x86)\Git\etc\profile`文件，在文件末尾添加如下内容：
 
-```
+```properties
 export LESSHARESET=utf-8  
 ```
 
@@ -458,7 +402,7 @@ export LESSHARESET=utf-8
 
 当出现以下报错时，则说明当前项目或系统中git的用户名有冲突：
 
-```
+```properties
 remote: HTTP Basic: Access denied
 fatal: Authentication failed for 'http://******/java/gh-assemble.Git/'
 ```
@@ -473,9 +417,7 @@ fatal: Authentication failed for 'http://******/java/gh-assemble.Git/'
 
 ## 记住用户名和密码
 
-```
-git config --global credential.helper store
-```
+`git config --global credential.helper store`
 
 # 参考文档
 
