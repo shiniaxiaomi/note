@@ -1,7 +1,14 @@
 # 安装步骤
 ## 租赁国外的服务器
 租赁地址
-https://www.vultr.com/
+
+- 国外
+
+  https://www.vultr.com/
+
+- 国内
+
+  https://www.aliyun.com/（香港）
 
 > 选择 Ubuntu 19.10 x64或更高 的系统版本
 
@@ -39,6 +46,12 @@ wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/dou
 ![1572148180276](/Users/yingjie.lu/Documents/note/.img/1572148180276.png)
 
 将ssr链接复制到软件上即可
+
+# ssr软件下载
+
+ShadowsocksX：https://www.emptyus.com/
+
+ShadowsocksX-NG：https://github.com/shadowsocks/ShadowsocksX-NG
 
 # 遇到的问题
 

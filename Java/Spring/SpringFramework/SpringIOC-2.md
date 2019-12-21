@@ -324,29 +324,21 @@ public void refresh() throws BeansException, IllegalStateException {
       // 标记7，主要功能为实例化剩余所有的(非懒加载)单例bean
       finishBeanFactoryInitialization(beanFactory);
 
-      // Last step: publish corresponding event.
+      // 标记11，主要功能为推送相应的事件
       finishRefresh();
     }
-
     catch (BeansException ex) {
-      if (logger.isWarnEnabled()) {
-        logger.warn("Exception encountered during context initialization - " +
-                    "cancelling refresh attempt: " + ex);
-      }
-
-      // Destroy already created singletons to avoid dangling resources.
+			//如果发生异常
+      //销毁已经创建的单例bean
       destroyBeans();
 
-      // Reset 'active' flag.
+      //取消刷新
       cancelRefresh(ex);
 
-      // Propagate exception to caller.
       throw ex;
     }
-
     finally {
-      // Reset common introspection caches in Spring's core, since we
-      // might not ever need metadata for singleton beans anymore...
+      //清空公共缓存
       resetCommonCaches();
     }
   }
@@ -417,23 +409,7 @@ public void preInstantiateSingletons() throws BeansException {
   }
   //===========遍历beanName的集合并创建所有的非懒加载的单例的bean实例===========
 
-  //todo。。。。
-  // Trigger post-initialization callback for all applicable beans...
-  for (String beanName : beanNames) {
-    Object singletonInstance = getSingleton(beanName);
-    if (singletonInstance instanceof SmartInitializingSingleton) {
-      final SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
-      if (System.getSecurityManager() != null) {
-        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-          smartSingleton.afterSingletonsInstantiated();
-          return null;
-        }, getAccessControlContext());
-      }
-      else {
-        smartSingleton.afterSingletonsInstantiated();
-      }
-    }
-  }
+  //...
 }
 ```
 
@@ -511,17 +487,10 @@ protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredTy
       //===================接下就是真正的创建bean实例了====================
       // 如果bean是单例
       if (mbd.isSingleton()) {
-        //重点：先执行匿名代码块中的内容，结果作为参数传入到getSingleton()方法
-        //将创建单例对象加入到单例缓存中
+        //获取指定beanName单实例bean，如果没有，则创建bean，且添加到 单例缓存 中并返回创建的bean
         sharedInstance = getSingleton(beanName, () -> {
-          try {
-            //标记10，主要作用为创建对应的bean实例
-            return createBean(beanName, mbd, args);
-          }
-          catch (BeansException ex) {
-            destroySingleton(beanName);
-            throw ex;
-          }
+          //标记10，主要作用为如果单例缓存中没有指定的bean，则创建对应的bean实例
+          return createBean(beanName, mbd, args);
         });
         //获取给定bean实例的对象，如果bean实例是FactoryBean，则通过FactoryBean创建bean后返回
         bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
@@ -576,15 +545,23 @@ protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable O
   throws BeanCreationException {
   //...
   
-  // 标记11，主要功能为在bean实例化前，拿到所有实现了postProcessBeforeInstantiation方法的类，并遍历回调该方法
+  //确定bean的类型
+  Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
+  if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
+    //保存bean的定义
+    mbdToUse = new RootBeanDefinition(mbd);
+    mbdToUse.setBeanClass(resolvedClass);
+  }
+  
+  // 标记10.1，主要功能为在bean实例化前，拿到所有实现了postProcessBeforeInstantiation方法的类，并遍历回调该方法
   Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
-  //如果返回的bean实例不为null，则直接将bean返回
+  //如果返回的bean实例不为null，则直接将已经实例化的bean直接返回
   if (bean != null) {
     return bean;
   }
 
-  //标记11，主要功能为真正的实例化bean
-  //如果返回的bean实例为null，调用doCreateBean方法继续按照流程正常的创建bean实例
+  //标记10.2，主要功能为正常的实例化bean
+  //如果返回的bean实例为null，调用doCreateBean方法继续按照流程正常的实例化bean
   Object beanInstance = doCreateBean(beanName, mbdToUse, args);//真正的实例化bean的方法
   return beanInstance;
   
@@ -602,6 +579,8 @@ protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable O
 
 ###### ----标记10.1-resolveBeforeInstantiation()
 
+> 在`AbstractAutowireCapableBeanFactory`类中
+
 ```java
 protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
   Object bean = null;
@@ -610,11 +589,12 @@ protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition 
     if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
       Class<?> targetType = determineTargetType(beanName, mbd);
       if (targetType != null) {
-        //回调BeanPostProcessorsBeforeInstantiation方法（在bean实例化前调用）
+        //标记10.1.1，主要功能为回调所有的BeanPostProcessorsBeforeInstantiation方法（在bean实例化前调用）
         bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
-        //如果bean不为null，说明bean已经在BeanPostProcessorsBeforeInstantiation回调中被创建并返回，返回在这里应该直接调用BeanPostProcessorsAfterInitialization方法（在bean实例化后调用）
-        //如果为null，则继续进行正常的bean实例化，那么对应的BeanPostProcessorsAfterInitialization方法也会被延后，直到bean正常的被实例化后才回调该方法
+        //如果返回的bean为null，不符合下面的条件判断，则会在方法结束时返回null，在方法外部继续进行正常的bean实例化，那么对应的BeanPostProcessorsAfterInitialization方法也会被延后，直到bean正常的被实例化后才回调该方法
         if (bean != null) {
+          //如果返回的bean不为null，说明bean已经在BeanPostProcessorsBeforeInstantiation回调中被创建并返回，因为bean已经被创建了，所以在这里应该直接调用BeanPostProcessorsAfterInitialization方法（在bean实例化后调用）
+          //applyBeanPostProcessorsAfterInitialization()方法回调所有的BeanPostProcessorsAfterInitialization方法
           bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
         }
       }
@@ -627,66 +607,91 @@ protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition 
 
 > 因此，`BeanPostProcessorsBeforeInstantiation()`是在bean实例化前被调用的，而`BeanPostProcessorsAfterInitialization()`是在bean实例化后被调用的
 
+###### --------标记10.1.1-applyBeanPostProcessorsBeforeInstantiation()
+
+```java
+@Nullable
+protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+  //先从getBeanPostProcessors()中获取到所有实现了postProcessBeforeInstantiation()方法的类
+  //在通过for循环挨个回调postProcessBeforeInstantiation()方法
+  for (BeanPostProcessor bp : getBeanPostProcessors()) {
+    //如果bp属于InstantiationAwareBeanPostProcessor类型
+    if (bp instanceof InstantiationAwareBeanPostProcessor) {
+      InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+      //回调postProcessBeforeInstantiation()方法
+      Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+      //如果回调结果不为空，则说明在回调中已经创建并返回了bean，那么直接返回已创建的bean
+      if (result != null) {
+        return result;
+      }
+    }
+  }
+  //如果全部回调完，则返回null，继续正常的实例化bean
+  return null;
+}
+```
+
+> Spring很粗暴的拿到了所有的有实现回调类，然后每次都遍历并通过类型判断是否需要进行回调
+
+> `getBeanPostProcessors()`方法获取到的回调链为（有顺序要求）：
+>
+> 1. `ApplicationContextAwareProcessor`：是`InstantiationAwareBeanPostProcessor`类型
+> 2. `ConfigurationClassPostProcessor`：不是`InstantiationAwareBeanPostProcessor`类型
+> 3. `PostProcessorRegistrationDelegate`：不是`InstantiationAwareBeanPostProcessor`类型
+> 4. `AwareBean`：自己创建的bean，实现了`InstantiationAwareBeanPostProcessor`接口
+> 5. `CommonAnnotationBeanPostProcessor`：是`InstantiationAwareBeanPostProcessor`类型
+> 6. `AutowiredAnnotationBeanPostProcessor`：不是`InstantiationAwareBeanPostProcessor`类型
+> 7. `ApplicationListenerDetector`：不是`InstantiationAwareBeanPostProcessor`类型
+>
+> 所以，被回调的就只有下这些：
+>
+> - `ApplicationContextAwareProcessor`
+> - `AwareBean`
+> - `CommonAnnotationBeanPostProcessor`
+
 ###### ----标记10.2-doCreateBean()
 
 ```java
 protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args) throws BeanCreationException {
-  // Instantiate the bean.
+
+  //定义实例包装器的引用
   BeanWrapper instanceWrapper = null;
+  //如果是单例
   if (mbd.isSingleton()) {
+    //从工厂bean实例缓存中删除对应的bean实例
     instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
   }
+  //如果实例包装器的引用为null
   if (instanceWrapper == null) {
+    //标记10.2.1，主要作用为创建bean实例，并返回bean实例的包装器
     instanceWrapper = createBeanInstance(beanName, mbd, args);
   }
+  //获取真实的bean实例
   final Object bean = instanceWrapper.getWrappedInstance();
+  //获取bean的类型
   Class<?> beanType = instanceWrapper.getWrappedClass();
   if (beanType != NullBean.class) {
     mbd.resolvedTargetType = beanType;
   }
 
-  // Allow post-processors to modify the merged bean definition.
-  synchronized (mbd.postProcessingLock) {
-    if (!mbd.postProcessed) {
-      try {
-        applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
-      }
-      catch (Throwable ex) {
-        throw new BeanCreationException(mbd.getResourceDescription(), beanName,
-                                        "Post-processing of merged bean definition failed", ex);
-      }
-      mbd.postProcessed = true;
-    }
-  }
+  //Spring允许在这里通过后置处理器去修改bean的定义，修改以后的用于beanFactory的bean
+  applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 
-  // Eagerly cache singletons to be able to resolve circular references
-  // even when triggered by lifecycle interfaces like BeanFactoryAware.
+  // 通过以下代码可以解决bean的循环引用问题
   boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
                                     isSingletonCurrentlyInCreation(beanName));
   if (earlySingletonExposure) {
-    if (logger.isTraceEnabled()) {
-      logger.trace("Eagerly caching bean '" + beanName +
-                   "' to allow for resolving potential circular references");
-    }
     addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
   }
 
-  // Initialize the bean instance.
+  //以下为初始化bean的代码
   Object exposedObject = bean;
-  try {
-    populateBean(beanName, mbd, instanceWrapper);
-    exposedObject = initializeBean(beanName, exposedObject, mbd);
-  }
-  catch (Throwable ex) {
-    if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
-      throw (BeanCreationException) ex;
-    }
-    else {
-      throw new BeanCreationException(
-        mbd.getResourceDescription(), beanName, "Initialization of bean failed", ex);
-    }
-  }
+  //标记10.2.2，主要功能为回调所有的postProcessAfterInstantiation()方法，并设置bean的属性
+  populateBean(beanName, mbd, instanceWrapper);
+  //标记10.2.3，主要功能为回调所有的postProcessBeforeInitialization()方法，并初始化bean
+  exposedObject = initializeBean(beanName, exposedObject, mbd);
 
+  // 通过以下代码可以解决bean的循环引用问题
   if (earlySingletonExposure) {
     Object earlySingletonReference = getSingleton(beanName, false);
     if (earlySingletonReference != null) {
@@ -702,27 +707,312 @@ protected Object doCreateBean(final String beanName, final RootBeanDefinition mb
           }
         }
         if (!actualDependentBeans.isEmpty()) {
-          throw new BeanCurrentlyInCreationException(beanName,
-                                                     "Bean with name '" + beanName + "' has been injected into other beans [" +
-                                                     StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
-                                                     "] in its raw version as part of a circular reference, but has eventually been " +
-                                                     "wrapped. This means that said other beans do not use the final version of the " +
-                                                     "bean. This is often the result of over-eager type matching - consider using " +
-                                                     "'getBeanNamesOfType' with the 'allowEagerInit' flag turned off, for example.");
+          throw new BeanCurrentlyInCreationException(beanName,"Bean with name '" + beanName + "' has been injected into other beans");
         }
       }
     }
   }
 
-  // Register bean as disposable.
-  try {
-    registerDisposableBeanIfNecessary(beanName, bean, mbd);
-  }
-  catch (BeanDefinitionValidationException ex) {
-    throw new BeanCreationException(
-      mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
-  }
-
+  //...
+  //返回创建的bean实例
   return exposedObject;
 }
 ```
+
+###### --------标记10.2.1-createBeanInstance()
+
+> 在`AbstractAutowireCapableBeanFactory`类中
+
+```java
+/**
+ * 使用适当的实例化策略为指定的bean创建一个新实例:工厂方法、构造函数或使用无参构造函数实例化。
+ */
+protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
+  //获取指定beanName的类型
+  Class<?> beanClass = resolveBeanClass(mbd, beanName);
+
+  Supplier<?> instanceSupplier = mbd.getInstanceSupplier();
+  if (instanceSupplier != null) {
+    return obtainFromSupplier(instanceSupplier, beanName);
+  }
+
+  //如果获取到bean工厂的名称，则使用工厂方法实例化bean
+  if (mbd.getFactoryMethodName() != null) {
+    return instantiateUsingFactoryMethod(beanName, mbd, args);
+  }
+
+  //...
+  //如果bean已经实例化
+  if (resolved) {
+    //如果必须自动装配
+    if (autowireNecessary) {
+      //通过有参的构造函数实例化bean（通过参数的类型匹配）
+      return autowireConstructor(beanName, mbd, null, null);
+    }
+    else {
+      //使用默认无参的构造方法实例化bean
+      return instantiateBean(beanName, mbd);
+    }
+  }
+
+  //如果bean未实例化
+  //获取构造函数
+  Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+  //如果构造函数不为空或者指定了通过构造函数实例化或者有传入参数
+  if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
+      mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
+    //通过有参的构造函数实例化
+    return autowireConstructor(beanName, mbd, ctors, args);
+  }
+
+  //获取推荐的构造函数
+  ctors = mbd.getPreferredConstructors();
+ 	//如果不为空，则使用构造函数创建
+  if (ctors != null) {
+    return autowireConstructor(beanName, mbd, ctors, null);
+  }
+
+  //没有特别的指定，则使用无参的构造函数实例化bean
+  return instantiateBean(beanName, mbd);
+}
+```
+
+###### --------标记10.2.2-populateBean()
+
+> 在`AbstractAutowireCapableBeanFactory`中
+
+```java
+protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) {
+  //...
+
+  //通过回调所有符合条件的postProcessAfterInstantiation()方法，这可以在bean的属性设置之前去修改bean的属性，如字段注入等
+  if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+      //遍历所有的BeanPostProcessors，如果类型为InstantiationAwareBeanPostProcessor
+      if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        //回调对应的postProcessAfterInstantiation()方法
+        //如果回调返回为false，则跳过bean属性的自动注入；如果为true，则继续自动注入属性到该bean中
+        //重要：所以，如果我们需要修改bean的属性，则可以在postProcessAfterInstantiation()回调中修改对应的bean属性，然后返回false，则跳过了该bean属性的自动注入，实现了可以自定义bean的属性
+        if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+          continueWithPropertyPopulation = false;
+          break;
+        }
+      }
+    }
+  }
+
+  //如果在回调中返回false，那么直接结束该方法，不继续之后的bean的属性注入
+  if (!continueWithPropertyPopulation) {
+    return;
+  }
+
+  //如果在回调中返回true，则进行下面的属性注入
+  //获取属性值
+  PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
+
+  //获取自动注入的类型
+  int resolvedAutowireMode = mbd.getResolvedAutowireMode();
+  //按名称自动注入或者按类型自动注入
+  if (resolvedAutowireMode == AUTOWIRE_BY_NAME || resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
+    MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
+    // 根据名称注入属性
+    if (resolvedAutowireMode == AUTOWIRE_BY_NAME) {
+      autowireByName(beanName, mbd, bw, newPvs);
+    }
+    // 根据类型注入属性
+    if (resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
+      autowireByType(beanName, mbd, bw, newPvs);
+    }
+    pvs = newPvs;
+  }
+
+  //判断有无实现了InstantiationAwareBeanPostProcessor接口
+  boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
+  //如果实现了
+  if (hasInstAwareBpps) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+      //遍历BeanPostProcessor链，并判断是否属于InstantiationAwareBeanPostProcessor类型
+      //如果属于该类型，则回调所有的postProcessProperties()方法，可以在该方法中修改需要设置的属性值
+      if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        //回调postProcessProperties()方法
+        PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+        //如果回调结果为null，则使用默认的属性进行属性注入
+        if (pvsToUse == null) {
+          //获取默认的属性值
+          pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+          //默认的属性值为null，则无需注入，直接返回
+          if (pvsToUse == null) {
+            return;
+          }
+        }
+        //如果回调结果不为null，则将回调返回的修改后的属性赋值给pvs变量，用于之后的属性注入
+        pvs = pvsToUse;
+      }
+    }
+  }
+  //...
+	//如果属性值不为null，则进行属性注入
+  if (pvs != null) {
+    applyPropertyValues(beanName, mbd, bw, pvs);
+  }
+}
+```
+
+> 重要：
+>
+> 在`postProcessAfterInstantiation()`回调中，可以修改对应的bean的属性，然后返回false，那么就可以跳过该bean的属性自动注入，从而达到修改对应bean的属性的目的
+
+###### --------标记10.2.3-initializeBean()
+
+> 在`AbstractAutowireCapableBeanFactory`中
+
+```java
+protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
+  //...
+  Object wrappedBean = bean;
+  if (mbd == null || !mbd.isSynthetic()) {
+    //标记10.2.3.1，主要功能为回调所有的postProcessBeforeInitialization()方法（在属性设值之后，初始化之前回调）
+    wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+  }
+
+  //标记10.2.3.2，主要功能为调用bean的init方法进行初始化
+  invokeInitMethods(beanName, wrappedBean, mbd);
+  
+  if (mbd == null || !mbd.isSynthetic()) {
+    //标记10.2.3.3，主要功能为调用所有的postProcessAfterInitialization()方法（初始化之后回调）
+    wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+  }
+
+  //返回bean的包装类
+  return wrappedBean;
+}
+```
+
+###### ----------------10.2.3.1-applyBeanPostProcessorsBeforeInitialization()
+
+> 在`AbstractAutowireCapableBeanFactory`中
+
+```java
+public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+  throws BeansException {
+
+  Object result = existingBean;
+  for (BeanPostProcessor processor : getBeanPostProcessors()) {
+    //遍历BeanPostProcessor链，回调postProcessBeforeInitialization()方法
+    Object current = processor.postProcessBeforeInitialization(result, beanName);
+    //如果回调返回null，则直接结束方法，不继续遍历BeanPostProcessor链
+    if (current == null) {
+      return result;
+    }
+    //如果回调返回结果不为null，则将返回的bean保存到result中，用于最后bean的返回
+    result = current;
+  }
+  //遍历结束后，返回bean
+  return result;
+}
+```
+
+> 在通过调用`getBeanPostProcessors()`获取到的BeanPostProcessor链，有几个比较特殊的BeanPostProcessor：
+>
+> 1. `test.AwareBean`：第一个就是我们自己写的`AwareBean`类，因为会调用该类实现的`postProcessBeforeInitialization()`方法
+> 2. `org.springframework.context.annotation.CommonAnnotationBeanPostProcessor`：第二个是这个类，在该类的`postProcessBeforeInitialization()`方法中会循环调用所有的标注有`@PostConstruct`，`@PreDestroy`和`@Resource`注解的方法
+
+###### ----------------10.2.3.2-invokeInitMethods()
+
+> 在`AbstractAutowireCapableBeanFactory`中
+
+```java
+//执行实现了InitializingBean接口的bean的初始化方法
+protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
+  throws Throwable {
+
+  //判断bean是否实现了InitializingBean接口
+  boolean isInitializingBean = (bean instanceof InitializingBean);
+  if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
+    //则回调bean的afterPropertiesSet()方法（用于bean的初始化）
+    if (System.getSecurityManager() != null) {
+      AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+						((InitializingBean) bean).afterPropertiesSet();
+						return null;
+					}, getAccessControlContext());
+    }
+    else {
+      ((InitializingBean) bean).afterPropertiesSet();
+    }
+  }
+	
+  //...
+}
+```
+
+###### ----------------10.2.3.3-applyBeanPostProcessorsAfterInitialization()
+
+> 在`AbstractAutowireCapableBeanFactory`中
+
+```java
+public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+  throws BeansException {
+
+  Object result = existingBean;
+  for (BeanPostProcessor processor : getBeanPostProcessors()) {
+    //遍历BeanPostProcessor链，回调postProcessAfterInitialization()方法
+    Object current = processor.postProcessAfterInitialization(result, beanName);
+    //如果回调返回null，则直接结束方法，不继续遍历BeanPostProcessor链
+    if (current == null) {
+      return result;
+    }
+    //如果回调返回结果不为null，则将返回的bean保存到result中，用于最后bean的返回
+    result = current;
+  }
+  //遍历结束后，返回bean
+  return result;
+}
+```
+
+### 标记11-finishRefresh()
+
+> 在`AbstractApplicationContext`类中
+
+```java
+//调用LifecycleProcessor来完成此上下文的刷新方法并发布
+protected void finishRefresh() {
+  //清除上下文的资源缓存
+  this.clearResourceCaches();
+  //初始化生命周期的处理器
+  //如果有实现LifecycleProcessor接口的类，则实例化处理器，如果没有实现，则实例化默认的处理器
+  this.initLifecycleProcessor();
+  //获取生命周期的处理器并刷新
+  this.getLifecycleProcessor().onRefresh();
+  //推送最终的刷新事件
+  this.publishEvent((ApplicationEvent)(new ContextRefreshedEvent(this)));
+  
+  LiveBeansView.registerApplicationContext(this);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

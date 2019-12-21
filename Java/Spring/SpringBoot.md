@@ -712,6 +712,20 @@ protected void doGet(HttpServletRequest servletRequest, HttpServletResponse serv
 }
 ```
 
+## 启动项目后才执行一段代码
+
+实现`ApplicationRunner`接口即可
+
+```java
+@Component
+public class ApplicationRunnerImpl implements ApplicationRunner {
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        System.out.println("应用启动成功！");
+    }
+}
+```
+
 # 参考文档
 
 [SpringBoot官方文档](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/html/)
