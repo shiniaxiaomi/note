@@ -61,6 +61,26 @@ npm i element-ui -S
 </html>
 ```
 
+# 解决页面加载闪动的问题
+
+在vue容器的div里面加上 v-cloak
+
+```html
+<div id="app" v-cloak>
+  //...
+</div>
+```
+
+在加入以下样式
+
+```css
+<style type="text/css">
+  [v-cloak] {
+    display: none !important;
+  }
+</style>
+```
+
 # Layout布局
 
 通过 row 和 col 组件，并使用 `span` 属性我们就可以自由地组合布局。
