@@ -961,6 +961,38 @@ new Vue({
 
 https://cn.vuejs.org/v2/guide/components.html
 
+# 经验总结
+
+## 解决vue在刷新页面时内容闪动的问题
+
+在vue容器的div里面加上 v-cloak
+
+```html
+<div id="app" v-cloak>
+  //...
+</div>
+```
+
+在加入以下样式
+
+```css
+<style type="text/css">
+  [v-cloak] {
+    display: none !important;
+  }
+</style>
+```
+
+## 指定不解析某个html标签中的内容
+
+只要在html标签中添加`v-pre`即可
+
+```html
+<div id="blog" class="markdown-body" v-pre>
+  ${blog!}
+</div>
+```
+
 # 参考文档
 
 [官方文档](https://cn.vuejs.org/v2/guide/)
