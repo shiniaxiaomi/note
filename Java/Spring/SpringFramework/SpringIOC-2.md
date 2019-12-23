@@ -992,9 +992,112 @@ protected void finishRefresh() {
 }
 ```
 
+# Spring的调用栈
 
+1. org.springframework.context.support.AbstractApplicationContext#refresh
 
+  2. org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization
 
+    3. org.springframework.beans.factory.config.ConfigurableListableBeanFactory#preInstantiateSingletons
+
+      4. org.springframework.beans.factory.support.AbstractBeanFactory#getBean(java.lang.String)	
+
+        5. org.springframework.beans.factory.support.AbstractBeanFactory#createBean
+
+          6. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation
+
+            7. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInstantiation
+
+              8. org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+
+                > 回调所有的`postProcessBeforeInstantiation`方法
+
+        6. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean
+
+          7. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBeanInstance
+
+            8. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#instantiateBean
+
+              > 在方法中，Spring会决定使用哪个构造方法去实例化bean
+              >
+              > 在这个方法中，会调用bean的构造方法
+
+          8. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyMergedBeanDefinitionPostProcessors
+
+             1. org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition
+
+                > 回调所有的`postProcessMergedBeanDefinition`方法
+
+          9. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean
+
+            9. org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation
+
+              > 回调所有的`postProcessAfterInstantiation`方法
+
+            10. org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor#postProcessProperties
+
+              > 回调所有的`postProcessProperties`方法
+
+          10. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(String, Object,RootBeanDefinition)
+
+            10. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInitialization
+          
+    11. org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization
+          
+      > 回调所有的`postProcessBeforeInitialization`方法:
+              >
+      > 1. 首先回调实现了InstantiationAwareBeanPostProcessor接口的`postProcessBeforeInitialization`方法
+                > 2. 在回调InitDestroyAnnotationBeanPostProcessor类的`postProcessBeforeInitialization`方法（即有标注@PostConstruct注解的方法）
+
+            11. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods
+
+              12. org.springframework.beans.factory.InitializingBean#afterPropertiesSet
+
+                > 回调实现了InitializingBean接口的`afterPropertiesSet`方法
+
+            12. org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsAfterInitialization
+
+              13. org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization
+  
+                > 回调所有的`postProcessAfterInitialization`方法
+          
+        
+  
+2. org.springframework.context.support.AbstractApplicationContext#close
+
+   1. org.springframework.context.support.AbstractApplicationContext#destroyBeans
+
+      1. org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons
+
+         1. org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#destroySingletons
+
+            1. org.springframework.beans.factory.support.DisposableBeanAdapter#destroy
+
+               1. org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor#postProcessBeforeDestruction
+
+                  > 回调所有的`postProcessBeforeDestruction`方法（即有标注@PreDestroy注解的方法）
+
+# 9个BeanPostProcessor的执行顺序
+
+1. 回调所有的`postProcessBeforeInstantiation`
+
+   > 在此期间执行bean的构造方法
+
+2. 回调所有的`postProcessMergedBeanDefinition`
+
+3. 回调所有的`postProcessAfterInstantiation`
+
+4. 回调所有的`postProcessProperties`
+
+5. 回调所有的`postProcessBeforeInitialization`
+
+   
+
+6. 回调所有的`afterPropertiesSet`
+
+7. 回调所有的`postProcessAfterInitialization`
+
+8. 当调用close方法时，回调所有的`postProcessBeforeDestruction`
 
 
 

@@ -544,4 +544,80 @@ public void afterLog(){
    > after log
    > afterReturning log:hello
 
-# 自定义注解,并使用AOP进行切面使用,可实现参数校验或事务等
+# 获取切面方法中标注的注解
+
+```java
+@Around("transactionPointCut()")
+public Object transactionHandler(ProceedingJoinPoint pjp) throws Throwable {
+  //拦截的实体类
+  Object target = pjp.getTarget();
+  //拦截的方法名称
+  String methodName = pjp.getSignature().getName();
+  //拦截的放参数类型
+  Class[] parameterTypes = ((MethodSignature)pjp.getSignature()).getMethod().getParameterTypes();
+  //获得parameterType参数类型的方法
+  Method method = target.getClass().getMethod(methodName, parameterTypes);
+  Transactional annotation = method.getAnnotation(Transactional.class);
+  if(annotation==null){
+    log.info("请在将@Transactional注解和@TodoRelated注解一起使用，不然有可能会导致数据不一致的情况！！！");
+  }
+  //...
+}
+```
+
+# 自定义注解,并实现参数校验和将参数发送到mq
+
+定义自定义注解
+
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface TodoRelated {
+}
+```
+
+标注自定义注解
+
+```java
+@TodoRelated
+public void test(){
+}
+```
+
+定义切面
+
+```java
+@Aspect
+@Component
+public class TodoAop {
+
+  //@TodoRelated注解的切面
+  @Pointcut("@annotation(com.lyj.datacenter.annotation.TodoRelated))")
+  public void transactionPointCut() {}
+
+  //事务切入点的环绕通知
+  @Around("transactionPointCut()")
+  public Object transactionHandler(ProceedingJoinPoint pjp) throws Throwable {
+    args = pjp.getArgs();
+    //规范参数
+    if (args.length != 1) {//参数不为1，则抛出异常
+      throw new BusinessException("参数不唯一，待验证");
+    }
+    if(!(args[0] instanceof TodoInstanceDO || args[0] instanceof List)){//如果参数不为TodoInstanceDO或者为List
+      throw new BusinessException("参数类型异常，待验证");
+    }
+
+    Object proceed = pjp.proceed();//如果抛出异常，则不做以下的任何操作（发送消息或缓存消息）
+
+    //如果没有返回值，则执行失败，那么就不发送mq
+    if((int)proceed==0){
+      return proceed;
+    }
+
+    //如果执行成功，则将参数数据发送到mq中
+    mqService.send(args[0]);
+  }
+}
+```
+

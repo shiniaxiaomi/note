@@ -726,6 +726,17 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 }
 ```
 
+## 统一异常处理
+
+```java
+@ControllerAdvice
+public class MyHandler {
+  @ExceptionHandler(Exception.class)
+  public void handler(HttpServletRequest request, HttpServletResponse response, Exception e){
+    System.out.println("异常！");
+}
+```
+
 # 参考文档
 
 [SpringBoot官方文档](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/html/)

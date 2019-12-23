@@ -156,3 +156,12 @@ find Documents/note -name Java*
 ## 使用Finder的智能搜索
 
 使用Finder新建智能文件夹进行准确的搜索（名称+内容）
+
+# 其他设置
+
+## 主次屏设置
+
+只需要将小屏上方的白条拖到大屏上方即可
+
+![image-20191223175835975](/Users/yingjie.lu/Documents/note/.img/image-20191223175835975.png)
+
