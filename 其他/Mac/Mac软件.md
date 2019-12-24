@@ -4,6 +4,10 @@
 
 
 
+输入法推荐使用百度输入法，可以定制化的比较多
+
+
+
 WiFi测速软件：Speedtest（AppStore中即可下载），尽管好用，用完赶紧删除掉即可（感觉很占用CPU）
 
 Markdown编辑器：[Typora](http://www.pc6.com/mac/132924.html)

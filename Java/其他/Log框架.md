@@ -119,7 +119,7 @@ LogBack 被分为3个组件：`logback-core`、`logback-classic` 和 `logback-ac
 
 ## 日志级别
 
-日志级别：ERROR, WARN, INFO, DEBUG, TRACE
+日志级别：error > warn > info > debug > trace
 
 默认的日志输出级别为info
 
