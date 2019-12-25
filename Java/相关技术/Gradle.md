@@ -379,7 +379,7 @@ uploadArchives { //指定jar生成后发布到的仓库地址
 
 ## 在idea中构建项目并运行
 
-首次创建项目后，idea可能会提示你需要安装插件，本质上就是下载`gradle-5.2.1-all.zip`压缩包，然后这个下载地址时定义在项目的`gradle/wrapper/gradle-wrapper.properties`文件中的`distributionUrl`属性值中，如果我们通过其他途径将该压缩包下载好，然后放在我们本地，将本地的压缩包路径复制到`distributionUrl`属性值中即可，那么在直接运行java代码时，gradle就会直接通过build.gradle构建脚本构建，然后在运行对应的java文件
+首次创建项目后，idea可能会提示你需要安装插件，本质上就是从`https://services.gradle.org/distributions/gradle-5.2.1-all.zip`网址下载`gradle-5.2.1-all.zip`压缩包，然后这个下载地址时定义在项目的`gradle/wrapper/gradle-wrapper.properties`文件中的`distributionUrl`属性值中，如果我们通过其他途径将该压缩包下载好，然后放在我们本地，将本地的压缩包路径复制到`distributionUrl`属性值中即可，那么在直接运行java代码时，gradle就会直接通过build.gradle构建脚本构建，然后在运行对应的java文件
 
 > 在属性中执行本地路径时只要在路径前加上`file://`前缀
 >
