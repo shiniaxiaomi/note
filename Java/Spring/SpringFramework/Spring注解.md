@@ -67,7 +67,96 @@ Spring中的相关注解
 
 - @Qualifier
 
-  
+  如果使用@Autowired会按照类型注入,但是当spring上下文中存在多个同类型的bean时,就需要使用@Qualifier指定在多个同类型的bean中再通过名称匹配注入
+
+  示例:
+
+  ```java
+  @Autowired   
+  @Qualifier("userServiceImpl")   
+  public IUserService userService;   
+  ```
+
+  或
+
+  ```java
+  @Autowired   
+  public void setUserDao(@Qualifier("userDao") UserDao userDao) {   
+      this.userDao = userDao;   
+  }  
+  ```
+
+# 总结
+
+## 定义bean的注解
+
+- @Controller
+
+  定义控制层Bean
+
+  通过`@Controller("Bean的名称")`可以定义控制层bean的名称
+
+- @Service 
+
+  定义业务层Bean
+
+  通过`@Service("Bean的名称")`可以定义业务层bean的名称
+
+- @Repository 
+
+  定义DAO层Bean
+
+  通过`@Repository("Bean的名称")`可以定义DAO层Bean的名称
+
+- @Component  
+
+  定义Bean, 不好归类时使用
+
+  通过`@Component("Bean的名称")`可以定义Bean的名称
+
+## 自动装配bean的注解
+
+- @Autowired
+
+  默认按类型注入,如果没匹配,则报错
+
+- @Qualifier
+
+  一般作为@Autowired注解的修饰(@Autowired和@Qualifier一起使用),在存在多个同类型bean时通过@Qualifier指定的名称去注入
+
+- @Resource
+
+  默认按照名称注入,如果没匹配,则报错
+
+  可以通过名称和类型属性进行选择性的注入
+
+## 定义Bean的作用域和生命过程注解
+
+- @Scope("prototype")
+
+  值有:singleton,prototype,session,request,session,globalSession
+
+  设置bean的作用域为原型
+
+  如果不标注,则默认为单例
+
+- @PostConstruct 
+
+  标注在方法上,在bean初始化之前执行
+
+- @PreDestroy 
+
+  标注在方法上,在bean销毁之前执行
+
+## 声明式事务注解
+
+- @Transactional
+
+  标注该注解的方法在抛出异常时能够进行回滚操作
+
+  默认捕获的是运行时异常
+
+  如果只需要指定异常类型,则可以使用如`@Transactional(Exception.class)`
 
 
 
