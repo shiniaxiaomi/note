@@ -902,6 +902,9 @@ protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable B
 protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
   //...
   
+  //执行实现了Aware接口的方法,如实现了BeanFactoryAware,BeanNameAware等接口的方法
+  invokeAwareMethods(beanName, bean);
+  
   //保存bean实例的引用
   Object wrappedBean = bean;
   //如果beanDefinition为null或者bean不是合成的
@@ -933,7 +936,8 @@ protected Object initializeBean(final String beanName, final Object bean, @Nulla
 回调postProcessBeforeInitialization(初始化方法之前回调):
 
 1. 回调自定义的后置处理器
-2. 回调处理@PostStructure注解的后置处理器(InitDestroyAnnotationBeanPostProcessor)等
+2. 回调处理@PostStructure注解的后置处理器(InitDestroyAnnotationBeanPostProcessor的postProcessBeforeInitialization方法)等
+3. 回调实现了`ApplicationContextAware`等接口的方法
 
 ##### id:14,pid:12---invokeInitMethods(beanName, wrappedBean, mbd)
 
@@ -972,7 +976,27 @@ protected void finishRefresh() {
 
 回调`ApplicationListener`的`onApplicationEvent`方法
 
+## 当调用容器的close()方法时
 
+`close()`==>`doClose()`==>`destroyBeans()`==>`getBeanFactory().destroySingletons()`==>`super.destroySingletons()`==>`destroySingleton(disposableBeanNames[i])`==>`super.destroySingleton(beanName)`==>`destroyBean(beanName, disposableBean)`==>`bean.destroy()`
+
+在`bean.destroy()`的方法中:
+
+```java
+public void destroy() {
+  //在这里面调用了@preDestroy注解标注的方法
+  for (DestructionAwareBeanPostProcessor processor : this.beanPostProcessors) {
+    processor.postProcessBeforeDestruction(this.bean, this.beanName);
+  }
+  
+  //...
+  
+  //在这里调用了实现了DisposableBean接口的destroy()方法
+  ((DisposableBean) this.bean).destroy();
+
+  //...
+}
+```
 
 # 精简的初始化过程
 
@@ -1016,6 +1040,10 @@ protected void finishRefresh() {
 
     - 调用`initializeBean(beanName, exposedObject, mbd)`方法来执行bean的初始化方法和一些回调
 
+      - 调用invokeAwareMethods方法,执行Aware接口的一些方法,如`BeanFactoryAware`,`BeanNameAware`等
+
+        > 如果bean实现了这些接口,那么在这个方法中,接口中实现的方法将会被调用
+
       - 调用`applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName)`方法来回调`postProcessBeforeInitialization`
 
         > 注意:
@@ -1024,6 +1052,8 @@ protected void finishRefresh() {
         >
         > 然后会调用处理@PostStructure注解的后置处理器(InitDestroyAnnotationBeanPostProcessor),默认存在的后置处理器
 
+        > 如果当前的bean实现了`ApplicationContextAware`接口,那么在循环到`ApplicationContextAwareProcessor`后置处理器时,会调用`invokeAwareInterfaces(bean)`,在该方法中会回调实现了接口的方法(setApplicationContext),该方法可以将ApplicationContext引用保存起来,以便之后使用
+
       - 执行`invokeInitMethods(beanName, wrappedBean, mbd)`方法,来执行实现了InitialBean接口的方法:afterPropertiesSet
 
       - 调用`applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName)`方法来回调`postProcessAfterInitialization`
@@ -1031,6 +1061,47 @@ protected void finishRefresh() {
   - 回调所有`SmartInitializingSingleton`类型的`afterSingletonsInstantiated`方法
 
 - 调用`publishEvent(new ContextRefreshedEvent(this));`方法来发送容器初始化成功事件,会回调实现了`ApplicationListener`接口的`onApplicationEvent`方法
+- 在容器调用close方法时,会执行beanFactory的`destroySingletons`方法,会调用`destroySingleton(disposableBeanNames[i])`把所有的单实例bean都进行销毁,然后会调用`InitDestroyAnnotationBeanPostProcessor`,执行`postProcessBeforeDestruction`方法,然后会调用了使用`@PreDestroy`注解标注的方法,然后调用实现了`DisposableBean`接口的`destroy()`方法,然后单实例bean就会被销毁了
+
+# 后置处理器的回调
+
+1. `postProcessBeanDefinitionRegistry`
+
+2. `postProcessBeforeInstantiation`
+
+> 调用bean的构造方法
+
+3. `postProcessMergedBeanDefinition`
+
+4. `postProcessAfterInstantiation`
+
+5. `postProcessProperties`
+
+> 调用BeanFactoryAware接口的setBeanFactory方法
+
+> 调用ApplicationContextAware接口的setApplicationContext方法
+
+6. `postProcessBeforeInitialization`
+
+> 执行@PostConstruct注解标注的方法
+
+> 调用InitializingBean接口的afterPropertiesSet方法(bean的初始化方法)
+
+7. `postProcessAfterInitialization`
+
+> 调用ApplicationListener接口的onApplicationEvent方法
+
+> 执行@PreDestroy注解标注的方法
+
+> 调用DisposableBean接口的Destroy方法
+
+# springIOC初始化流程图
+
+![springIOC的初始化过程](/Users/yingjie.lu/Documents/note/.img/springIOC的初始化过程.svg)
+
+# 总结
+
+可以继承`InstantiationAwareBeanPostProcessorAdapter`类来替代实现`InstantiationAwareBeanPostProcessor`接口,使用起来会更加的方便
 
 
 
@@ -1042,7 +1113,19 @@ protected void finishRefresh() {
 
 
 
-# 九处后置处理器回调
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
