@@ -31,6 +31,7 @@
      postProcessBeanFactory(beanFactory);
      
      //实例化并注册自定义的BeanDefinitionRegistryPostProcessor,并执行对应的回调===============重要
+     //在这里通过执行Configxxx了对类的所有扫描并解析生成beanDefinition放到map中
      invokeBeanFactoryPostProcessors(beanFactory);
      
      //实例化并注册自定义的BeanPostProcessors,并执行对应的回调===============重要
@@ -48,7 +49,7 @@
      //注册所有的事件监听器(包括早期的事件监听器和实现了ApplicationListener接口的事件监听器)
      registerListeners();
      
-     //实例化所有剩下的非懒加载的单例bean(该方法)===============重要
+     //实例化所有剩下的非懒加载的单例bean(该方法),并解决了bean的循环依赖问题===============重要
      finishBeanFactoryInitialization(beanFactory);
     
      //最后一步,发送应用启动完成的消息事件
@@ -67,8 +68,8 @@ public static void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFacto
 
   Set<String> processedBeans = new HashSet<>();
 
-  //++++++++++++先执行类型为BeanDefinitionRegistry的回调++++++++++++
-  //如果beanFactory属于BeanDefinitionRegistry类型
+  //+++++++++++++++先执行类型为BeanDefinitionRegistry的回调(进行对所有类的扫描和解析,并生成beanDefinition放到map中)+++++++++++++++
+		//如果beanFactory属于BeanDefinitionRegistry类型
   if (beanFactory instanceof BeanDefinitionRegistry) {
     BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
     List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
@@ -108,6 +109,7 @@ public static void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFacto
     //将所有的排好序并且优先级较高的先全部添加到registryProcessors中
     registryProcessors.addAll(currentRegistryProcessors);
     //执行优先级较高的postProcessBeanDefinitionRegistry回调
+    //=========主要执行ConfigureClassPostProcessor,用于处理@Configure注解的配置类==============
     invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
     //执行完之后,将已经执行的postProcessor全部清空
     currentRegistryProcessors.clear();
@@ -171,37 +173,163 @@ public static void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFacto
 >
 > 优先级大小: 实现了PriorityOrdered接口的>实现Ordered接口的>默认的
 
-接下来,在`org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors`中就会回调我们自定义的`BeanDefinitionRegistryPostProcessor`的具体方法:
+1. 在`invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);`方法回调中,存在之前创建的`ConfigureClassPostProcessor`回调其`postProcessBeanDefinitionRegistry`方法,该方法是解析我们的配置类(即标注有@Configure注解的类)
 
-```java
-@Component
-public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+   以下是该类重写的方法:
 
-  /**
-	 * 执行顺序:1
-	 * 可以添加或修改BeanDefinition
-	 * 在执行该方法时,所有常规的bean都已经加载并添加到BeanDefinitionMap中,但是此时的bean还未被实例化,
-	 * 所以,在该方法中,允许修改已经添加到BeanDefinitionMap中的bean的定义,或者是添加我们自己的bean的定义,
-	 * 然后在bean的实例化时,添加或修改的bean都会生效,并被spring所管理
-	 * @param registry 上下文的beanDefinitionMap(bean定义的注册表)
-	 */
-  @Override
-  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-    System.out.println("postProcessBeanDefinitionRegistry");
-  }
+   ```java
+   @Override
+   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+     //...
+     processConfigBeanDefinitions(registry);//真正的执行类的扫描和解析
+   }
+   ```
 
-  /**
-	 * 执行顺序:2
-	 * 功能同上述方法
-	 * 在执行该方法时,所有bean定义都已加载，但还没有实例化bean;
-	 * @param beanFactory 上下文的beanFactory
-	 */
-  @Override
-  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-    System.out.println("postProcessBeanFactory");
-  }
-}
-```
+   在`processConfigBeanDefinitions`方法中:
+
+   ```java
+   public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
+     List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
+     String[] candidateNames = registry.getBeanDefinitionNames();
+   
+     //...
+   
+     //如果没有找到@Configuration注解，则立即返回
+     if (configCandidates.isEmpty()) {
+       return;
+     }
+   
+     //将标注有@Configure注解的类进行排序
+     configCandidates.sort((bd1, bd2) -> {
+       int i1 = ConfigurationClassUtils.getOrder(bd1.getBeanDefinition());
+       int i2 = ConfigurationClassUtils.getOrder(bd2.getBeanDefinition());
+       return Integer.compare(i1, i2);
+     });
+   
+     //生成配置类的beanName
+     SingletonBeanRegistry sbr = null;
+     if (registry instanceof SingletonBeanRegistry) {
+       sbr = (SingletonBeanRegistry) registry;
+       if (!this.localBeanNameGeneratorSet) {
+         BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(
+           AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+         if (generator != null) {
+           this.componentScanBeanNameGenerator = generator;
+           this.importBeanNameGenerator = generator;
+         }
+       }
+     }
+   
+     //...
+   
+     //生成@Configuration注解的解析类
+     ConfigurationClassParser parser = new ConfigurationClassParser(
+       this.metadataReaderFactory, this.problemReporter, this.environment,
+       this.resourceLoader, this.componentScanBeanNameGenerator, registry);
+   
+     //保存还未解析的配置类
+     Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
+     //保存已经解析过的配置类
+     Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
+   
+     //进行循环并递归解析,直到candidates集合为空
+     do {
+       //包扫描并解析,然后将beanDefinition放到map中
+       parser.parse(candidates);
+       //校验
+       parser.validate();
+   
+       Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
+       configClasses.removeAll(alreadyParsed);
+   
+       //注册配置类,并解析配置类,将配置类中需要扫描,导入等一些的bean都进行递归的解析
+       if (this.reader == null) {
+         this.reader = new ConfigurationClassBeanDefinitionReader(
+           registry, this.sourceExtractor, this.resourceLoader, this.environment,
+           this.importBeanNameGenerator, parser.getImportRegistry());
+       }
+       //读取配置类，并向注册中心注册beanDefinition
+       this.reader.loadBeanDefinitions(configClasses);
+       //标记已经添加的配置类
+       alreadyParsed.addAll(configClasses);
+   
+       candidates.clear();
+       //如果目前的beanDefinition个数大于原始的beanName个数
+       if (registry.getBeanDefinitionCount() > candidateNames.length) {
+         //获取目前的beanDefinition
+         String[] newCandidateNames = registry.getBeanDefinitionNames();
+         //获取以前的beanName
+         Set<String> oldCandidateNames = new HashSet<>(Arrays.asList(candidateNames));
+         //创建一个存放已经解析过的类的集合
+         Set<String> alreadyParsedClasses = new HashSet<>();
+         for (ConfigurationClass configurationClass : alreadyParsed) {
+           //将已经解析过的类存放到alreadyParsedClasses集合中
+           alreadyParsedClasses.add(configurationClass.getMetadata().getClassName());
+         }
+         //遍历目前的所有beanDefinition
+         for (String candidateName : newCandidateNames) {
+           //如果还未解析过
+           if (!oldCandidateNames.contains(candidateName)) {
+             //获取当前bean的beanDefinition
+             BeanDefinition bd = registry.getBeanDefinition(candidateName);
+             //如果当前bean是配置类 并且 还未被解析
+             if (ConfigurationClassUtils.checkConfigurationClassCandidate(bd, this.metadataReaderFactory) &&
+                 !alreadyParsedClasses.contains(bd.getBeanClassName())) {
+               //将bean的beanDefinition添加到candidates集合中,等待下一轮循环时再次解析
+               candidates.add(new BeanDefinitionHolder(bd, candidateName));
+             }
+           }
+         }
+         candidateNames = newCandidateNames;
+       }
+     }
+     while (!candidates.isEmpty());
+   
+     //将ImportRegistry注册为bean，用来实现@Configuration类的@Import注解
+     if (sbr != null && !sbr.containsSingleton(IMPORT_REGISTRY_BEAN_NAME)) {
+       sbr.registerSingleton(IMPORT_REGISTRY_BEAN_NAME, parser.getImportRegistry());
+     }
+   
+     if (this.metadataReaderFactory instanceof CachingMetadataReaderFactory) {
+       //清除缓存
+       ((CachingMetadataReaderFactory) this.metadataReaderFactory).clearCache();
+     }
+   }
+   ```
+
+2. 自定义的`BeanDefinitionRegistryPostProcessor`
+
+   在`org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors`中就会回调我们自定义的`BeanDefinitionRegistryPostProcessor`的具体方法:
+
+   ```java
+   @Component
+   public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+   
+     /**
+   	 * 执行顺序:1
+   	 * 可以添加或修改BeanDefinition
+   	 * 在执行该方法时,所有常规的bean都已经加载并添加到BeanDefinitionMap中,但是此时的bean还未被实例化,
+   	 * 所以,在该方法中,允许修改已经添加到BeanDefinitionMap中的bean的定义,或者是添加我们自己的bean的定义,
+   	 * 然后在bean的实例化时,添加或修改的bean都会生效,并被spring所管理
+   	 * @param registry 上下文的beanDefinitionMap(bean定义的注册表)
+   	 */
+     @Override
+     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+       System.out.println("postProcessBeanDefinitionRegistry");
+     }
+   
+     /**
+   	 * 执行顺序:2
+   	 * 功能同上述方法
+   	 * 在执行该方法时,所有bean定义都已加载，但还没有实例化bean;
+   	 * @param beanFactory 上下文的beanFactory
+   	 */
+     @Override
+     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+       System.out.println("postProcessBeanFactory");
+     }
+   }
+   ```
 
 ## id:2---registerBeanPostProcessors(beanFactory)
 
@@ -1097,7 +1225,179 @@ public void destroy() {
 
 # springIOC初始化流程图
 
-![springIOC的初始化过程](/Users/yingjie.lu/Documents/note/.img/springIOC的初始化过程.svg)
+![springIOC的初始化过程](/Users/yingjie.lu/Documents/note/.img/springIOC的初始化过程-8314350.svg)
+
+# bean的循环引用问题
+
+spring是通过一级缓存和二级缓存来解决bean的循环引用问题,即一级缓存则为狭义的IOC容器,而二级缓存则为保存当前正在创建的bean(即存在缓存引用的bean)
+
+**在bean的生命周期中,在bean进行属性的自动注入的时候,会调用`AutowiredAnnotationBeanPostProcessor`后置处理器的`postProcessProperties`回调方法来进行属性注入,并解决循环依赖的问题**
+
+> org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor#postProcessProperties
+
+该后置处理器的方法大致如下:
+
+```java
+@Override
+public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
+  InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
+  metadata.inject(bean, beanName, pvs);//注入属性
+  return pvs;
+}
+```
+
+在`inject()`方法中的核心代码为:
+
+```java
+@Override
+protected void inject(Object bean, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
+  Field field = (Field) this.member;
+  Object value;
+  if (this.cached) {
+    value = resolvedCachedArgument(beanName, this.cachedFieldValue);
+  }
+  else {
+    //获取需要注入属性值的依赖
+    DependencyDescriptor desc = new DependencyDescriptor(field, this.required);
+    
+    //...
+    //=====================重要=================
+    //解决属性的依赖问题(获取到了需要注入属性的值,即使是有循环引用)
+    value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
+    
+    //...
+  }
+  
+  //如果拿到了要注入的值,则进行注入(如果是循环引用,因为有了之前的处理,然后就没有继续循环的调用创建循环依赖的bean,而是返回了一个属性值为null的循环依赖bean,先进行设值)
+  if (value != null) {
+    //开放属性的权限
+    ReflectionUtils.makeAccessible(field);
+    //将value的值设置的bean的字段中
+    field.set(bean, value);
+  }
+}
+```
+
+在`resolveDependency()`方法中会调用`doResolveDependency()`方法,去解决属性的依赖问题
+
+> org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency
+
+在`doResolveDependency()`方法中的核心内容如下:
+
+```java
+public Object doResolveDependency(DependencyDescriptor descriptor, @Nullable String beanName,
+                                  @Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException {
+  //获取将要注入的属性(注入点，指向方法/构造函数参数或字段)
+  InjectionPoint previousInjectionPoint = ConstructorResolver.setCurrentInjectionPoint(descriptor);
+  try {
+    //...
+    
+    //获取自动注入属性的候选
+    //获取到需要注入的属性
+    Map<String, Object> matchingBeans = findAutowireCandidates(beanName, type, descriptor);
+    if (matchingBeans.isEmpty()) {
+      if (isRequired(descriptor)) {
+        raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
+      }
+      return null;
+    }
+
+    String autowiredBeanName;
+    Object instanceCandidate;
+    //如果有多个,则需要在进行判断
+    //====(先按名称进行自动注入,如果没有名称,则按照类型自动注入)=====
+    if (matchingBeans.size() > 1) {
+      //获取自动注入的指定的名称
+      autowiredBeanName = determineAutowireCandidate(matchingBeans, descriptor);
+      //如果没有名称,则按照类型进行注入属性
+      if (autowiredBeanName == null) {
+        if (isRequired(descriptor) || !indicatesMultipleBeans(type)) {
+          return descriptor.resolveNotUnique(descriptor.getResolvableType(), matchingBeans);
+        }
+        else {
+          return null;
+        }
+      }
+      //如果有名称,则优先按照名称进行注入
+      instanceCandidate = matchingBeans.get(autowiredBeanName);
+    }
+    else {
+      //如果只有一个匹配的
+      Map.Entry<String, Object> entry = matchingBeans.entrySet().iterator().next();
+      //获取bean的名称
+      autowiredBeanName = entry.getKey();
+      //获取bean的实体
+      instanceCandidate = entry.getValue();
+    }
+
+    if (autowiredBeanNames != null) {
+      autowiredBeanNames.add(autowiredBeanName);
+    }
+    if (instanceCandidate instanceof Class) {
+      //==============================解决循环引用的问题==============================
+      //在resolveCandidate()方法中会调用beanFactory.getBean(beanName)来返回对应的bean
+      //大致流程为: 先去单例缓存中获取,如果没有,则进行创建(在创建过程中又会进行属性装配,然后在装配过程中又会调用该方法)
+      //主要的核心内容是: 
+      //去单例缓存中获取对应bean(getSingleton()方法)
+      //在该方法中,先尝试从一级缓存中获取(已经创建好的bean),如果没有
+      //再尝试从二级缓存中获取(正在创建的bean,即有循环引用),如果没有获取到,并且允许循环引用
+      //则从单例工厂SingletonFactorys中获取对应的bean工厂,然后创建对应的bean,
+      //然后将bean保存到二级缓存中,并将其从单例工厂中删除,并返回通过单例工厂创建的bean
+      instanceCandidate = descriptor.resolveCandidate(autowiredBeanName, type, this);
+    }
+    Object result = instanceCandidate;
+    if (result instanceof NullBean) {
+      if (isRequired(descriptor)) {
+        raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
+      }
+      result = null;
+    }
+    return result;
+  }
+  finally {
+    //设置当前正在创建的bean(如果已经不是正在创建,则删除集合中保存这正在创建的bean)
+    ConstructorResolver.setCurrentInjectionPoint(previousInjectionPoint);
+  }
+}
+```
+
+在`resolveCandidate()`方法中最终会调用最重要的`getSingleton(beanName, true)`方法,大致核心代码如下:
+
+```java
+//allowEarlyReference为表示是否允许循环引用,spring是默认支持循环引用的
+protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+  //从保存单实例bean的ConcurrentHashMap中获取实例
+  Object singletonObject = this.singletonObjects.get(beanName);//一级缓存
+  //如果没有获取到,并且该bean当前正在创建状态(说明是循环引用)
+  if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+    synchronized (this.singletonObjects) {
+      //先尝试从二级缓存中获取对应的bean
+      singletonObject = this.earlySingletonObjects.get(beanName);//二级缓存
+      //如果没有获取到 并且 允许循环引用
+      if (singletonObject == null && allowEarlyReference) {
+        //从缓存单例工厂的HashMap中获取对应的单例工厂
+        ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);//单例工厂
+        //如果获取到了单例工厂
+        if (singletonFactory != null) {
+          //从单例工厂获取一个对应的单实例bean
+          //在从单例工厂中创建的bean可以返回的是一个代理类,这样,就可以在循环引用中注入代理类
+          //(getObject()方法是可以自定义的,因此可以在获取bean是可以返回一个代理类)
+          //获取到对应的bean实例之后,需要将其进行缓存到二级缓存中,然后将其从singletonFactory中删除(因为他是单例的,不需要每次都使用工厂创建,因为已经缓存了)
+          singletonObject = singletonFactory.getObject();
+          //将从单例工厂中创建的bean缓存到二级缓存中,在下一次来获取时,可以在之前就从二级缓存中直接获取,而不用通过单例工厂在创建依次
+          this.earlySingletonObjects.put(beanName, singletonObject);
+          //将缓存单例工厂的HashMap中的对应的单例工厂删除
+          this.singletonFactories.remove(beanName);
+        }
+      }
+    }
+  }
+  //返回对应的单例对象
+  return singletonObject;
+}
+```
+
+> 正是因为有了二级缓存的存在(保存当前正在创建bean),所以才避免了循环引用bean时会进行循环创建的问题
 
 # 总结
 
