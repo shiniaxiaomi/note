@@ -1,3 +1,14 @@
+# 添加事务的依赖
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-tx</artifactId>
+    <version>5.2.2.RELEASE</version>
+</dependency>
+```
+
 # 事务的基本原理
 
 Spring事务的本质其实就是数据库对事务的支持,使用[JDBC](D:\note\Java\数据库\JDBC.md)的事务管理机制,就是利用java.sql.Connection对象完成对事务的提交
