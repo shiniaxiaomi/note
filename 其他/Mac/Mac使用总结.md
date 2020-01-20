@@ -165,3 +165,6 @@ find Documents/note -name Java*
 
 ![image-20191223175835975](/Users/yingjie.lu/Documents/note/.img/image-20191223175835975.png)
 
+# 修改host
+
+sudo vi /etc/hosts
