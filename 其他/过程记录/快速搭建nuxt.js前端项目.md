@@ -1,4 +1,35 @@
+# 快速搭建nuxt前端项目
+
+[参考网址](https://zh.nuxtjs.org/guide/installation)
+
+```shell
+npx create-nuxt-app <项目名>
+```
+
+选择你所需要的内容，如下
+
+![image-20200123192948214](/Users/yingjie.lu/Documents/note/.img/image-20200123192948214.png)
+
+安装成功之后，就会创建好对应的文件结构，进入对应的文件夹，如：
+
+```shell
+cd blog-ui
+```
+
+使用命令运行
+
+```shell
+npm run dev
+```
+
+
+
+
+
+---
+
 # 安装nuxt
+
 `vue init nuxt-community/starter-template  <project-name>`
 
 # 进入项目安装依赖
