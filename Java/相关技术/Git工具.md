@@ -442,7 +442,7 @@ export LESSHARESET=utf-8
 
 ## 解决git账号更改导致不能push和pull
 
-当出现以下报错时，则说明当前项目或系统中git的用户名有冲突：
+当出现以下报错时，则说明当前项目或系统中git**的用户名有冲突**：
 
 ```properties
 remote: HTTP Basic: Access denied
