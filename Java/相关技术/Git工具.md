@@ -134,6 +134,36 @@ b1416c1 (origin/master) HEAD@{10}: commit (initial): init
 
 > 在本地了创建了一个dev分支
 
+## 远程创建新分支
+
+> 将本地分支推送并在远程创建分支，简单来说就是：`git push origin <分支名称>`
+
+现在本地创建新分支(假设我目前在develop分支)
+
+```shell
+git branch -b release 
+```
+
+查看一下分支情况：`git branch -a`
+
+```shell
+$ git branch -a
+  develop
+  master
+* release
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/develop
+  remotes/origin/master
+```
+
+> 当前指向本地的release分支
+
+将本地的release分支推送到远程：
+
+```shell
+git push origin release
+```
+
 ## 切换本地分支
 
 `git checkout <分支名>`
@@ -163,6 +193,18 @@ b1416c1 (origin/master) HEAD@{10}: commit (initial): init
 `git branch -d <本地分支名>`
 
 示例：`git branch -d dev`
+
+## 删除远程分支
+
+`git push origin --d [分支名称]`
+
+## 重命名本地分支名称
+
+`git branch -m <旧分支名> <新分支名>`
+
+## 重命名远程分支名称
+
+先将本地分支重命名，然后推送到远程，然后将远程旧分支删除即可
 
 ## 合并本地分支
 
@@ -368,7 +410,7 @@ git每次提交串成一条时间线,这条时间线就是一个分支
 
 ## 解决gitbash的中文乱码
 
-编辑`C:\Program Files (x86)\Git\etc\gitconfig`文件，在文件末尾增加以下内容：
+编辑`C:\Program Files\Git\etc\gitconfig`文件，在文件末尾增加以下内容：
 
 ```properties
 [gui]  
@@ -379,20 +421,20 @@ git每次提交串成一条时间线,这条时间线就是一个分支
     pathnameencoding = utf-8  #支持中文路径 
 ```
 
-编辑`C:\Program Files (x86)\Git\etc\git-completion.bash`文件，在文件末尾增加以下内容：
+编辑`C:\Program Files\Git\etc\git-completion.bash`文件，在文件末尾增加以下内容：
 
 ```properties
 alias ls='ls --show-control-chars --color=auto'  #ls能够正常显示中文 
 ```
 
-编辑`C:\Program Files (x86)\Git\etc\inputrc`文件，修改output-meta和convert-meta属性值：
+编辑`C:\Program Files\Git\etc\inputrc`文件，修改output-meta和convert-meta属性值：
 
 ```properties
 set output-meta on  #bash可以正常输入中文  
 set convert-meta off  
 ```
 
-编辑`C:\Program Files (x86)\Git\etc\profile`文件，在文件末尾添加如下内容：
+编辑`C:\Program Files\Git\etc\profile`文件，在文件末尾添加如下内容：
 
 ```properties
 export LESSHARESET=utf-8  
