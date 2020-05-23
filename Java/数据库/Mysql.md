@@ -66,6 +66,10 @@
      # 输入你的密码即可
      ```
 
+- 在windows下
+  - 关闭msyql：`mysqld-nt -uroot -p shutdown`
+  - 在命令行启动mysql：`mysqld --console`
+
 # 登入
 
 ```shell
@@ -615,11 +619,55 @@ https://www.runoob.com/mysql/mysql-operator.html
 
 
 
+# 优化
+
+查看表的数据存储情况：
+
+表的基本信息都存储在`information_schema`这一个数据库中
+
+在`information_schema`中的`TABLES`表中，存放了所有数据库表的基本信息，里面包含了`table_name`,`data_length`,`index_length`等重要信息
+
+可以通过一下sql进行查看：
+
+```sql
+use information_schema;
+select * from TABLES;
+select * from TABLES where table_name='blog'
+```
 
 
 
+---
 
 
+
+## 表空间
+
+使用optimize命令对已存在的表进行表空间的优化
+
+命令如下：
+
+```sql
+optimize table table_name;
+例如：
+optimize table `blog`;
+```
+
+在执行`optimize`命令的时候会提示一下报错：
+
+```shell
+Table does not support optimize, doing recreate + analyze instead
+```
+
+参考官方文档的内容：
+
+https://dev.mysql.com/doc/refman/5.7/en/optimize-table.html
+
+```shell
+By default, OPTIMIZE TABLE does not work for tables created using any other storage engine and returns a result indicating this lack of support. You can make OPTIMIZE TABLE work for other storage engines by starting mysqld with the --skip-new option. In this case, OPTIMIZE TABLE is just mapped to ALTER TABLE.
+```
+
+我们需要重启mysql服务并指定`--skip-new`参数，然后就解决问题
 
 
 
