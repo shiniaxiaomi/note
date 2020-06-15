@@ -75,7 +75,7 @@ public <T> void addMapper(Class<T> type) {
 
 mybatis通过jdk的动态代理生成的代理类:
 
-- MapperProxy类实现了InvocationHandler接口z
+- MapperProxy类实现了InvocationHandler接口
 
 
 
@@ -93,4 +93,13 @@ org.apache.ibatis.binding.MapperMethod#execute
 2. 通过sqlSessionFactory第一次拿对应接口（getMapper）的时候，会去生成接口的代理类
 3. 拿到代理类后，调用对应的方法会执行invoke方法，在invoke方法中可以拿到调用方法的名称，参数和返回值，之后会调用org.apache.ibatis.session.defaults.DefaultSqlSession#selectOne(java.lang.String, java.lang.Object)方法，先看一下缓存中是否有，如果没有，再在org.apache.ibatis.executor.BaseExecutor#queryFromDatabase方法中，会去真正的查询数据库，并将查询结构进行缓存
 4. 在org.apache.ibatis.executor.SimpleExecutor#doQuery方法中，处理好了PreparedStatement对象
-5. 在org.apache.ibatis.executor.statement.PreparedStatementHandler#query方法中，执行PreparedStatement.execute()的方法，然后org.apache.ibatis.executor.resultset.DefaultResultSetHandler#applyAutomaticMappings方法中做数据绑定，最终是调用的实体类的set方法将值设置进去，
+5. 在org.apache.ibatis.executor.statement.PreparedStatementHandler#query方法中，执行PreparedStatement.execute()的方法，然后org.apache.ibatis.executor.resultset.DefaultResultSetHandler#applyAutomaticMappings方法中做数据绑定，最终是通过反射调用的实体类的set方法将值设置进去
+6. 最后返回实体类
+
+## 参考
+
+https://www.cnblogs.com/wuzhenzhao/p/11103017.html
+
+整个源码的过程所涉及的核心类： 
+
+![img](D:\note\.img\1383365-20190702152319339-1998015172.png)
