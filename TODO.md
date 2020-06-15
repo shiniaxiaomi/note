@@ -1,3 +1,23 @@
+spring注解的具体细节
+
+spring事务传播
+
+springcloud alibaba源码
+
+
+
+jdk源码
+
+mybatis源码
+
+mysql
+
+redis
+
+消息队列rabbitmq
+
+
+
 算法+源码
 
 
@@ -25,8 +45,6 @@ Arthas
 > 通过xxlJob定时任务，定时的去mongo中分批的拉取数据，然后数据的格式进行转换并统计数据的数量，然后再将转换后的数据保存到mongo中
 
 
-
-找世超讲一下首页统计
 
 重点：
 
