@@ -103,3 +103,21 @@ https://www.cnblogs.com/wuzhenzhao/p/11103017.html
 整个源码的过程所涉及的核心类： 
 
 ![img](D:\note\.img\1383365-20190702152319339-1998015172.png)
+
+
+
+---
+
+一般我们都使用以下这种方式创建sqlSessionFactory：
+
+```java
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+```
+
+使用这种方式创建的时候，如果我们在Configuration对象中添加的对应的mapper接口，那么在org.apache.ibatis.builder.annotation.MapperAnnotationBuilder#parse方法中，会先去加载同路径下的xml文件，然后再加载接口信息，
+
+
+
+
+
+org.apache.ibatis.builder.annotation.MapperAnnotationBuilder#parseStatement：解析sql，预处理
