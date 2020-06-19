@@ -354,6 +354,11 @@ Linux 系统中，所有系统默认的软件都存储在 /usr 目录下, /usr �
 [root@localhost ~]# cp [选项] 源文件 目标文件
 ```
 
+常用命令：
+
+- `cp a.log b.log`：复制文件
+- `cp AFolder BFolder`：复制文件夹
+
 选项
 
 - `-a`：相当于 -d、-p、-r 选项的集合
