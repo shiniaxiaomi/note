@@ -1,3 +1,13 @@
+每个blog都是有多个item组成的，可以在一个blog中随机的修改一个item，或者是删除和新增一个item
+
+> 解决了快速定位的问题：一个要查看时的快速定位，一个是编辑新增时的快速定位，编辑和新增最好就是以弹窗的形式弹出，方便编辑
+
+最终的toc目录可以由前端浏览器生成（根据dom生成即可），并且可以创建好滚动监听
+
+
+
+
+
 重新构建博客的创建模式，搜索
 
 想法：
@@ -26,9 +36,20 @@
 
 - 
 
+---
 
+tag也是有层级的（tag就是blog的层级路径）
+
+---
 
 表结构设计
+
+User表
+
+- id
+- userName
+- password
+- visitCount
 
 blog表
 
@@ -41,6 +62,12 @@ blog表
 - createTime
 - updateTime
 - pid
+
+tag表
+
+- id
+- name
+- count
 
 
 
