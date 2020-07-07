@@ -12,6 +12,32 @@ Git是目前使用最多的分布式版本控制工具
 
 [下载安装程序](https://git-scm.com/downloads)
 
+# 总结
+
+## 版本回退
+
+先查看git的提交历史：`git log`，之后就可以拿到每个commit对应的hashID
+
+![image-20200707171010623](/Users/luyingjie/Library/Application Support/typora-user-images/image-20200707171010623.png)
+
+要恢复到指定的commit就使用以下命令：
+
+```shell
+git reset --hard 16d9fcebdae298e3f7c12793a713f9e3d8d5b3ea
+```
+
+---
+
+## 撤销commit
+
+git reset --soft HEAD^
+
+> 撤销上一个commit
+
+git reset --soft HEAD~2
+
+> 撤销上两个commit
+
 # 基本命令
 
 ## 克隆仓库

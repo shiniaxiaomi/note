@@ -53,6 +53,7 @@
 2. 创建跟数据库表对应的实体类
 
    ```java
+   @Accessors(chain = true)
    @Data
    public class User {
        private Long id;
@@ -639,6 +640,7 @@ https://mp.baomidou.com/guide/performance-analysis-plugin.html
 创建实体类User：
 
 ```java
+@Accessors(chain = true)
 @Data
 public class User {
   	@TableId(type = IdType.AUTO) //id策略设置为自动生成
