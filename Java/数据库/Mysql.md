@@ -2,6 +2,48 @@
 
 数据库
 
+# 补充
+
+在window中安装mysql：
+
+1. 先写在已经安装的mysql
+
+2. 下载对应的安装包：https://dev.mysql.com/downloads/file/?id=495322
+
+3. 一路next安装，安装成功后，打开client终端，修改编码
+
+   ```shell
+   show variables like 'character%'; //查看编码
+   set xxx=utf8mb4; //修改编码
+   修改完之后刷新一下：FLUSH PRIVILEGES;
+   ```
+
+4. 允许外部连接数据库(针对用户开通外部访问权限)
+
+   ```sql
+   use mysql;
+   selcet * from user;
+   修改root用户的host为 % 即可
+   ```
+
+出现的问题：
+
+- Authentication plugin 'caching_sha2_password' cannot be loaded
+
+  ```shell
+  ALTER USER 'yourusername'@'localhost' IDENTIFIED WITH mysql_native_password BY 'youpassword';
+  ```
+
+  执行上述命令，修改一下即可
+
+- : The server time zone value '�й���׼ʱ��' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the 'serverTimezone' configuration property) to use a more specifc time zone value if you want to utilize time zone support
+
+  时区问题
+
+  ```shell
+  数据库连接的url后面加上：&serverTimezone=GMT
+  ```
+
 # 安装
 
 - Mac安装
