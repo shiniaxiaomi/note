@@ -38,7 +38,7 @@ rabbitmq安装成功，命令位于`/usr/local/sbin`,但是path环境中并没�
 
 大体实现如图功能：
 
-![image-20191124171342984](/Users/yingjie.lu/Documents/note/.img/image-20191124171342984.png)
+![image-20191124171342984](/Users/luyingjie/note/.img/image-20191124171342984.png)
 
 引入maven依赖
 
@@ -119,11 +119,11 @@ public class Recv {
 
 先启动Provider，因为Consumer必须要先有队列才能够监听，先启动Provider后就能创建简单的hello队列，并发送一条数据到rabbitmq中，图解如下：
 
-![image-20191124171453714](/Users/yingjie.lu/Documents/note/.img/image-20191124171453714.png)
+![image-20191124171453714](/Users/luyingjie/note/.img/image-20191124171453714.png)
 
 在启动Consumer，这样，Consumer就可以将rabbitmq中的hello队列中的数据消费掉，图解如下：
 
-![image-20191124171544038](/Users/yingjie.lu/Documents/note/.img/image-20191124171544038.png)
+![image-20191124171544038](/Users/luyingjie/note/.img/image-20191124171544038.png)
 
 # 多个消费者
 
@@ -216,17 +216,17 @@ public class Worker {
 
 Provider发送消息如下：
 
-![image-20191124182715216](/Users/yingjie.lu/Documents/note/.img/image-20191124182715216.png)
+![image-20191124182715216](/Users/luyingjie/note/.img/image-20191124182715216.png)
 
 两个Consumer接受消息如下：
 
 - Worker：
 
-  ![image-20191124182753965](/Users/yingjie.lu/Documents/note/.img/image-20191124182753965.png)
+  ![image-20191124182753965](/Users/luyingjie/note/.img/image-20191124182753965.png)
 
 - Worker2:
 
-  ![image-20191124182808358](/Users/yingjie.lu/Documents/note/.img/image-20191124182808358.png)
+  ![image-20191124182808358](/Users/luyingjie/note/.img/image-20191124182808358.png)
 
 
 
@@ -314,7 +314,7 @@ RabbitMQ消息传递模型的核心思想是：生产者从不直接向消息队
 
 交换机一边接收生产者的消息，一边把消息推送到队列中；交换机必须知道它应该怎么处理接收到的消息（发送给特定的队列，还是多个队列等等），而这就取决于使用的是哪种类型的交换机
 
-![image-20191125095054183](/Users/yingjie.lu/Documents/note/.img/image-20191125095054183.png)
+![image-20191125095054183](/Users/luyingjie/note/.img/image-20191125095054183.png)
 
 交换机的类型有：`direct`, `topic`, `headers` 和 `fanout`
 
@@ -359,7 +359,7 @@ channel.basicPublish( "logs", queueName, null, message.getBytes());
 
 ## 交换机绑定队列
 
-![image-20191125101534727](/Users/yingjie.lu/Documents/note/.img/image-20191125101534727.png)
+![image-20191125101534727](/Users/luyingjie/note/.img/image-20191125101534727.png)
 
 在我们创建好交换机后，我们需要指定交换机和哪些队列绑定，代码如下：
 
@@ -443,17 +443,17 @@ public class ReceiveLogs {
 
 生产者发送消息如下：
 
-![image-20191125103635432](/Users/yingjie.lu/Documents/note/.img/image-20191125103635432.png)
+![image-20191125103635432](/Users/luyingjie/note/.img/image-20191125103635432.png)
 
 消费者接受消息如下：
 
 - 消费者1:
 
-  ![image-20191125103713785](/Users/yingjie.lu/Documents/note/.img/image-20191125103713785.png)
+  ![image-20191125103713785](/Users/luyingjie/note/.img/image-20191125103713785.png)
 
 - 消费者2:
 
-  ![image-20191125103718221](/Users/yingjie.lu/Documents/note/.img/image-20191125103718221.png)
+  ![image-20191125103718221](/Users/luyingjie/note/.img/image-20191125103718221.png)
 
 因为该交换机模式是广播模式，所以，生产者发送消息后，两个消费者都会接受到同样的消息
 
@@ -477,7 +477,7 @@ channel.queueBind(queueName, EXCHANGE_NAME, "black");
 
 图解如下：
 
-![image-20191125105414475](/Users/yingjie.lu/Documents/note/.img/image-20191125105414475.png)
+![image-20191125105414475](/Users/luyingjie/note/.img/image-20191125105414475.png)
 
 > 如图所示：
 >
@@ -489,7 +489,7 @@ channel.queueBind(queueName, EXCHANGE_NAME, "black");
 
 ## 多重绑定
 
-![image-20191125105857696](/Users/yingjie.lu/Documents/note/.img/image-20191125105857696.png)
+![image-20191125105857696](/Users/luyingjie/note/.img/image-20191125105857696.png)
 
 如图所示：
 
@@ -619,15 +619,15 @@ public class ReceiveInfoLogsDirect {
 
 在生产者中输入要发送的消息如下：
 
-![image-20191125114018423](/Users/yingjie.lu/Documents/note/.img/image-20191125114018423.png)
+![image-20191125114018423](/Users/luyingjie/note/.img/image-20191125114018423.png)
 
 error消费者消费的消息：
 
-![image-20191125114054283](/Users/yingjie.lu/Documents/note/.img/image-20191125114054283.png)
+![image-20191125114054283](/Users/luyingjie/note/.img/image-20191125114054283.png)
 
 info消费者消费的消息：
 
-![image-20191125114110456](/Users/yingjie.lu/Documents/note/.img/image-20191125114110456.png)
+![image-20191125114110456](/Users/luyingjie/note/.img/image-20191125114110456.png)
 
 # 主题（topic）
 
@@ -646,7 +646,7 @@ topic交换机的逻辑和direct交换机很相似：一个消息发送到对应
 
 图解如下：
 
-![image-20191125123502742](/Users/yingjie.lu/Documents/note/.img/image-20191125123502742.png)
+![image-20191125123502742](/Users/luyingjie/note/.img/image-20191125123502742.png)
 
 > 上述图中：
 >
@@ -803,15 +803,15 @@ public class ReceiveInfoLogsTopic {
 
 生产者信息发送如下：
 
-![image-20191125133119822](/Users/yingjie.lu/Documents/note/.img/image-20191125133119822.png)
+![image-20191125133119822](/Users/luyingjie/note/.img/image-20191125133119822.png)
 
 error消费者信息接受如下：
 
-![image-20191125133140169](/Users/yingjie.lu/Documents/note/.img/image-20191125133140169.png)
+![image-20191125133140169](/Users/luyingjie/note/.img/image-20191125133140169.png)
 
 info消费者信息接受如下：
 
-![image-20191125133239700](/Users/yingjie.lu/Documents/note/.img/image-20191125133239700.png)
+![image-20191125133239700](/Users/luyingjie/note/.img/image-20191125133239700.png)
 
 # RPC
 
@@ -821,7 +821,7 @@ RabbitMQ支持搭建远程RPC调用服务
 
 大体流程：
 
-![image-20191125140313802](/Users/yingjie.lu/Documents/note/.img/image-20191125140313802.png)
+![image-20191125140313802](/Users/luyingjie/note/.img/image-20191125140313802.png)
 
 RPC的工作流程：
 
@@ -874,7 +874,14 @@ name	messages
 hello	0
 ```
 
+## 其他问题
 
+### 如何保证RabbitMQ的消息有序？
+
+有两种方式：
+
+1. 保证只有一个消费者，然后消费者拿到数据之后再交给多个线程去执行
+2. 在消息中添加序号标识，在消费者再通过序号进行依次消费
 
 # SpringBoot整合RabbitMQ
 
