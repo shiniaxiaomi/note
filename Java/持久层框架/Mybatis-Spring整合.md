@@ -22,7 +22,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
 步骤:
 
 1. 添加pom依赖
-
+   
    ```xml
    <?xml version="1.0" encoding="UTF-8"?>
    <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -71,7 +71,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 2. 创建实体类User
-
+   
    ```java
    public class User {
        int id;
@@ -81,7 +81,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 3. 创建映射器接口
-
+   
    ```java
    import org.apache.ibatis.annotations.Param;
    import org.apache.ibatis.annotations.Update;
@@ -93,7 +93,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 4. 创建UserService
-
+   
    ```java
    public class UserService {
    
@@ -113,34 +113,34 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 5. 创建spring.xml
-
+   
    1. 在Mybaits-Spring中,可使用`SqlSessionFactoryBean`来创建`SqlSessionFactory`; 要配置这个`SqlSessionFactoryBean`,需要在Spring的xml配置文件中配置以下代码:
-
+      
       ```xml
       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
       </bean>
       ```
-
+   
    2. 通过 `MapperFactoryBean` 将接口加入到 Spring 中
-
+      
       ```xml
       <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
           <property name="mapperInterface" value="org.mybatis.spring.sample.mapper.UserMapper" />
           <property name="sqlSessionFactory" ref="sqlSessionFactory" />
       </bean>
       ```
-
+      
       > 注意:  所指定的映射器类**必须**是一个接口，而不是具体的实现类 
-      >
+      > 
       > 在这个示例中，通过注解来指定 SQL 语句，但是也可以使用 MyBatis 映射器的 XML 配置文件。 
-      >
+      > 
       > 配置好之后，你就可以像 Spring 中普通的 bean 注入方法那样，将映射器注入到你的业务或服务对象中。`MapperFactoryBean` 将会负责 `SqlSession` 的创建和关闭。如果使用了 Spring 的事务功能，那么当事务完成时，session 将会被提交或回滚。最终任何异常都会被转换成 Spring 的 `DataAccessException` 异常 
-
+   
    ---
-
+   
    完成spring.xml代码如下:
-
+   
    ```xml
    <?xml version="1.0" encoding="utf-8" ?>
    <beans xmlns="http://www.springframework.org/schema/beans"
@@ -148,13 +148,13 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
-   
-   
+   ```
+
        <!--注入sqlSessionFactory-->
        <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
            <property name="dataSource" ref="dataSource" />
        </bean>
-   
+    
        <!--配置数据源-->
        <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
            <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
@@ -162,23 +162,23 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
            <property name="username" value="root"></property>
            <property name="password" value="123456"></property>
        </bean>
-   
+    
        <!--注入mapper-->
        <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
            <property name="mapperInterface" value="UserMapper" />
            <property name="sqlSessionFactory" ref="sqlSessionFactory" />
        </bean>
-   
+    
        <!--注入service-->
        <bean name="userService" class="UserService">
            <property name="userMapper" ref="userMapper"></property>
        </bean>
-   
-   </beans>
+
+</beans>
    ```
 
 6. 测试类
-
+   
    ```java
    public class Test {
        public static void main(String[] args) throws Exception {
@@ -199,7 +199,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
 步骤:
 
 1. 添加pom依赖
-
+   
    ```xml
    <?xml version="1.0" encoding="UTF-8"?>
    <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -248,7 +248,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 2. 创建实体类User
-
+   
    ```java
    public class User {
        int id;
@@ -258,7 +258,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 3. 创建映射器接口
-
+   
    ```java
    public interface UserMapper {
        @Update("update user set name=#{name} where id = #{id}")
@@ -267,7 +267,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 4. 创建UserService
-
+   
    ```java
    @Service
    public class UserService {
@@ -285,7 +285,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 5. 创建AppConfig配置类
-
+   
    ```java
    @Configuration
    @ComponentScan
@@ -320,7 +320,7 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 6. 测试类
-
+   
    ```java
    public class Test {
        public static void main(String[] args) throws Exception {
@@ -340,11 +340,11 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
 `SqlSessionFactoryBean`的属性:
 
 1. `DataSource` 
-
+   
    必须传入
-
+   
    在`sqlSessionFactory`中需要使用到该属性,配置如下:
-
+   
    ```xml
    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
        <property name="dataSource" ref="dataSource" />
@@ -352,19 +352,19 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    ```
 
 2. `configLocation `
-
+   
    不是必须传入
-
+   
    该属性用来执行Mybatis的xml配置文件路径,它在需要修改Mybatis的基础配置时非常的有用,你可以执行你自定义的Mybatis配置文件来覆盖默认的配置,示例如下
-
+   
    ```xml
    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
        <property name="configLocation" value="classpath:mybatis-config.xml"/>
    </bean>
    ```
-
+   
    或者通过Java代码进行配置:
-
+   
    ```java
    @Bean
    public SqlSessionFactory sqlSessionFactory() {
@@ -374,30 +374,30 @@ Mybatis-Spring会帮助你将Mybatis代码无缝的整合到Spring中;
    }
    ```
 
-3.  `mapperLocations`  
-
+3. `mapperLocations`  
+   
    不是必须传入
-
+   
    该属性可以指定映射器XML文件的位置,指定后加载指定目录的所有mapper.xml文件
-
+   
    Mybatis首先会在映射器接口类对应的路径下找映射器XML文件,如果没找到,则需要进行配置,有两种方式:
-
+   
    1. 手动在Mybatis的xml配置文件中的`<mappers>`中执行xml文件的路径
-
+   
    2. 使用该属性指定映射器xml文件的目录,它会加载指定目录下的所有mapper.xml文件,具体可以这样配置:
-
+      
       ```xml
       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="mapperLocations" value="classpath*:sample/config/mappers/**/*.xml" />
+       <property name="mapperLocations" value="classpath*:sample/config/mappers/**/*.xml" />
       </bean>
       ```
-
+      
       > 这会从类路径下加载所有在` sample.config.mappers ` 包和它的子包中的 MyBatis 映射器 XML 配置文件。 
 
 4. `transactionFactoryClass`
-
+   
    不是必须传入
-
+   
    当你需要事务时,可以对该属性进行设置,具体参考事务章节的内容
 
 ## 事务
@@ -413,23 +413,23 @@ Mybatis-Spring借助了Spring中的 `DataSourceTransactionManager`来实现事�
 ### 标准事务配置
 
 1. 要开启Spring的事务,需要在Spring的配置文件中创建一个 `DataSourceTransactionManager`  对象:
-
+   
    ```xml
    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
      <constructor-arg ref="dataSource" />
    </bean>
    ```
-
+   
    > 这里传入的datasource必须和用来创建`SqlSessionFactoryBean`的是同一个数据源,否则事务管理器就无法生效
 
 2. 在Spring中指定一个 `JtaTransactionManager`对象或由容器指定的一个子类作为事务管理器
-
+   
    可以参考以下几种方式:
-
+   
    1. 声名式事务管理
-
+      
       这种方法不需要对原有的业务做任何修改，通过在XML文件中定义需要拦截方法的匹配即可完成配置,但是对于方法的命名需要有一定的规范,配置如下:
-
+      
       ```xml
       <!--配置事务管理器-->
       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -457,9 +457,9 @@ Mybatis-Spring借助了Spring中的 `DataSourceTransactionManager`来实现事�
       ```
    
    2. 注解式事务管理
-   
+      
       这种方法，只需要在Spring配置文件中定义一个事务管理对象（如DataSourceTransactionManager），然后加入`<tx:annotation-driven/>`节点，引用该事务管理对象，然后即可在需要进行事务处理的类和方法使用@Transactional进行标注。示例如下：
-   
+      
       ```xml
       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
           <property name="dataSource" ref="dataSource"></property>
@@ -467,9 +467,9 @@ Mybatis-Spring借助了Spring中的 `DataSourceTransactionManager`来实现事�
       <!-- 声明使用注解式事务 -->
       <tx:annotation-driven transaction-manager="transactionManager"/>
       ```
-   
+      
       > 注意点: 
-      >
+      > 
       > 1. `@Transactional`注解 **默认只对RuntimeException异常回滚**； 
       > 2. 如果在接口、实现类或方法上都指定了@Transactional 注解，则优先级顺序为方法>实现类>接口;  建议只在实现类或实现类的方法上使用@Transactional，而不要在接口上使用 
    
@@ -551,7 +551,7 @@ public class UserDaoImpl extends SqlSessionDaoSupport implements UserDao {
 
 ```xml
 <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
-	<!--指定映射器接口-->
+    <!--指定映射器接口-->
     <property name="mapperInterface" value="org.mybatis.spring.sample.mapper.UserMapper" />
     <!--指定sqlSessionFactory-->
     <property name="sqlSessionFactory" ref="sqlSessionFactory" />
@@ -598,7 +598,7 @@ public MapperFactoryBean<UserMapper> userMapper() throws Exception {
   http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
   <mybatis:scan base-package="org.mybatis.spring.sample.mapper" />
-    
+
 </beans>
 ```
 
@@ -624,7 +624,7 @@ public class AppConfig {
 
 下面是配置代码:
 
-```xml 
+```xml
 <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     <property name="basePackage" value="org.mybatis.spring.sample.mapper" />
     <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
@@ -851,6 +851,3 @@ https://mybatis.org/spring/zh/batch.html
 # 参考文档
 
 [Mybatis-Spring整合官方文档](https://mybatis.org/spring/zh/)
-
-
-

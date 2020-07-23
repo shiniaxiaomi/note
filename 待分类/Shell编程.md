@@ -11,7 +11,7 @@ linux中有多种shell，常见的有：
 - Bourne Shell（`/usr/bin/sh`或`/bin/sh`）
 
 - Bourne Again Shell（`/bin/bash`）
-
+  
   > 大多数linux系统默认的shell
 
 之后基于`/bin/bash`进行记录
@@ -25,7 +25,7 @@ str="hello world"
 ```
 
 > 定义一个str变量，值为"hello world"
->
+> 
 > 注意：定义变量时，等号两边不能有空格
 
 ## 使用变量
@@ -36,7 +36,7 @@ echo ${str}Java
 ```
 
 > 使用`$`符来获取变量的值
->
+> 
 > 通过`{}`来区分变量的界限，因为如果不加`{}`，则会去获取`strJava`变量的值，而然我们是没有定义该变量的
 
 ## 变量赋值
@@ -48,7 +48,7 @@ str=$(curl http://baidu.com)
 ```
 
 > 注意：**变量赋值时，等号两边不能有空格**
->
+> 
 > 可以使用`$()`来包裹命令，并将命令的返回值赋值给变量
 
 ## 删除变量
@@ -105,54 +105,52 @@ echo ${str:1:3}
 ```
 
 > 从第1个字符开始，截取3个字符
->
+> 
 > 结果：ell
 
 ## 判断字符串为空
 
 - 使用`test`判断
-
+  
   ```shell
   if test !${a}
   then 
-  	echo "字符串为空"
+      echo "字符串为空"
   fi
   ```
 
 - 使用`[]`判断
-
+  
   ```shell
   if [ !$str ]
   then
-  	echo "字符串为空"
+      echo "字符串为空"
   fi
   ```
 
 ## 判断字符串相等
 
 - 使用`[]`判断
-
+  
   ```shell
   if [ $a = "java" ]
   then 
-  	echo "字符串相等"
+      echo "字符串相等"
   fi
   ```
-
 
 注意：判断字符串时，字符串需要使用双引号`""`
 
 ## 判断字符串不相等
 
 - 使用`[]`判断
-
+  
   ```shell
   if [ $a != "java" ]
   then 
-  	echo "字符串不相等"
+      echo "字符串不相等"
   fi
   ```
-
 
 注意：判断字符串时，字符串需要使用双引号`""`
 
@@ -203,7 +201,7 @@ echo str
 ## 遍历数组
 
 - 使用`for ... in`方式遍历
-
+  
   ```shell
   arr=(1 2 3 4 5)
   for i in ${arr[@]}
@@ -213,12 +211,12 @@ echo str
   ```
 
 - 使用下标遍历
-
+  
   ```shell
   arr=(1 2 3 4 5)
   for(( i=0; i<${#arr[@]}; i++ )) 
   do
-  	echo ${arr[i]};
+      echo ${arr[i]};
   done
   ```
 
@@ -245,7 +243,7 @@ EOF
 `echo $1 $2 $3`
 
 > 结果：1 2 3
->
+> 
 > 传入第n个变量就可以通过`$n`来获取
 
 ## 获取传入参数的个数
@@ -342,7 +340,7 @@ echo $a
 ```shell
 if (( $a == $b ))
 then
-	echo "相等"
+    echo "相等"
 fi
 ```
 
@@ -353,7 +351,7 @@ fi
 ```shell
 if (( $a != $b ))
 then
-	echo "不相等"
+    echo "不相等"
 fi
 ```
 
@@ -364,7 +362,7 @@ fi
 ```shell
 if (( $a != $b && $c != $d ))
 then
-	...
+    ...
 fi
 ```
 
@@ -373,36 +371,36 @@ fi
 ```shell
 if (( $a != $b || $c != $d ))
 then
-	...
+    ...
 fi
 ```
 
 # 打印输出
 
 - 打印普通字符串
-
+  
   `echo "hello world"`
-
+  
   > 可以参略掉双引号
 
 - 打印有转义的字符串
-
+  
   `echo "\"test\""`
-
+  
   结果："test"
 
 - 打印变量
-
+  
   `echo $str`
 
 - 将结果打印到文件
-
+  
   `echo "test" > testFile`
 
 - 打印命令的执行结果
-
+  
   `echo $(curl http://baidu.com)`
-
+  
   `echo $(ls | grep java)`
 
 # test命令
@@ -412,7 +410,7 @@ fi
 ```shell
 if test $a == "1"
 then 
-	echo "变量等于1"
+    echo "变量等于1"
 fi
 ```
 
@@ -423,7 +421,7 @@ fi
 ```shell
 if (( $a <= 1 && $b < 4))
 then 
-	echo 1111
+    echo 1111
 fi
 ```
 
@@ -432,7 +430,7 @@ fi
 ```shell
 if (( $a == 1 && $a != 2))
 then 
-	echo 1111
+    echo 1111
 fi
 ```
 
@@ -441,9 +439,9 @@ fi
 **注意：**
 
 > 这种表达式符合C语言的运算符
->
+> 
 > 这种表达式是整数型的计算,不支持浮点型和字符串
->
+> 
 > 若是逻辑判断,表达式exp为真则为1,假则为0
 
 # 流程控制
@@ -453,7 +451,7 @@ fi
 ```shell
 if (( $a == $b ))
 then 
-	...
+    ...
 fi
 ```
 
@@ -462,9 +460,9 @@ fi
 ```shell
 if (( $a == $b ))
 then 
-	...
+    ...
 else
-	...
+    ...
 fi
 ```
 
@@ -473,11 +471,11 @@ fi
 ```shell
 if (( $a == $b ))
 then 
-	...
+    ...
 elif (( $c == $d ))
-	...
+    ...
 else
-	...
+    ...
 fi
 ```
 
@@ -515,7 +513,7 @@ done
 arr=(1 2 3 4 5)
 for(( i=0; i<${#arr[@]}; i++ )) 
 do
-	echo ${arr[i]};
+    echo ${arr[i]};
 done
 ```
 
@@ -525,8 +523,8 @@ done
 a=10
 while (( $a >=1 ))
 do
-	echo $a
-	let "a--"
+    echo $a
+    let "a--"
 done
 ```
 
@@ -535,7 +533,7 @@ done
 ```shell
 while true
 do
-	...
+    ...
 done
 ```
 
@@ -544,10 +542,10 @@ done
 ```shell
 while true
 do
-		if (( $a == 1 ))
-		then 
-				break
-		fi
+        if (( $a == 1 ))
+        then 
+                break
+        fi
 done
 ```
 
@@ -557,11 +555,11 @@ done
 arr=(1 2 3 4 5)
 for(( i=0; i<${#arr[@]}; i++ )) 
 do
-	if (( $i == 2 ))
-	then
-  	continue
-	fi
-	echo ${arr[i]};
+    if (( $i == 2 ))
+    then
+      continue
+    fi
+    echo ${arr[i]};
 done
 ```
 
@@ -577,7 +575,7 @@ done
 
 ```shell
 domeFun(){
-	echo "demo"
+    echo "demo"
 }
 ```
 
@@ -591,7 +589,7 @@ domeFun(){
 
 ```shell
 domeFun(){
-	return 1
+    return 1
 }
 ```
 
@@ -603,7 +601,7 @@ echo $?
 ```
 
 > 结果：1
->
+> 
 > 调用有返回值的函数时，通过`$?`来获取函数的返回值
 
 ## 有入参有返回值函数
@@ -612,10 +610,10 @@ echo $?
 
 ```shell
 domeFun(){
-	echo "第一个参数为 $1 !"
-	echo "第二个参数为 $2 !"
+    echo "第一个参数为 $1 !"
+    echo "第二个参数为 $2 !"
   echo "参数总数有 $# 个!"
-	return 1
+    return 1
 }
 ```
 
@@ -650,7 +648,7 @@ ls > testFile 2>&1
 ```
 
 > 可以将控制台的输出输出到指定文件中
->
+> 
 > 使用`>>`替换`>`可以将内容追加到文件中
 
 ## 将文件内容作为参数传入命令
@@ -707,7 +705,7 @@ source test.sh
 app=$(pgrep -f plantip)
 if [ !$app ]
 then
-	kill -9 $app
+    kill -9 $app
 fi
 ```
 
@@ -744,5 +742,3 @@ tail -f $projectPath/log
 ```shell
 exit 0
 ```
-
-

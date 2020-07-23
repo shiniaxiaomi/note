@@ -19,53 +19,53 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 # 定义概念
 
 - Aspect
-
+  
   切面,是公共抽取出来的模块的集中点; 使用`@Aspect`注解来定义一个切面类
 
 - Join point
-
+  
   连接点,在程序执行过程中的一个点,例如方法的执行或异常的处理等; 在Spring AOP中,连接点始终代表方法的执行
 
 - Advice
-
+  
   通知,切面在特定的连接点处所采取的操作,如前置通知,后置通知等
 
 - Pointcut
-
+  
   切入点,和连接点匹配的谓词,建议与切入点表达式配合使用; 切入点表达式匹配的连接点的概念是AOP的核心
 
 - Target object
-
+  
   一个或多个切面通知的对象,也称通知对象; 由于Spring AOP是使用运行时代理实现的,因此该对象始终是代理对象
 
 - AOP proxy
-
+  
   AOP代理对象,由AOP框架创建的一个对象,用于实现切面编程; 在Spring Framework中,AOP代理是JDK动态代理或CGLIB代理
 
 - Weaving
-
+  
   编织,将切面与其他对象链接以创建通知的对象; 这可以在编译时（例如使用AspectJ编译器）,加载时或在运行时完成,像其他纯Java AOP框架一样,Spring AOP时在运行时执行编织的;
 
 # AOP的5种通知机制
 
 - Before advice
-
+  
   前置通知,在方法运行前调用
 
 - After returning advice
-
+  
   返回通知,在方法的返回时调用
 
 - After throwing advice
-
+  
   异常通知,在方法抛出异常时调用
 
 - After (finally) advice
-
+  
   后置通知,在方法结束后调用
 
 - Around advice
-
+  
   环绕通知,在方法的调用前后都会被调用
 
 # 切点表达式(excution)
@@ -77,13 +77,13 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 ```
 
 > 在同一包中时包名和类名可以省略,可以直接写方法名
->
+> 
 > 如果要指定包名下的所有方法,则可以将类名和方法名省略,直接`包名..(..)`即可
->
+> 
 > 权限限定词可以省略不写,如果不写代表包括所有的权限限定词(private,public等)
->
+> 
 > 当权限限定词或返回值或方法名为`*`时代表任意内容
->
+> 
 > 参数名为`..`时代表任意多参数,即进行不匹配参数名,就是同一方法的全部重载都包括
 
 ## 常用切入点表达式
@@ -95,32 +95,32 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 切入点表达式总共分为以下几类:
 
 - 方法描述匹配
-
+  
   1. `execution()`: 用于匹配方法执行的连接点
 
 - 方法参数匹配
-
+  
   1. `args()`: 用于匹配当前执行的方法传入的参数为指定类型的执行方法
   2. `@args()`: 用于匹配当前执行的方法传入的参数持有指定注解的执行方法
 
 - 目标类匹配
-
+  
   1. `target()`: 用于匹配当前目标对象类型的指定方法;
-
+     
      > 注意是目标对象的类型匹配,这样就不包括引入接口的类型匹配
-
+  
   2. `@target()`: 用于匹配当前目标对象类型的指定方法,其中目标对象持有指定的注解
-
+  
   3. `within()`: 用于匹配指定对象类型内的方法
-
+  
   4. `@within()`: 用于匹配所有指定注解类型的方法
 
 - 标有指定注解的方法匹配
-
+  
   1. `@annotation()`: 用于匹配当前执行方法标注指定注解的方法
 
 - 匹配指定名称的bean对象的方法
-
+  
   1. `bean()`: SpringAOP扩展的表达式,AspectJ没有对应的表达式, 其用于匹配指定名称的bean对象的方法
 
 参考文档:
@@ -131,33 +131,33 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 ### execution表达式
 
 1. 任何公共方法
-
+   
    ```java
    @Pointcut("execution(public * * (..))")
    ```
 
 2. 任何名称以set开头的方法
-
+   
    ```java
    @Pointcut("execution(* set* (..))")
    ```
-
+   
    > 可以使用正则表达式来进行方法名的匹配
 
 3. 某个类的所有方法
-
+   
    ```java
    @Pointcut("execution(* annotation.AOP.Person.* (..))")
    ```
 
 4. `AOP`包中所有类的所有方法
-
+   
    ```java
    @Pointcut("execution(* annotation.AOP.*.* (..))")
    ```
 
 5. `AOP`包或其子包中定义的任何方法
-
+   
    ```java
    @Pointcut("execution(* annotation.AOP..* (..))")
    ```
@@ -167,19 +167,19 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 用来指定包中或类中的所有方法,指定的粒度比execution要大
 
 1. 指定Person类中的所有方法
-
+   
    ```java
    @Pointcut("within(annotation.AOP.Person)")
    ```
 
 2. 指定`AOP`包中的所有类
-
+   
    ```java
    @Pointcut("within(annotation.AOP.*)")
    ```
 
 3. 指定`AOP`包或其子包中的所有方法
-
+   
    ```java
    @Pointcut("within(annotation.AOP..*)") 
    ```
@@ -191,7 +191,7 @@ spring中的注解基本上都可以通过AOP来实现,如`@Value`,`@Component`,
 查询接收了哪些参数的方法,该表达式一般可用在接收到前端传过来的form表单的切面
 
 1. 指定接收了一个参数为String类型的所有方法
-
+   
    ```java
    @Pointcut("args(java.lang.String)")
    ```
@@ -240,7 +240,7 @@ public class AOPTest {
 ```
 
 > 注意: 在获取使用了AOP并且实现了接口的Javabean时,不能再去用原类型获取Javabean,因为使用了代理,所有类型已经发生了变化,我们可以使用Javabean的id(获取后需要转成接口类型)或者是接口类型去获取对应的Javabean
->
+> 
 > 即我们可以使用的方法会被限定在接口中定义的方法
 
 ## 组合切点表达式
@@ -274,7 +274,7 @@ public void afterLog(){
 设置AOP执行顺序的方法有两种：
 
 1. 使用注解方式
-
+   
    ```java
    @Component  
    @Aspect  
@@ -286,13 +286,13 @@ public void afterLog(){
    ```
 
 2. 实现Ordered接口
-
+   
    ```java
    @Component  
    @Aspect  
    @Slf4j  
    public class MessageQueueAopAspect1 implements Ordered{
-     	@Override  
+         @Override  
        public int getOrder() {  
            return 2;  
        }  
@@ -310,7 +310,7 @@ public void afterLog(){
 # xml配置-AOP使用Demo
 
 1. 定义一个业务类
-
+   
    ```java
    //它将在xml中注入到IOC容器中
    public class Person {
@@ -326,22 +326,22 @@ public void afterLog(){
    ```
 
 2. 定义一个切面的处理类
-
+   
    > 发生通知后会调用该处理类的对应的方法
-
+   
    ```java
    public class AspectClass {
-       
+   
        //前置通知
        public void beforeLog(){
            System.out.println("before log");
        }
-       
+   
        //后置通知
        public void afterLog(){
            System.out.println("after log");
        }
-       
+   
        //环绕通知
        public void aroundLog(ProceedingJoinPoint pjp) throws Throwable {
            //============在业务方法执行之前
@@ -352,7 +352,7 @@ public void afterLog(){
            System.out.println("aroundAfterLog");
            //============在业务方法执行之后
        }
-       
+   
        //返回通知
        //不获取返回值
    //    public void afterReturningLog(){
@@ -362,7 +362,7 @@ public void afterLog(){
        public void afterReturningLog(Object retVal){
            System.out.println("afterReturning log:"+retVal);
        }
-       
+   
        //异常通知
        //不获取异常信息
    //    public void afterThrowingLog(){
@@ -376,7 +376,7 @@ public void afterLog(){
    ```
 
 3. 配置xml文件
-
+   
    ```xml
    <?xml version="1.0" encoding="UTF-8" ?>
    <beans xmlns="http://www.springframework.org/schema/beans"
@@ -389,7 +389,7 @@ public void afterLog(){
    
        <!-- 将切面类注入IOC容器 -->
        <bean id="aspectClass" class="xml.AOP.AspectClass"></bean>
-       
+   
        <!-- 开启AOP功能 -->
        <aop:aspectj-autoproxy/>
    
@@ -426,9 +426,9 @@ public void afterLog(){
    ```
 
 4. 测试类
-
+   
    > 加载配置文件,获取业务类并调用其方法
-
+   
    ```java
    public class AOPTest {
        public static void main(String[] args) throws Exception {
@@ -437,9 +437,9 @@ public void afterLog(){
        }
    }
    ```
-
+   
    > 运行结果:
-   >
+   > 
    > before log
    > 打招呼:hello
    > after log
@@ -448,7 +448,7 @@ public void afterLog(){
 # 注解配置-AOP使用Demo
 
 1. 定义一个业务类
-
+   
    ```java
    @Component //该业务类必须要被IOC容器管理
    public class Person {
@@ -464,7 +464,7 @@ public void afterLog(){
    ```
 
 2. 定义一个切面类
-
+   
    ```java
    @Component
    @Aspect //标记该类为一个切面类,该注解不能被IOC容器扫描到,所以需要加上@Component才能够被处理
@@ -524,7 +524,7 @@ public void afterLog(){
    ```
 
 3. 开启AOP功能
-
+   
    ```java
    @Configuration
    @EnableAspectJAutoProxy //使用注解开启AOP(该类需要被IOC管理才能生效,所以需要加上@Configuration或者@Component)
@@ -536,9 +536,9 @@ public void afterLog(){
        }
    }
    ```
-
+   
    > 运行结果:
-   >
+   > 
    > before log
    > 打招呼:hello
    > after log
@@ -620,4 +620,3 @@ public class TodoAop {
   }
 }
 ```
-

@@ -27,6 +27,7 @@ Spring Boot提供了版本管理工具`Dependency Management`来帮我们管理�
 - 所有Spring官方的启动器命名都是以`spring-boot-starter-*`开头的，`*`是应用的名称
 
 - 创建自定义的started（启动器）可以参考该链接：[Creating Your Own Starter](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/html/spring-boot-features.html#boot-features-custom-starter)
+
 - 第三方的启动器的命令规则为：`*-spring-boot-starter`,`*`是第三方应用的名称
 
 更多的springboot starters可以参考[文档](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/html/using-spring-boot.html#using-boot-starter)
@@ -61,19 +62,9 @@ Springboot会自动配置一些你添加的依赖，如果你标注了`@EnableAu
 
 > Springboot建议将`@SpringBootApplication`或`@EnableAutoConfiguration`注解只标注在最主要的配置类上
 
-
-
-
-
-
-
-
-
 SpringBean
 
 依赖注入
-
-
 
 # SpringBoot功能总结
 
@@ -88,8 +79,6 @@ AMQP的全名为：Advanced Message Queuing Protocol（先进的消息队列协�
 AMQP时一个与平台无关的，面向消息的中间件
 
 SpringBoot提供了方便使用RabbitMQ的starter：`spring-boot-starter-amqp`
-
-
 
 #### RabbitMQ配置
 
@@ -117,12 +106,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyBean {
 
-  	@Autowired
+      @Autowired
     private final AmqpAdmin amqpAdmin;
-  	@Autowired
+      @Autowired
     private final AmqpTemplate amqpTemplate;
 
-  	//...
+      //...
 }
 ```
 
@@ -160,18 +149,13 @@ public class TestProducer {
         return "发送成功！";
     }
 }
-
 ```
 
 > 注意：
->
+> 
 > 当使用`RabbitListener`注解时，需要使用`@EnableRabbit`注解开启RabbitMQ注解
 
-
-
 如果需要创建多个消息监听的`RabbitListenerContainerFactory`实例或者需要覆盖默认的bean，Spring提供了`SimpleRabbitListenerContainerFactoryConfigurer` 和 `DirectRabbitListenerContainerFactoryConfigurer`类，我们只需要在容器中初始化他们就可以了，自动配置还是会生效的
-
-
 
 如果需要进行消息的转化，可以参考以下配置：
 
@@ -212,15 +196,9 @@ public class TestConsumer {
 }
 ```
 
-
-
 如果需要配置消息接受重试，可以配置`RetryTemplate`
 
-
-
 #### 创建多实例的RabbitMQ代码实例
-
-
 
 创建application.properties配置文件
 
@@ -236,13 +214,11 @@ spring.rabbitmq.second.username=guest
 spring.rabbitmq.second.password=guest
 ```
 
-
-
 创建配置类
 
 1. FirstRabbitConfig
-
-   ```Java
+   
+   ```java
    package com.lyj.springboot_rabbitmq_demo.config;
    
    import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -303,7 +279,7 @@ spring.rabbitmq.second.password=guest
    ```
 
 2. SecondRabbitConfig
-
+   
    ```java
    package com.lyj.springboot_rabbitmq_demo.config;
    
@@ -362,12 +338,10 @@ spring.rabbitmq.second.password=guest
    ```
 
 > 注意：
->
+> 
 > 两份配置代码几乎一样，但是必须其中一个配置文件的bean要打上`@Primary`注解，不然会报找到两个类型相同的错误
->
+> 
 > 两份配置代码的bean必须要标明bean的名称，注入时也需要使用`@Qualifier`注解指定注入哪个名称的bean
-
-
 
 创建生产者
 
@@ -403,8 +377,6 @@ public class TestController {
 }
 ```
 
-
-
 创建消费者
 
 ```java
@@ -429,8 +401,6 @@ public class TestConsumer {
 }
 ```
 
-
-
 主入口
 
 ```java
@@ -444,8 +414,6 @@ public class SpringbootRabbitmqDemoApplication {
     }
 }
 ```
-
-
 
 运行代码后，在浏览器端进行生产数据，查看控制台的数据消费情况
 
@@ -462,8 +430,6 @@ test2:"test"
 
 ### Kafaka
 
-
-
 # 辅助功能
 
 监控
@@ -472,11 +438,7 @@ test2:"test"
 
 审核
 
-
-
 # 部署SpringBoot应用程序
-
-
 
 # SpringBoot CLI
 
@@ -486,8 +448,6 @@ test2:"test"
 
 配置
 
-
-
 # 生成工具插件
 
 Maven插件
@@ -496,10 +456,6 @@ Gradle插件
 
 Antlib
 
-
-
-
-
 # 其他相关记录
 
 ## 多配置文件
@@ -507,9 +463,9 @@ Antlib
 创建多个配置文件：
 
 - application.properties
-
+  
   主配置文件，可以决定是哪个配置文件生效
-
+  
   ```properties
   spring.profiles.active=test
   ```
@@ -521,19 +477,19 @@ Antlib
 ## 使用java -jar命令启动项目
 
 - 指定生效的配置文件
-
+  
   ```java
   java -jar xxx.jar --spring.profiles.active=prod
   ```
 
 - 指定启动的端口
-
+  
   ```java
   java -jar xxx.jar --server.port=8181
   ```
 
 - 全都指定
-
+  
   ```java
   java -jar plantip-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --server.port=8002
   ```
@@ -551,7 +507,7 @@ java -jar xxx.jar --spring.profiles.active=prod &
 ```
 
 - 添加日志输出的方法
-
+  
   ```shell
   java -jar xxx.jar --spring.profiles.active=prod >log &
   ```
@@ -568,8 +524,6 @@ pgrep -f 项目相关名称或信息
 pgrep -f plantip
 ```
 
-
-
 # 其他
 
 ## 静态资源
@@ -581,7 +535,7 @@ spring.resources.static-locations=classpath:/static/,file:/Users/yingjie.lu/Docu
 ```
 
 > 使用`,`分隔多个静态资源路径即可
->
+> 
 > 如果配置外部的静态资源，需要在路径前面加上`file:`关键字
 
 ## 多配置文件
@@ -597,7 +551,7 @@ spring.resources.static-locations=classpath:/static/,file:/Users/yingjie.lu/Docu
 开启定时任务注解
 
 > 注意：
->
+> 
 > 在定时任务中，需要捕获异常后自行处理，而不能直接抛出，不然会导致定时任务异常，最终会终止项目
 
 ## 配置文件变量
@@ -632,8 +586,8 @@ person.name=a
 @Component
 @ConfigurationProperties(prefix="person") 
 public class Test(){
-		int age;
-		String name;
+        int age;
+        String name;
 }
 ```
 

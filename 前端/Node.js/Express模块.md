@@ -19,16 +19,16 @@ Express 框架核心特性：
 ## hello world
 
 - 创建一个demo.js
-
+  
   ```js
   var express = require('express');//导入express模块 
   var app = express();//获取app对象
-   
+  
   //当'/'请求时的回调(request 和 response 对象来处理请求和响应的数据)
   app.get('/', function (req, res) {
      res.send('Hello World');
   })
-   
+  
   //启动server并监听再8081端口
   var server = app.listen(8081, function () {
     var host = server.address().address;
@@ -38,7 +38,7 @@ Express 框架核心特性：
   ```
 
 - 执行demo.js
-
+  
   `node demo.js`
 
 - 访问网址http://localhost:8081
@@ -48,15 +48,15 @@ Express 框架核心特性：
 分别对应不同的url请求
 
 - 访问主页
-
+  
   `app.get('/', function (req, res){})`
 
 - 普通的url请求
-
+  
   `app.get('/del_user', function (req, res) {})`
 
 - 使用正则来匹配url请求
-
+  
   `app.get('/ab*cd', function(req, res) {})`
 
 # 静态资源
@@ -64,7 +64,7 @@ Express 框架核心特性：
 Express 提供了内置的中间件 express.static 来设置静态文件
 
 - 设置public目录为静态资源文件路径
-
+  
   ```js
   var express = require('express');
   var app = express();
@@ -72,7 +72,7 @@ Express 提供了内置的中间件 express.static 来设置静态文件
   ```
 
 - 在public目录下放`logo.png`图片并访问
-
+  
   `http://localhost:8081/public/logo.png`即可看到图片
 
 # [API](http://www.expressjs.com.cn/4x/api.html)
@@ -90,21 +90,21 @@ Express 提供了内置的中间件 express.static 来设置静态文件
 option对象属性
 
 - inflate
-
+  
   类型: 布尔 (默认为true)
-
+  
   > 启动或禁止压缩json文本
 
 - limit
-
+  
   类型: String (默认为"100kb")
-
+  
   > 控制最大请求体大小
 
 - type
-
+  
   类型: String (默认为"application/json")
-
+  
   > 用于确认需要解析的类型
 
 ### express.static(root,[options])
@@ -120,13 +120,13 @@ root参数
 options参数
 
 - maxAge
-
+  
   类型: 数值或字符串 (默认为0)
-
+  
   > 设置静态资源的缓存时间
 
 - 示例
-
+  
   ```js
   var options = {
     dotfiles: 'ignore',
@@ -147,8 +147,6 @@ options参数
   app.use("", express.static("/css"));
   app.use("", express.static("/js"));
   ```
-  
-  
 
 ## express对象
 
@@ -179,16 +177,16 @@ path参数
 callback参数
 
 - 回调函数
-
+  
   ```js
   app.all('/secret', function (req, res, next) {
       console.log('Accessing the secret section ...')
-    	next() // 接着下一个匹配的http处理器
+        next() // 接着下一个匹配的http处理器
   })
   ```
 
 - 可以填写多个回调函数
-
+  
   ```js
   app.all('*', requireAuthentication, loadUser);
   //如同
@@ -330,7 +328,7 @@ req.ip
 此属性是一个对象,包好了url请求中的参数
 
 > 如果url的请求是`/user/:name`,则
->
+> 
 > ```js
 > // GET /user/tj
 > req.params.name
@@ -404,15 +402,15 @@ res.append('Warning', '199 Miscellaneous warning');
 options参数
 
 - expires
-
+  
   类型是Date,设置cookie的过期日期
 
 - maxAge
-
+  
   类型是Number,设置cookie从现在开始后多少毫秒钟过期
 
 - path
-
+  
   类型是String, 设置cookie对应的url路径
 
 ```js
@@ -484,15 +482,15 @@ res.redirect('../login');
 渲染一个视图,并将html页面返回给客户端
 
 - view
-
+  
   指定一个视图,一般是html页面路径
 
 - locals
-
+  
   指定一个对象,里面包含了需要渲染到html中的数据
 
 - callback
-
+  
   回调函数
 
 ```javascript
@@ -515,9 +513,9 @@ res.render('user', { name: 'Tobi' }, function(err, html) {
 发送一个http response
 
 - body
-
+  
   该参数可以是一个Buffer object,object,String或者是Array
-
+  
   ```javascript
   res.send(new Buffer('whoop'));
   res.send({ some: 'json' });
@@ -533,17 +531,17 @@ res.render('user', { name: 'Tobi' }, function(err, html) {
 option参数
 
 - headers
-
+  
   指定文件对应的http的消息头
 
 - root
-
+  
   指定资源文件的根路径,如果没有该参数,则path必须要为绝对路径
 
 - fn
-
+  
   在文件传输结束或报错的时候的回调
-
+  
   如果指定了回调函数,则在文件传输错误时必须要关闭这个response生命周期
 
 ```javascript
@@ -659,11 +657,11 @@ app.get('/', function (req, res) {
 使用
 
 - 安装
-
+  
   `cnpm i express-session -S`
 
 - 创建
-
+  
   ```js
   var session = require("express-session");
   app.use(
@@ -676,14 +674,11 @@ app.get('/', function (req, res) {
   ```
 
 - 使用
-
+  
   ```js
   req.session.isLogin=true; //创建session
   console.log(req.session.isLogin); //获取session
   ```
-
-
-
 
 # 参考文档
 

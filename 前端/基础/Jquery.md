@@ -22,7 +22,7 @@ jQuery下载
 jQuery使用
 
 - 添加到head标签中
-
+  
   ```html
   <head>
   <script src="jquery.js"></script>
@@ -30,7 +30,7 @@ jQuery使用
   ```
 
 - 引用cdn
-
+  
   ```html
   <head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js">
@@ -58,7 +58,7 @@ jQuery使用
 
 ```js
 $(document).ready(function(){
-	...
+    ...
 });
 ```
 
@@ -99,21 +99,21 @@ $(document).ready(function(){
 ## 显示和隐藏
 
 - 显示
-
+  
   ```js
   $(selector).show();//简单使用
   $(selector).show(speed,callback);//可以设定时间和回调
   ```
 
 - 隐藏
-
+  
   ```js
   $(selector).hide();//简单使用
   $(selector).hide(speed,callback);//可以设定时间和回调
   ```
 
 - 显示或隐藏来回切换
-
+  
   ```js
   $("button").click(function(){
     $("p").toggle();
@@ -156,59 +156,59 @@ $("#w3s").attr({
 ## 添加元素
 
 - `.append() `- 在被选元素的子元素的结尾插入内容(插入的元素会称为该元素的子节点)
-
+  
   ```js
   $("p").append("Some appended text.");
   ```
-
+  
   > 在p标签的内部的最后加入文本
-
+  
   ```js
   $("ol").append("<li>Some appended text.</li>");
   ```
-
+  
   > 在ol标签的内容的最后加入`li`标签
 
 - `.prepend()` - 在被选元素的子元素的开头插入内容(插入的元素会称为该元素的子节点)
-
+  
   ```js
   $("p").prepend("Some prepended text.");
   ```
 
 - `.after() `- 在被选元素的同级别之后插入内容(插入的元素会称为该元素的兄弟节点)
-
+  
   用法和上述一样
 
 - `.before()` - 在被选元素的同级别之前插入内容(插入的元素会称为该元素的兄弟节点)
-
+  
   用法和上述一样
 
 ## 创建元素
 
 - `var p=$("<p>111</p>");`
-
+  
   > 创建了一个有内容的p标签元素
 
 - `$("ol").append("<li>Some appended text.</li>");`
-
+  
   > 直接通过文本的形式,直接插入到元素中,就相当于创建了一个元素
 
 ## 删除元素
 
 - `.remove() `- 删除被选元素（及其子元素）
-
+  
   ```js
   $("#div1").remove();
   ```
-
+  
   > `remove()`可以带一个参数,用来过滤删除的元素
-  >
+  > 
   > 如`$("p").remove(".italic");`
-  >
+  > 
   > 删除 class="italic" 的所有 <p> 元素
 
 - `.empty() `- 从被选元素中删除子元素
-
+  
   ```js
   $("#div1").empty();
   ```
@@ -216,25 +216,25 @@ $("#w3s").attr({
 ## 设置css和class
 
 - `.addClass()` - 向被选元素添加一个或多个类
-
+  
   ```js
   $("div").addClass("important bule");
   ```
 
 - `.removeClass()` - 从被选元素删除一个或多个类
-
+  
   ```js
   $("h1,h2,p").removeClass("blue");
   ```
 
 - `.toggleClass()` - 对被选元素进行添加/删除类的切换操作
-
+  
   ```js
   $("h1,h2,p").toggleClass("blue");
   ```
 
 - `.css()` - 设置或返回style属性
-
+  
   ```js
   $("#id").css("display"); //获取display的值
   $("#id").css("display","none"); //设置display的值为none,则隐藏该元素
@@ -261,25 +261,25 @@ jQuery提供很多方法给我们遍历Dom树
 ## 向父级遍历
 
 - `.parent()` : 返回被选元素的直接父元素
-
+  
   ```js
   $("span").parent();
   ```
 
 - `.parents()` : 返回被选元素的所有祖先元素，它一路向上直到文档的根元素
-
+  
   ```js
   $("span").parents();
   ```
-
+  
   > 该方法还可以设置参数来过滤父元素
-  >
+  > 
   > `$("span").parents("ul");`
-  >
+  > 
   > 返回所有 <span> 元素的所有祖先，并且它是 <ul> 元素
 
 - `.parentsUntil()` : 返回介于两个给定元素之间的所有祖先元素
-
+  
   ```js
   $("span").parentsUntil("div");//返回介于 <span> 与 <div> 元素之间的所有祖先元素
   ```
@@ -287,19 +287,19 @@ jQuery提供很多方法给我们遍历Dom树
 ## 向子节点遍历
 
 - `.children()` : 返回被选元素的所有直接子元素(该方法只会向下一级Dom树进行遍历)
-
+  
   ```js
   $("div").children();//返回每个 <div> 元素的所有直接子元素
   ```
-
+  
   > 该方法也可以和`.parents()`方法一样,设置参数来过滤子元素
-  >
+  > 
   > `$("div").children("p.demo");`
-  >
+  > 
   > 返回类名为 "demo" 的所有 <p> 元素，并且它们是 <div> 的直接子元素
 
 - `.find()` : 返回被选元素的子元素，一路向下直到最后一个zi元素
-
+  
   ```js
    $("div").find("p>span");//查找div下的,父元素是p标签的span元素
   ```
@@ -307,14 +307,14 @@ jQuery提供很多方法给我们遍历Dom树
 ## 向兄弟节点遍历
 
 - `.siblings()` : 返回被选元素的所有兄弟节点
-
+  
   ```js
   $("h2").siblings();//返回所有兄弟节点
   $("h2").siblings("p");//返回是p标签的兄弟节点
   ```
 
 - `.next()` : 返回被选元素的下一个兄弟节点
-
+  
   ```js
   $("h2").next();
   ```
@@ -322,7 +322,7 @@ jQuery提供很多方法给我们遍历Dom树
 - `.nextAll()` : 返回被选元素的所有在其元素后面的兄弟节点
 
 - `.nextUntil()` : 返回介于两个给定参数之间的所有兄弟节点
-
+  
   ```js
   $("h2").nextUntil("h6");//返回介于 <h2> 与 <h6> 元素之间的所有兄弟节点
   ```
@@ -336,31 +336,31 @@ jQuery提供很多方法给我们遍历Dom树
 ## 过滤和选择已经筛选出的节点
 
 - `.first()` : 返回被选元素的首个元素
-
+  
   ```js
   $("div p").first();//相当于.eq(0)
   ```
 
 - `.last()` : 返回被选元素的最后一个元素
-
+  
   ```js
   $("div p").last();
   ```
 
 - `.eq()` : 返回被选元素中带有指定索引号的元素
-
+  
   ```js
   $("p").eq(1);
   ```
 
 - `.filter()` : 匹配的元素会被返回
-
+  
   ```js
   $("p").filter(".intro");//返回带有类名 "intro" 的所有 <p> 元素
   ```
 
 - `.not()` : 返回不匹配标准的所有元素
-
+  
   ```js
   $("p").not(".intro");//返回不带有类名 "intro" 的所有 <p> 元素
   ```

@@ -9,7 +9,7 @@ Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以�
 1. 创建一个maven项目
 
 2. 引入mysql的maven依赖
-
+   
    ```xml
    <dependency>
        <groupId>mysql</groupId>
@@ -19,7 +19,7 @@ Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以�
    ```
 
 3. 新建数据库表`mybatisTest`,并插入一条数据
-
+   
    ```sql
    //创建user表
    CREATE TABLE `user` (
@@ -28,7 +28,7 @@ Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以�
       `age` int(11) DEFAULT NULL,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-    
+   
    //插入数据
    INSERT INTO `user` (NAME, age) VALUES ('A', 1);
    INSERT INTO `user` (NAME, age) VALUES ('B', 2);
@@ -36,7 +36,7 @@ Mybatis是一款优秀的持久层框架,它支持定制化sql,存储过程以�
    ```
 
 4. 使用JDBC查询数据
-
+   
    ```java
    public class MybatisTest {
        public static void main(String[] args) throws Exception {
@@ -103,64 +103,64 @@ JDBC与数据库交互有7个步骤,哪些步骤是可以进一步封装的?这�
 ### 优化与数据库连接的获取和释放
 
 - 问题描述:
-
+  
   数据库连接频繁的开启和关闭本身就造成了资源的浪费,影响系统的性能
 
 - 解决方案:
-
+  
   数据库连接的获取和关闭我们可以使用数据库连接池来解决频繁的开启或关闭连接导致资源浪费的问题; 通过连接池可以反复利用已经建立的连接去访问数据库,减少连接的开启和关闭的时间;
 
 ### 优化sql统一存取
 
 - 问题描述
-
+  
   我们使用JDBC操作数据库时,sql语句基本上都散落在各个Java类中,有三点不足:
-
+  
   1. 可读性差,不利于维护以及做性能调优
   2. 改动Sql需要重新编译,打包部署
   3. 不利于去除sql在数据库客户端执行(需要在自己去重新组装sql)
 
 - 解决方案
-
+  
   我么可以把sql统一存放在一个地方,以key-value的形式存放,通过key就可以找到对应的sql,然后再对应的去执行
 
 ### 传入参数映射和动态sql
 
 - 问题描述
-
+  
   很多时候,我们使用占位符来传入参数,这种方法有一定的局限,就是需要按照一定顺序传入参数,而且要与占位符一一对应; 但是如果我们传入的参数个数不确定,那么按照传统的JDBC只能将判断逻辑写在Java代码中,使得sql和Java代码更加的耦合
 
 - 解决方案
-
+  
   对应参数的判断逻辑可以写在sql当中,我们自定义例如`<if test=''></if>`和`<else test=''><else/>`标签判断,再用一个专门的sql解析器解析这样的sql语句就能够解决; 那么`<if>`标签中的变量来自哪里呢? 我们可以使用`#变量名#`或`$变量名$`来获取到对应传入的变量
 
 ### 结果映射和结果缓存
 
 - 问题描述
-
+  
   执行sql语句,获取到执行结果,对执行就欸过进行转换处理并释放相关资源是必不可少的一套动作; 如果是执行查询语句,那么执行完sql语句后,返回的是一个ResultSet结果集,这时我们就需要将ResultSet对象的数据取出来,不然等到释放资源后就取不到结果集了; 如果能够完成获取结果集的封装,直接调用一个封装的方法即可以返回一个数据结构(结果集),那么就完美了
 
 - 解决方案
-
+  
   我们可以再获取ResultSet结果集后,将所有的数据取出并复制到我们指定的JavaBean中(可以是一个普通对象,一个Map,一个List等等),我们只需要做两点:
-
+  
   1. 告诉mybatis我们需要返回什么类型的对象
   2. 我们需要返回的对象的数据结构和ResultSet中的结果集的字段怎么一一对应
-
+  
   这样,mybatis就可以让帮我们将具体的结果赋值到对应的对象中,并返回给我们
-
+  
   ---
-
+  
   接下来考虑对sql执行结果的缓存来提升性能; 缓存数据都是key-value形式的,那么这个key怎么确定唯一?我们可以将sql和传入的参数两部分结合起来作为数据缓存的key值
 
 ### 解决重复sql语句问题
 
 - 问题描述
-
+  
   由于我们将所有sql语句都放到配置文件中,这时会遇到一个sql重复的问题; 或者是几个sql语句的功能都差不多,但是可能因为查询的字段不同或者where条件不同而重复写多个sql
 
 - 解决方案
-
+  
   我们可以将重复的代码抽离成一个独立的片段,可以在各个需要的地方进行引用, 这样需要修改时只需要修改一处即可
 
 ### 对比与总结
@@ -177,7 +177,7 @@ JDBC与数据库交互有7个步骤,哪些步骤是可以进一步封装的?这�
 ### Mybatis待改进之处
 
 - 问题描述
-
+  
   Mybatis所有的数据库操作都是基于sql语句,对于不同的数据库对应的sql可能会略微不同,无法做到快速的切换数据源
 
 # Mybatis工作原理
@@ -193,13 +193,13 @@ JDBC与数据库交互有7个步骤,哪些步骤是可以进一步封装的?这�
 详细流程如下:
 
 1. 加载mybatis全局配置文件(mybatis-config.xml),解析配置文件,Mybatis基于xml配置文件生成Configuration(配置类对象,包含了所有配置),和一个个MappedStatement(包括了参数映射配置,动态sql语句,结果映射配置),其对应着一个个xxxMapper.xml中的`<select|update|delete|insert>`标签
-
+   
    > mybatis-config.xml会包含数据源的配置,事务配置,mappers配置等
 
 2. SqlSessionFactoryBuilder通过Configuration(配置类对象)生成SqlSessionFactory,用来开启SqlSession
 
 3. SqlSession对象完成和数据库的交互
-
+   
    1. 用户程序调用mybatis接口层api(集Mapper接口中的方法)
    2. SqlSession通过调用api并传入StatementID找到对应的MappedStatement对象
    3. 通过Executor(负责动态sql的生成和查询缓存的维护)将MappedStatement对象进行解析,sql参数转化,动态sql拼接,生成JDBC Statement对象
@@ -528,135 +528,135 @@ Mybatis的配置文件会影响Mybatis行为的设置和属性信息;
 ## settings(设置)
 
 - cacheEnabled
-
+  
   > 可以开启或关闭配置文件中的所有映射器已经配置的任何缓存
-
+  
   默认值: true
-
+  
   可选值: true,false
 
 - lazyLoadingEnabled
-
+  
   > 延迟加载的开关; 当开启时,所有关联对象都会延迟加载; 特定关联关系中可通过设置` fetchType `属性来覆盖该现象的开关状态
-
+  
   默认值: false
-
+  
   可选值: true,false
 
 - multipleResultSetsEnabled
-
+  
   > 是否允许单一语句返回多个结果集(去要驱动支持)
-
+  
   默认值: true
-
+  
   可选值: true,false
 
 - useColumnLabel
-
+  
   > 使用列标签代替列名,不同的驱动会有不同的表现,具体需要参考相关的驱动文档;
-
+  
   默认值: true
-
+  
   可选值: true,false
 
 - useGeneratedKeys
-
+  
   > 允许JDBC支持自动生成主键,去要对应的数据库支持; 
-
+  
   默认值: false
-
+  
   可选值: true,false
 
 - autoMappingBehavior
-
+  
   > 指定Mybatis应该如何自动映射数据库的列名到对象中的属性;
-
+  
   默认值:  PARTIAL 
-
+  
   可选值:
-
+  
   1. `NONE`: 表示取消自动映射；
   2. `PARTIAL`: 只会自动映射没有定义嵌套结果集映射的结果集。
   3. `FULL`: 会自动映射任意复杂的结果集（无论是否嵌套） 
 
 - autoMappingUnknownColumnBehavior
-
+  
   > 指定发现自动映射目标未知列(或者位置属性类型)的行为
-
+  
   默认值:  NONE 
-
+  
   可选值:
-
+  
   1. `NONE`: 不做任何反应
   2. `WARNING`: 输出提醒日志 (`'org.apache.ibatis.session.AutoMappingUnknownColumnBehavior'`的日志等级必须设置为 `WARN`)
   3. `FAILING`: 映射失败 (抛出 `SqlSessionException`)
 
 - defaultExecutorType
-
+  
   >  配置默认的执行器 
-
+  
   默认值:  SIMPLE 
-
+  
   可选值:
-
+  
   1. `SIMPLE`: 就是普通的执行器；
   2. `REUSE`: 执行器会重用预处理语句（prepared statements）； 
   3. `BATCH`: 执行器将重用语句并执行批量更新 
 
 - defaultStatementTimeout
-
+  
   >  设置超时时间，它设置等待数据库响应的秒数 
-
+  
   默认值: 未设置(null)
-
+  
   可选值: 任意正整数
 
 - defaultFetchSize
-
+  
   > 设置一个默认的查询个数,此参数可以在查询设置中被覆盖
-
+  
   默认值: 未设置(null)
-
+  
   可选值: 任意正整数
 
 - safeRowBoundsEnabled
-
+  
   >  允许在嵌套语句中使用分页 , 如果允许使用则设置为 false 
-
+  
   默认值: false
-
+  
   可选值: true,false
 
 - mapUnderscoreToCamelCase
-
+  
   >  是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。 
-
+  
   默认值: false
-
+  
   可选值: true,false
 
 - localCacheScope
-
+  
   >  MyBatis 利用本地缓存机制（Local Cache）防止循环引用（circular references）和加速重复嵌套查询。 
-
+  
   默认值: `SESSION`，这种情况下会缓存一个会话中执行的所有查询 
-
+  
   若设置值为 `STATEMENT`，本地会话仅用在语句执行上，对相同 SqlSession 的不同调用将不会共享数据 
 
 - jdbcTypeForNull
-
+  
   > 当没有为参数提供特定的 JDBC 类型时，为空值指定 JDBC 类型。 有些数据库驱动需要指定列名的 JDBC 类型，多数情况直接用一般类型即可，比如 NULL、VARCHAR 或 OTHER。 
-
+  
   默认值:  OTHER 
-
+  
   可选值:  JdbcType 常量，常用值：NULL, VARCHAR 或 OTHER 
 
 - lazyLoadTriggerMethods
-
+  
   > 指定哪个对象的方法触发一次延迟加载
-
+  
   默认值:  equals,clone,hashCode,toString 
-
+  
   可选值:  用逗号分隔的方法列表
 
 ---
@@ -727,8 +727,8 @@ public class Author {
 
 以下是一些较为常见的Java类型内建的相应的类型别名; 他们都是不区分大小写的
 
-| 别名       | 映射的类型 |
-| :--------- | :--------- |
+| 别名         | 映射的类型      |
+|:---------- |:---------- |
 | _byte      | byte       |
 | _long      | long       |
 | _short     | short      |
@@ -763,9 +763,9 @@ public class Author {
 
  下表描述了一些默认的并常见的类型处理器 :
 
-| 类型处理器           | Java 类型                      | JDBC 类型                            |
-| :------------------- | :----------------------------- | :----------------------------------- |
-| `BooleanTypeHandler` | `java.lang.Boolean`, `boolean` | 数据库兼容的 `BOOLEAN`               |
+| 类型处理器                | Java 类型                        | JDBC 类型                       |
+|:-------------------- |:------------------------------ |:----------------------------- |
+| `BooleanTypeHandler` | `java.lang.Boolean`, `boolean` | 数据库兼容的 `BOOLEAN`              |
 | `ByteTypeHandler`    | `java.lang.Byte`, `byte`       | 数据库兼容的 `NUMERIC` 或 `BYTE`     |
 | `ShortTypeHandler`   | `java.lang.Short`, `short`     | 数据库兼容的 `NUMERIC` 或 `SMALLINT` |
 | `IntegerTypeHandler` | `java.lang.Integer`, `int`     | 数据库兼容的 `NUMERIC` 或 `INTEGER`  |
@@ -886,7 +886,7 @@ MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用
 // ExamplePlugin.java
 @Intercepts({@Signature(
   type= Executor.class, //指定拦截哪个类
-  method = "update",	//指定拦截哪个方法
+  method = "update",    //指定拦截哪个方法
   args = {MappedStatement.class,Object.class})})
 public class ExamplePlugin implements Interceptor {
   private Properties properties = new Properties();
@@ -949,7 +949,7 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
 ```
 
 > 注意:
->
+> 
 > - 需要配置默认的环境（比如：default="development"）
 > - 每个环境都需要指定一个id（比如：id="development"）
 > - 事务管理器的配置（比如：type="JDBC"）
@@ -960,18 +960,18 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
  在 MyBatis 中有两种类型的事务管理器: 
 
 - `JDBC` 
-
+  
   这个配置就是直接使用了 JDBC 的提交和回滚设置，它依赖于从数据源得到的连接来管理事务作用域。
 
--  `MANAGED` 
-
-   这个配置几乎没做什么。它从来不提交或回滚一个连接，而是让容器来管理事务的整个生命周期（比如 JEE 应用服务器的上下文）。 默认情况下它会关闭连接，然而一些容器并不希望这样，因此需要将 closeConnection 属性设置为 false 来阻止它默认的关闭行为,例如:
-
-   ```xml
-   <transactionManager type="MANAGED">
-     <property name="closeConnection" value="false"/>
-   </transactionManager>
-   ```
+- `MANAGED` 
+  
+  这个配置几乎没做什么。它从来不提交或回滚一个连接，而是让容器来管理事务的整个生命周期（比如 JEE 应用服务器的上下文）。 默认情况下它会关闭连接，然而一些容器并不希望这样，因此需要将 closeConnection 属性设置为 false 来阻止它默认的关闭行为,例如:
+  
+  ```xml
+  <transactionManager type="MANAGED">
+    <property name="closeConnection" value="false"/>
+  </transactionManager>
+  ```
 
 > 提示: 如果你正在使用 Spring + MyBatis，则没有必要配置事务管理器， 因为 Spring 模块会使用自带的管理器来覆盖前面的配置。 
 
@@ -981,12 +981,12 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
 
 总共有三种数据源类型:
 
-1.  UNPOOLED
-
+1. UNPOOLED
+   
    这个数据源的实现只是每次被请求时打开和关闭连接 
-
+   
    该数据源具有以下属性:
-
+   
    - `driver` – 这是 JDBC 驱动的 Java 类的完全限定名（并不是 JDBC 驱动中可能包含的数据源类）。
    - `url` – 这是数据库的 JDBC URL 地址。
    - `username` – 登录数据库的用户名。
@@ -996,11 +996,11 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
    - `driver.encoding=UTF8` -  这将通过 DriverManager.getConnection(url,driverProperties) 方法传递值为 `UTF8` 的 `encoding` 属性给数据库驱动。 
 
 2. POOLED
-
+   
     这种数据源的实现利用“池”的概念将 JDBC 连接对象组织起来，避免了创建新的连接实例时所必需的初始化和认证时间; web项目大多使用的是这种数据源类型;
-
+   
    除了上述提到 UNPOOLED 下的属性外，还有更多属性用来配置 POOLED 的数据源: 
-
+   
    - `poolMaximumActiveConnections` – 在任意时间可以存在的活动（也就是正在使用）连接数量，默认值：10
    - `poolMaximumIdleConnections` – 任意时间可能存在的空闲连接数。
    - `poolMaximumCheckoutTime` – 在被强制返回之前，池中连接被检出（checked out）时间，默认值：20000 毫秒（即 20 秒）
@@ -1011,29 +1011,30 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
    - `poolPingConnectionsNotUsedFor` – 配置 poolPingQuery 的频率。可以被设置为和数据库连接超时时间一样，来避免不必要的侦测，默认值：0（即所有连接每一时刻都被侦测 — 当然仅当 poolPingEnabled 为 true 时适用）。
 
 3. JNDI 
-
+   
     这个数据源的实现是为了能在如 EJB 或应用服务器这类容器中使用，容器可以集中或在外部配置数据源，然后放置一个 JNDI 上下文的引用 ,  这种数据源配置只需要两个属性： 
-
+   
    - `initial_context` – 这个属性用来在 InitialContext 中寻找上下文（即，initialContext.lookup(initial_context)）。这是个可选属性，如果忽略，那么将会直接从 InitialContext 中寻找 data_source 属性。
+   
    - `data_source` – 这是引用数据源实例位置的上下文的路径。提供了 initial_context 配置时会在其返回的上下文中进行查找，没有提供时则直接在 InitialContext 中查找。
-
+   
    - `env.encoding=UTF8` - 这就会在初始上下文（InitialContext）实例化时往它的构造方法传递值为 `UTF8` 的 `encoding` 属性。
-
+   
    ---
-
+   
    你可以使用以下方法进行数据源的替换:
-
+   
    你可以通过实现接口 `org.apache.ibatis.datasource.DataSourceFactory` 来使用第三方数据源：
-
+   
    ```java
    public interface DataSourceFactory {
      void setProperties(Properties props);
      DataSource getDataSource();
    }
    ```
-
+   
    `org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory` 可被用作父类来构建新的数据源适配器，比如下面这段插入 C3P0 数据源所必需的代码：
-
+   
    ```java
    import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
    import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -1045,9 +1046,9 @@ SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader, environ
      }
    }
    ```
-
+   
    为了令其工作，记得为每个希望 MyBatis 调用的 setter 方法在配置文件中增加对应的属性。 下面是一个可以连接至 PostgreSQL 数据库的例子：
-
+   
    ```xml
    <dataSource type="org.myproject.C3P0DataSourceFactory">
      <property name="driver" value="org.postgresql.Driver"/>
@@ -1169,21 +1170,21 @@ ps.setInt(1,id);
 
 ### select标签的属性
 
-| 属性                   | 描述                                                         |
-| :--------------------- | :----------------------------------------------------------- |
-| `id`                   | 在命名空间中唯一的标识符，可以使用`命名空间.id`来确定唯一的sql语句 |
-| `parameterType`        | 将会传入这条语句的参数类的完全限定名或别名。这个属性是可选的，因为 MyBatis 可以通过类型处理器（TypeHandler） 推断出具体传入语句的参数，默认值为未设置（unset）。 |
-| `resultType`           | 设置返回类型的类的完全限定名或别名。 注意如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身。可以使用 resultType 或 resultMap，但不能同时使用。 |
-| `resultMap`            | 外部 resultMap 的命名引用。**结果集的映射是 MyBatis 最强大的特性**，如果你对其理解透彻，许多复杂映射的情形都能迎刃而解。可以使用 resultMap 或 resultType，但不能同时使用。 |
-| `flushCache`           | 将其设置为 true 后，只要语句被调用，都会导致本地缓存和二级缓存被清空，默认值：false。 |
-| `useCache`             | 将其设置为 true 后，将会导致本条语句的结果被二级缓存缓存起来，默认值：**对 select 元素为 true** |
-| `timeout`              | 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为未设置（unset）（依赖驱动）。 |
-| `fetchSize`            | 这是一个给驱动的提示，尝试让驱动程序每次批量返回的结果行数和这个设置值相等。 默认值为未设置（unset）（依赖驱动） |
-| `statementType`        | `STATEMENT`，`PREPARED` 或 `CALLABLE` 中的一个。这会让 MyBatis 分别使用 `Statement`，`PreparedStatement` 或 `CallableStatement`，默认值：`PREPARED` |
-| `resultSetType`-不常用 | `FORWARD_ONLY`，`SCROLL_SENSITIVE`, `SCROLL_INSENSITIVE` 或 `DEFAULT`(等价于 unset)中的一个，默认值为 unset （依赖驱动）。 |
-| `databaseId`-不常用    | 如果配置了数据库厂商标识（databaseIdProvider），MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。 |
-| `resultOrdered`        | 这个设置仅针对嵌套结果 select 语句适用：如果为 true，就是假设包含了嵌套结果集或是分组，这样的话当返回一个主结果行的时候，就不会发生有对前面结果集的引用的情况。 这就使得在获取嵌套的结果集的时候不至于导致内存不够用。默认值：`false`。 |
-| `resultSets`           | 这个设置仅对多结果集的情况适用。它将列出语句执行后返回的结果集并给每个结果集一个名称，名称是逗号分隔的。 |
+| 属性                  | 描述                                                                                                                             |
+|:------------------- |:------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                | 在命名空间中唯一的标识符，可以使用`命名空间.id`来确定唯一的sql语句                                                                                          |
+| `parameterType`     | 将会传入这条语句的参数类的完全限定名或别名。这个属性是可选的，因为 MyBatis 可以通过类型处理器（TypeHandler） 推断出具体传入语句的参数，默认值为未设置（unset）。                                  |
+| `resultType`        | 设置返回类型的类的完全限定名或别名。 注意如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身。可以使用 resultType 或 resultMap，但不能同时使用。                                       |
+| `resultMap`         | 外部 resultMap 的命名引用。**结果集的映射是 MyBatis 最强大的特性**，如果你对其理解透彻，许多复杂映射的情形都能迎刃而解。可以使用 resultMap 或 resultType，但不能同时使用。                   |
+| `flushCache`        | 将其设置为 true 后，只要语句被调用，都会导致本地缓存和二级缓存被清空，默认值：false。                                                                               |
+| `useCache`          | 将其设置为 true 后，将会导致本条语句的结果被二级缓存缓存起来，默认值：**对 select 元素为 true**                                                                    |
+| `timeout`           | 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为未设置（unset）（依赖驱动）。                                                                          |
+| `fetchSize`         | 这是一个给驱动的提示，尝试让驱动程序每次批量返回的结果行数和这个设置值相等。 默认值为未设置（unset）（依赖驱动）                                                                    |
+| `statementType`     | `STATEMENT`，`PREPARED` 或 `CALLABLE` 中的一个。这会让 MyBatis 分别使用 `Statement`，`PreparedStatement` 或 `CallableStatement`，默认值：`PREPARED` |
+| `resultSetType`-不常用 | `FORWARD_ONLY`，`SCROLL_SENSITIVE`, `SCROLL_INSENSITIVE` 或 `DEFAULT`(等价于 unset)中的一个，默认值为 unset （依赖驱动）。                          |
+| `databaseId`-不常用    | 如果配置了数据库厂商标识（databaseIdProvider），MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。                       |
+| `resultOrdered`     | 这个设置仅针对嵌套结果 select 语句适用：如果为 true，就是假设包含了嵌套结果集或是分组，这样的话当返回一个主结果行的时候，就不会发生有对前面结果集的引用的情况。 这就使得在获取嵌套的结果集的时候不至于导致内存不够用。默认值：`false`。 |
+| `resultSets`        | 这个设置仅对多结果集的情况适用。它将列出语句执行后返回的结果集并给每个结果集一个名称，名称是逗号分隔的。                                                                           |
 
 ## insert, update 和 delete
 
@@ -1217,17 +1218,17 @@ ps.setInt(1,id);
 
 ### Insert,Update,Delete标签的属性
 
-| 属性                | 描述                                                         |
-| :------------------ | :----------------------------------------------------------- |
-| `id`                | 在命名空间中唯一的标识符，可以使用`命名空间.id`来确定唯一的sql语句 |
-| `parameterType`     | 将要传入语句的参数的完全限定类名或别名。这个属性是可选的，因为 MyBatis 可以通过类型处理器推断出具体传入语句的参数，默认值为未设置（unset）。 |
-| `flushCache`        | 将其设置为 true 后，只要语句被调用，都会导致本地缓存和二级缓存被清空，**默认值：true (对于 insert、update 和 delete 语句)**。 |
-| `timeout`           | 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为未设置（unset）（依赖驱动）。 |
-| `statementType`     | `STATEMENT`，`PREPARED` 或 `CALLABLE` 的一个。这会让 MyBatis 分别使用 `Statement`，`PreparedStatement` 或 `CallableStatement`，默认值：`PREPARED`。 |
-| `useGeneratedKeys`  | **(仅对 insert 和 update 有用)** 这会令 MyBatis 使用 JDBC 的 `getGeneratedKeys` 方法来取出由数据库内部生成的主键（比如：像 MySQL(自增主键) 和 SQL Server 这样的关系数据库管理系统的自动递增字段），默认值：false。 |
-| `keyProperty`       | **(仅对 insert 和 update 有用)** 唯一标记一个属性，MyBatis 会通过 getGeneratedKeys 的返回值或者通过 insert 语句的 selectKey 子元素设置它的键值，默认值：未设置（`unset`）。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。 |
-| `keyColumn`         | **(仅对 insert 和 update 有用)**通过生成的键值设置表中的列名，这个设置仅在某些数据库（像 PostgreSQL）是必须的，当主键列不是表中的第一列的时候需要设置。如果希望使用多个生成的列，也可以设置为逗号分隔的属性名称列表。 |
-| `databaseId`-不常用 | 如果配置了数据库厂商标识（databaseIdProvider），MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。 |
+| 属性                 | 描述                                                                                                                                                       |
+|:------------------ |:-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`               | 在命名空间中唯一的标识符，可以使用`命名空间.id`来确定唯一的sql语句                                                                                                                    |
+| `parameterType`    | 将要传入语句的参数的完全限定类名或别名。这个属性是可选的，因为 MyBatis 可以通过类型处理器推断出具体传入语句的参数，默认值为未设置（unset）。                                                                            |
+| `flushCache`       | 将其设置为 true 后，只要语句被调用，都会导致本地缓存和二级缓存被清空，**默认值：true (对于 insert、update 和 delete 语句)**。                                                                       |
+| `timeout`          | 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为未设置（unset）（依赖驱动）。                                                                                                    |
+| `statementType`    | `STATEMENT`，`PREPARED` 或 `CALLABLE` 的一个。这会让 MyBatis 分别使用 `Statement`，`PreparedStatement` 或 `CallableStatement`，默认值：`PREPARED`。                           |
+| `useGeneratedKeys` | **(仅对 insert 和 update 有用)** 这会令 MyBatis 使用 JDBC 的 `getGeneratedKeys` 方法来取出由数据库内部生成的主键（比如：像 MySQL(自增主键) 和 SQL Server 这样的关系数据库管理系统的自动递增字段），默认值：false。      |
+| `keyProperty`      | **(仅对 insert 和 update 有用)** 唯一标记一个属性，MyBatis 会通过 getGeneratedKeys 的返回值或者通过 insert 语句的 selectKey 子元素设置它的键值，默认值：未设置（`unset`）。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。 |
+| `keyColumn`        | **(仅对 insert 和 update 有用)**通过生成的键值设置表中的列名，这个设置仅在某些数据库（像 PostgreSQL）是必须的，当主键列不是表中的第一列的时候需要设置。如果希望使用多个生成的列，也可以设置为逗号分隔的属性名称列表。                              |
+| `databaseId`-不常用   | 如果配置了数据库厂商标识（databaseIdProvider），MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。                                                 |
 
 示例:
 
@@ -1256,7 +1257,7 @@ ps.setInt(1,id);
 如上所述,插入语句的配置规则更加丰富,在插入语句里面有一些额外的属性和子元素用来处理主键的生成,而且有多种生成方式
 
 - 如果你的数据库支持自动生成主键(比如MySQL和SQL Server),那么你可以设置 `useGeneratedKeys=”true”`，然后再把 `keyProperty` 设置到目标属性上就可以了; 例如: 
-
+  
   ```xml
   <insert id="insertAuthor" useGeneratedKeys="true"
       keyProperty="id">
@@ -1266,7 +1267,7 @@ ps.setInt(1,id);
   ```
 
 - 如果你的数据库还支持多行插入,你也可以传入一个Author数组或集合,并返回自动生成的主键
-
+  
   ```xml
   <insert id="insertAuthor" useGeneratedKeys="true"
       keyProperty="id">
@@ -1278,9 +1279,9 @@ ps.setInt(1,id);
   ```
 
 - 如果你的数据库不支持自动生成主键,Mybatis有另外一种方法来生成主键
-
+  
   这里有一个简单的示例,它可以生成一个随机ID(这里只是用来展示,但你最好不要这样做)
-
+  
   ```xml
   <insert id="insertAuthor">
     <selectKey keyProperty="id" resultType="int" order="BEFORE">
@@ -1292,11 +1293,11 @@ ps.setInt(1,id);
       (#{id}, #{username}, #{password}, #{email}, #{bio}, #{favouriteSection,jdbcType=VARCHAR})
   </insert>
   ```
-
+  
   在上面的示例中,` selectKey`标签中的语句将会首先运行,将运行的结果返回后设置到Author的id(由`keyProperty`指定)中,然后插入语句会被调用; 这可以提供给你一个于数据库中自动生成主键类似的行为,同时保持了Java代码的简介
-
+  
   selectKey 元素描述如下：
-
+  
   ```xml
   <selectKey
     keyProperty="id"
@@ -1304,16 +1305,16 @@ ps.setInt(1,id);
     order="BEFORE"
     statementType="PREPARED">
   ```
-
+  
    selectKey 元素的属性如下:
-
-  | 属性            | 描述                                                         |
-  | :-------------- | :----------------------------------------------------------- |
-  | `keyProperty`   | 可以指定selectKey语句的查询结果设置到参数对象的哪个属性当中; 如果希望将多个多列的查询结果设置到多个属性中，也可以使用逗号分隔的属性名称列表。 |
-  | `keyColumn`     | 匹配属性的返回结果集中的列名称。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。 |
-  | `resultType`    | 结果的类型。MyBatis 通常可以推断出来，但是为了更加精确，写上也不会有什么问题。MyBatis 允许将任何简单类型用作主键的类型，包括字符串。如果希望作用于多个生成的列，则可以使用一个包含期望属性的 Object 或一个 Map。 |
+  
+  | 属性              | 描述                                                                                                                                                                 |
+  |:--------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+  | `keyProperty`   | 可以指定selectKey语句的查询结果设置到参数对象的哪个属性当中; 如果希望将多个多列的查询结果设置到多个属性中，也可以使用逗号分隔的属性名称列表。                                                                                       |
+  | `keyColumn`     | 匹配属性的返回结果集中的列名称。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。                                                                                                                      |
+  | `resultType`    | 结果的类型。MyBatis 通常可以推断出来，但是为了更加精确，写上也不会有什么问题。MyBatis 允许将任何简单类型用作主键的类型，包括字符串。如果希望作用于多个生成的列，则可以使用一个包含期望属性的 Object 或一个 Map。                                             |
   | `order`         | 这可以被设置为 `BEFORE` 或 `AFTER`。如果设置为 `BEFORE`，那么它会首先生成主键，设置 `keyProperty` 然后执行插入语句。如果设置为 `AFTER`，那么先执行插入语句，然后是 `selectKey` 中的语句 - 这和 Oracle 数据库的行为相似，在插入语句内部可能有嵌入索引调用。 |
-  | `statementType` | 与前面相同，MyBatis 支持 `STATEMENT`，`PREPARED` 和 `CALLABLE` 语句的映射类型，分别代表 `PreparedStatement` 和 `CallableStatement` 类型。 |
+  | `statementType` | 与前面相同，MyBatis 支持 `STATEMENT`，`PREPARED` 和 `CALLABLE` 语句的映射类型，分别代表 `PreparedStatement` 和 `CallableStatement` 类型。                                                    |
 
 ## sql(sql片段)
 
@@ -1331,10 +1332,10 @@ ps.setInt(1,id);
 <select id="selectUsers" resultType="map">
   select
     <include refid="userColumns">
-    	<property name="alias" value="t1"/>
+        <property name="alias" value="t1"/>
     </include>,
     <include refid="userColumns">
-    	<property name="alias" value="t2"/>
+        <property name="alias" value="t2"/>
     </include>
   from some_table t1
     cross join some_table t2
@@ -1364,7 +1365,7 @@ ps.setInt(1,id);
 ```
 
 > `someinclude`中把`sometable`的sql片段和`prefix`当作为属性
->
+> 
 > 使用`<include>`标签可以关联sql片段
 
 ## 参数(#{}和${})
@@ -1449,9 +1450,9 @@ User findByColumn(@Param("column") String column, @Param("value") String value);
 ```
 
 > 因为其中 `${column}` 会被直接替换，而 `#{value}` 会被使用 `?` 预处理 
->
+> 
 > 这个想法也同样适用于用来替换表明的情况
->
+> 
 > 注意: 用这种方式接收用户的输入,并将用于语句中的参数是不安全的,会导致潜在的SQL注入攻击,因此要么不允许用户输入这些字段,要么自行转义并检验
 
 ## resultMap(结果映射)
@@ -1669,10 +1670,10 @@ MyBatis 创建时的一个思想是：数据库不可能永远是你所想或所
 
 ResultMap 的属性列表 
 
-| 属性          | 描述                                                         |
-| :------------ | :----------------------------------------------------------- |
-| `id`          | 当前命名空间中的一个唯一标识，用于标识一个结果映射集。       |
-| `type`        | 类的完全限定名, 或者一个类型别名。                           |
+| 属性            | 描述                                                                                   |
+|:------------- |:------------------------------------------------------------------------------------ |
+| `id`          | 当前命名空间中的一个唯一标识，用于标识一个结果映射集。                                                          |
+| `type`        | 类的完全限定名, 或者一个类型别名。                                                                   |
 | `autoMapping` | 如果设置这个属性，MyBatis将会为本结果映射开启或者关闭自动映射。 这个属性会覆盖全局的属性 autoMappingBehavior。默认值：未设置（unset）。 |
 
 ### id & result
@@ -1692,13 +1693,13 @@ ResultMap 的属性列表
 
  Id 和 Result 的属性 
 
-| 属性          | 描述                                                         |
-| :------------ | :----------------------------------------------------------- |
-| `property`    | 映射Javabean中的字段名称                                     |
-| `column`      | 映射数据库中的列名                                           |
-| `javaType`    | 用来指定要映射的一个JavaBean对象类型; MyBatis 通常可以推断类型。然而，如果你映射到的是 HashMap，那么你应该明确地指定 javaType 来保证行为与期望的相一致。它的值可以是一个 Java 类的完全限定名，或一个类型别名 |
+| 属性            | 描述                                                                                                                                            |
+|:------------- |:--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `property`    | 映射Javabean中的字段名称                                                                                                                              |
+| `column`      | 映射数据库中的列名                                                                                                                                     |
+| `javaType`    | 用来指定要映射的一个JavaBean对象类型; MyBatis 通常可以推断类型。然而，如果你映射到的是 HashMap，那么你应该明确地指定 javaType 来保证行为与期望的相一致。它的值可以是一个 Java 类的完全限定名，或一个类型别名                   |
 | `jdbcType`    | JDBC 类型，所支持的 JDBC 类型参见这个表格之后的“支持的 JDBC 类型”。 只需要在可能执行插入、更新和删除的且允许空值的列上指定 JDBC 类型。这是 JDBC 的要求而非 MyBatis 的要求。如果你直接面向 JDBC 编程，你需要对可能存在空值的列指定这个类型。 |
-| `typeHandler` | 我们在前面讨论过默认的类型处理器。使用这个属性，你可以覆盖默认的类型处理器。 这个属性值是一个类型处理器实现类的完全限定名，或者是类型别名。 |
+| `typeHandler` | 我们在前面讨论过默认的类型处理器。使用这个属性，你可以覆盖默认的类型处理器。 这个属性值是一个类型处理器实现类的完全限定名，或者是类型别名。                                                                        |
 
 ### 支持的JDBC类型
 
@@ -1713,10 +1714,6 @@ ResultMap 的属性列表
 | `BIGINT`   | `DECIMAL` | `TIME`        | `NULL`          | `CURSOR`  | `ARRAY`     |
 
 ### 构造方法
-
-
-
-
 
 ### 关联
 
@@ -1966,11 +1963,11 @@ AND title like ‘someTitle’
 ```
 
 > `prefix="where"`定义了在trim包裹的代码前面添加"where"
->
+> 
 > `prefixOverrides="AND"`可以去除掉最前面多余的"AND"
->
+> 
 > `suffix="where"`可以在trim包裹的代码后面添加"where"
->
+> 
 > `suffixOverrides=","`可以去除掉最后面多余的","
 
 ## where
@@ -2048,11 +2045,11 @@ AND title like ‘someTitle’
 foreach元素的功能非常强大,它允许你指定一个集合,声明可以在元素内使用的集合项(item)和索引(index)变量; 它也允许你指定开头与结尾的字符串以及在迭代结果之间放置分隔符; 这个元素很之恩那个,因此它不会附加多余的分隔符
 
 > `item="item"`指明了在foreach循环中取到的每个变量可以通过#{item}来获取到
->
+> 
 > `index="index"`指明了指明了在foreach循环中取到的每个变量的索引
->
+> 
 > `collection="list"`指明了去遍历哪个传入的参数,其变量名称为list
->
+> 
 > `open="(" separator="," close=")"`表示了在遍历拼接时,最前面和最后面使用`(`和`)`包裹,中间的每个元素使用`,`来进行分隔
 
 ## bind
@@ -2215,7 +2212,7 @@ Mybatis的**二级缓存的作用域是一个mapper的namespace**,同一namespac
 开启二级缓存步骤:
 
 1. 在对应的mapper中开启二级缓存
-
+   
    ```xml
    <mapper namespace="com.zpc.mybatis.dao.UserMapper">
        <cache/> <!-- 开启二级缓存 -->
@@ -2224,7 +2221,7 @@ Mybatis的**二级缓存的作用域是一个mapper的namespace**,同一namespac
    ```
 
 2. 开启二级缓存时,使用的JavaBean必须要序列化(实现Serializable接口)
-
+   
    ```java
    public class User implements Serializable{
        private static final long serialVersionUID = -3330851033429007657L;
@@ -2241,7 +2238,7 @@ Mybatis的**二级缓存的作用域是一个mapper的namespace**,同一namespac
 - 不开启(默认是不开启的)
 
 - 在全局的mybatis-config.xml 中去关闭二级缓存 
-
+  
   ```xml
   <settings>
       <!--开启二级缓存,全局总开关，这里关闭，mapper中开启了也没用-->
@@ -2266,7 +2263,7 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 以下是开启日志记录的步骤:
 
 1. 我们可以在` mybatis-config.xml `配置文件中开启日志功能:
-
+   
    ```xml
    <configuration>
        <!-- 开启日志功能 -->
@@ -2275,13 +2272,13 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
        </settings>
    </configuration>
    ```
-
+   
    > 注意: `settings`标签的位置在`configuration`标签中是有要求的,如果位置不正确会报排列顺序错误
-   >
+   > 
    > `settings`标签需要在`properties`标签和`environments`标签中间
 
 2. 在pom文件中引入log4j的依赖
-
+   
    ```xml
    <dependency>
        <groupId>log4j</groupId>
@@ -2291,7 +2288,7 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
    ```
 
 3. 在项目的静态资源根路径创建`log4j.properties`配置文件
-
+   
    ```properties
    # Global logging configuration
    log4j.rootLogger=ERROR, stdout
@@ -2330,7 +2327,7 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 - mybatis日志插件：[mybatis-log-plugin](https://plugins.jetbrains.com/plugin/10065-mybatis-log-plugin/)
 
 - mybatis接口和xml跳转插件：[free-mybatis-plugin](https://plugins.jetbrains.com/plugin/8321-free-mybatis-plugin/)
-
+  
   > 不好的是，插件更新后集成了自动生成xml的功能，会和`mybatis-generator-plus`插件冲突，所以换成了`Cofe-Mybatis`插件
 
 - CodeGlance: 代码全局可视化插件
@@ -2340,4 +2337,3 @@ MyBatis 内置日志工厂基于运行时自省机制选择合适的日志工具
 [Mybatis实战教程](https://blog.csdn.net/hellozpc/article/details/80878563)
 
 [Mybatis中文官网](https://mybatis.org/mybatis-3/zh/getting-started.html)
-

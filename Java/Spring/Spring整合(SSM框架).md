@@ -13,11 +13,11 @@ Spring的核心是IOC和AOP,通过IOC容器可以管理很多的JavaBean,并可�
 当web应用启动时,我们会加载`spring.xml`配置文件,来加载Spring的上下文,该上下文是被所有的Javabean共享的
 
 > spring.xml中包含了Spring的上下文和Mybatis整合的内容
->
+> 
 > 它会将Service层和Dao层(由Mybatis-Spring创建)的Javabean放入到spring的上下文中,这些bean是会被所有bean共享的(在Controller中共享,Dao使用了SqlSessionTemplate保证了线程安全,而Service可能会存在线程不安全问题)
->
+> 
 > > 需要注意的是在Service中尽量不要创建和使用成员变量和静态变量,这样会导致Service层在多线程环境下数据不一致,即线程不安全
-> >
+> > 
 > > 如果非要使用成员变量,可以使用ThreadLocal来解决
 
 之后我们会在web.xml中配置DispatchServlet的初始化和映射,在DispatchServlet初始化时,会加载springmvc.xml,该文件会扫描Controller层,并将其放入到ServletContext(Servlet上下文)中,Controller层的Javabean只能被Servlet所共享
@@ -49,13 +49,13 @@ SSM各自起到的作用:
 > 该环境在XML-Demo中和注解-Demo中都需要使用到
 
 1. 创建一个maven项目
-
+   
    ![1572167797787](/Users/yingjie.lu/Documents/note/.img/1572167797787.png)
-
+   
    ![1572167828392](/Users/yingjie.lu/Documents/note/.img/1572167828392.png)
 
 2. 添加maven依赖(pom.xml文件)
-
+   
    ```xml
    <?xml version="1.0" encoding="UTF-8"?>
    <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -116,7 +116,7 @@ SSM各自起到的作用:
                <artifactId>jackson-databind</artifactId>
                <version>2.10.0</version>
            </dependency>
-           
+   
            <!--在纯注解-Demo中需要添加servlet-api 3.0+的依赖-->
            <dependency>
                <groupId>javax.servlet</groupId>
@@ -130,33 +130,33 @@ SSM各自起到的作用:
    ```
 
 3. 配置tomcat
-
+   
    ![1572167924834](/Users/yingjie.lu/Documents/note/.img/1572167924834.png)
-
+   
    ![1572167955842](/Users/yingjie.lu/Documents/note/.img/1572167955842.png)
-
+   
    点击Fix按钮,然后点击下方的选项
-
+   
    ![1572168052961](/Users/yingjie.lu/Documents/note/.img/1572168052961.png)
-
+   
    将右边的Maven依赖添加到Tomcat中
-
+   
    ![1572168140593](/Users/yingjie.lu/Documents/note/.img/1572168140593.png)
-
+   
    在项目中创建web目录以及WEB-INF和web.xml等重要的文件
-
+   
    > 我们可以通过idea自带的功能来自动创建,参考下图
-
+   
    ![1572168890701](/Users/yingjie.lu/Documents/note/.img/1572168890701.png)
-
+   
    点击下方的按钮,然后点击OK即可自动创建web目录
-
+   
    ![1572169013573](/Users/yingjie.lu/Documents/note/.img/1572169013573.png)
-
+   
    然后一步finish或next即可
 
 4. 创建数据库表
-
+   
    ```sql
    CREATE TABLE `user` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -165,9 +165,9 @@ SSM各自起到的作用:
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8
    ```
-
+   
    并插入初始数据
-
+   
    ```sql
    insert into `user` (`id`, `name`, `age`) values('1','A','1');
    insert into `user` (`id`, `name`, `age`) values('2','B','2');

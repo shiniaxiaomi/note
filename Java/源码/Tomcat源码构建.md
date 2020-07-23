@@ -13,7 +13,7 @@
 可以从github中克隆Tomcat的源代码([网址](https://github.com/apache/tomcat))
 
 > 在克隆时,注意选择Tomcat的版本,建议选择8以上的版本
->
+> 
 > 本文将以Tomcat8.5.x版本为例进行构建
 
 ### 安装构建工具ant
@@ -35,7 +35,7 @@ mac用户直接使用命令`brew install ant`即可快速安装完成
 ![image-20200113191551462](/Users/yingjie.lu/Documents/note/.img/image-20200113191551462.png)
 
 > 其中的`build`目录就是编译构建好的tomcat的目录结构,就如我们平常下载Tomcat后的`/usr/local/Cellar/tomcat/9.0.27/libexec`目录下所看到的目录一样
->
+> 
 > 其中的`classes`文件夹可以先忽略,这个文件夹是idea在编译java文件时产生的class文件,我索性就直接指向到`output`目录下了,其实执行到其他地方问题也不大
 
 在`build/lib`目录中,存放下载和编译完成的jar包,是Tomcat运行时必要的jar包,如果不小心删除了或者修改了,可以使用`ant`命令重新编译生成(注意需要在项目跟路径输入命令)
@@ -61,16 +61,16 @@ mac用户直接使用命令`brew install ant`即可快速安装完成
 1. 在项目的根目录中创建lib文件夹
 
 2. 将以下jar包复制到lib文件夹下
-
+   
    - [ant-1.10.7.jar](https://mvnrepository.com/artifact/org.apache.ant/ant/1.10.7)
    - [javax.xml.rpc-api-1.1.2.jar](https://mvnrepository.com/artifact/javax.xml.rpc/javax.xml.rpc-api/1.1.2)
    - [org.eclipse.jdt.core-3.20.0.jar](https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.core/3.20.0)
    - [wsdl-1.6.2.jar](https://mvnrepository.com/artifact/javax/wsdl/1.6.2)
 
 3. 然后将他们都添加到Libraries中
-
+   
    ![image-20200113193146443](/Users/yingjie.lu/Documents/note/.img/image-20200113193146443.png)
-
+   
    > 添加好之后,idea就不会报错了
 
 ### 在idea中添加启动项
